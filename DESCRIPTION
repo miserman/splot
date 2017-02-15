@@ -1,0 +1,14 @@
+Package: splot
+Type: Package
+Title: Split Plot
+Version: 0.1.0
+Author: Micah Iserman
+Maintainer: Micah Iserman <micah.iserman@ttu.edu>
+Description: Automates common plotting tasks, with a focus on interactions and mediation.
+Depends: R (>= 3.1), graphics, stats, grDevices
+License: GPL (>= 2)
+LazyData: TRUE
+RoxygenNote: 5.0.1
+Suggests: knitr,
+    rmarkdown
+VignetteBuilder: knitr
