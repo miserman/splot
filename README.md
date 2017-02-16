@@ -9,7 +9,7 @@ View an [introduction/guide](https://www.myweb.ttu.edu/miserman/splot.html)
 install.packages('devtools')
 devtools::install_github('miserman/splot')
 ```
-Then load the package, and view its the help file
+Then load the package, and view its help file
 ```R
 library(splot)
 ?splot
