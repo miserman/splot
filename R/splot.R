@@ -115,7 +115,8 @@
 #' })
 #'
 #' @export
-#' @importFrom grDevices grey dev.copy dev.size dev.off dev.prev cairo_pdf
+#' @importFRom devEMF emf
+#' @importFrom grDevices grey dev.copy dev.size dev.off cairo_pdf
 #' @importFrom graphics axis axTicks hist legend lines mtext plot barplot par points arrows
 #' @importFrom stats density median quantile sd lm confint.default loess na.omit
 splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',data=NULL,su=NULL,levels=list(),
@@ -141,7 +142,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
   if(tryCatch(class(y)=='formula',error=function(e)FALSE)){
     f=paste(deparse(y),collapse='')
     y=gsub('~.*$|\\\"| ','',f)
-    v=strsplit(gsub('^.*~|\\\"|\\)$| ','',f),'\\+')[[1]]
+    v=strsplit(gsub('^.*~|\\\"| ','',f),'\\+')[[1]]
     if(grepl('\\*',f)){
       r=strsplit(v[sapply(v,function(i)grepl('\\*',i))],'\\*')[[1]]
       if(length(r)>0) x=r[1]
@@ -497,18 +498,16 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
   if(save || (missing(save) && any(!missing(format),!missing(dims)))){
     tryCatch({
       t=substitute(format)
-      if(t=='pdf') t=substitute(cairo_pdf)
-      if(t=='bitmat') t=substitute(bmp)
-      if(t=='postscript') t=substitute(cairo_ps)
-      if(grepl('jpeg|png|tiff|bmp',t) && missing(dims)) dims=dev.size(units='px')
-      fn=paste0(if(main=='') 'splot' else gsub(' ','_',gsub('^ +| +$|  ','',main)),
-        paste0('.',if(grepl('cairo',t)) strsplit(deparse(t),'_')[[1]][2] else if(grepl('post',t))'ps' else t))
-      dev.copy(format,filename=fn,width=dims[1],height=dims[2])
-      dev.off(dev.prev())
+      tt=if(grepl('cairo',t)){paste0('.',strsplit(deparse(t),'_')[[1]][2])
+      }else if(t=='postscript'){'.ps'
+      }else if(grepl('emf|slide|power',t,TRUE)){'.emf'
+      }else paste0('.',t)
+      if(grepl('jpeg|png|tiff|bmp|bit',t) && missing(dims)) dims=dev.size(units='px')
+      fn=paste0(if(main=='') 'splot' else gsub(' ','_',gsub('^ +| +$|  ','',main)),tt)
+      dev.copy(format,fn,width=dims[1],height=dims[2])
       dev.off()
       message('image saved: ',getwd(),'/',fn)
     },error=function(e)warning('unable to save image: ',e$message,call.=FALSE))
   }
   invisible(list(data=dat,cdat=cdat,txt=txt,ptxt=ptxt,seg=seg,ck=ck,model=fmod))
 }
-
