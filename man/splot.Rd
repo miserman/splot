@@ -101,7 +101,7 @@ x axis label.}
 y axis label.}
 
 \item{lty}{logical or a vector: if \code{FALSE}, lines are always solid. If a vector, changes line type based on each value. Otherwise loops
-through available line types, see \code{\link[par]{par}}.}
+through available line types, see \code{\link[graphics]{par}}.}
 
 \item{lhz}{logical: if \code{FALSE}, the legend grows horizontally.}
 
@@ -173,4 +173,3 @@ splot(y~x+x^2, data=dat, su=bet1==1&bet2==0&by==1, add={
 })
 
 }
-

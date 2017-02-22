@@ -56,7 +56,7 @@
 #' @param laby logical or a character: if \code{FALSE}, the label on the y axis is turned off. If a character, this will be shown as the
 #'   y axis label.
 #' @param lty logical or a vector: if \code{FALSE}, lines are always solid. If a vector, changes line type based on each value. Otherwise loops
-#'   through available line types, see \code{\link[par]{par}}.
+#'   through available line types, see \code{\link[graphics]{par}}.
 #' @param lhz logical: if \code{FALSE}, the legend grows horizontally.
 #' @param sub logical: if \code{FALSE}, the small title above each plot showing \code{between} levels is turned off.
 #' @param leg logical: if \code{FALSE}, the legend is turned off.
@@ -115,7 +115,6 @@
 #' })
 #'
 #' @export
-#' @importFRom devEMF emf
 #' @importFrom grDevices grey dev.copy dev.size dev.off cairo_pdf
 #' @importFrom graphics axis axTicks hist legend lines mtext plot barplot par points arrows
 #' @importFrom stats density median quantile sd lm confint.default loess na.omit
@@ -500,7 +499,6 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
       t=substitute(format)
       tt=if(grepl('cairo',t)){paste0('.',strsplit(deparse(t),'_')[[1]][2])
       }else if(t=='postscript'){'.ps'
-      }else if(grepl('emf|slide|power',t,TRUE)){'.emf'
       }else paste0('.',t)
       if(grepl('jpeg|png|tiff|bmp|bit',t) && missing(dims)) dims=dev.size(units='px')
       fn=paste0(if(main=='') 'splot' else gsub(' ','_',gsub('^ +| +$|  ','',main)),tt)

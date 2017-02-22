@@ -8,7 +8,7 @@ Description: Automates common plotting tasks, with a focus on interactions and m
 Depends: R (>= 3.1), graphics, stats, grDevices
 License: GPL (>= 2)
 LazyData: TRUE
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1
 Suggests: knitr,
     rmarkdown
 VignetteBuilder: knitr
