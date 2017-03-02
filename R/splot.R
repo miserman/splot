@@ -483,6 +483,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
       }
       success=TRUE
     }
+    if(!missing(add)) tryCatch(eval(substitute(add),envir=odat),error=function(e)warning('error from add: ',e$message,call.=FALSE))
   },error=function(e){par(op);stop(e)})}
   if(!success){par(op);stop("failed to make any plots with the current input",call.=FALSE)}
   mtext(main,3,2,TRUE,font=2,cex=1.5,col='#303030')
@@ -492,7 +493,6 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
   mtext(if(ck$t==2) 'Density' else ylab,2,-.2,TRUE,font=2,col='#303030')
   mtext(if(ck$t==2) ylab else xlab,1,0,TRUE,font=2,col='#303030')
   if(!is.logical(note)) mtext(note,1,1,TRUE,adj=0,font=3,cex=.7)
-  if(!missing(add)) tryCatch(eval(substitute(add),envir=odat),error=function(e)warning('error from add: ',e$message,call.=FALSE))
   par(op)
   if(save || (missing(save) && any(!missing(format),!missing(dims)))){
     tryCatch({
