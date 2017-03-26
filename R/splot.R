@@ -478,7 +478,8 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
         if(points) points(x,y,pch=pch,col=if(seg$by$ll==1 && colors[1]=='#2E2E2E') '#999999' else colors[l])
         if(lines){
           fit=if(ck$c) lm(y~x+cdat[[i]][[l]][,cvar])$fitted else ifelse(loess,stats::loess,lm)(y~x)$fitted
-          lines(x[order(x)],fit[order(x)],col=colors[l],lwd=lwd,lty=if(ck$lty && lty)l else if(!missing(lty) && !ck$lty) lty else 1)
+          lines(x[order(x)],fit[order(x)],col=colors[l],lwd=lwd,lty=if(ck$lty && lty)
+            l else if(!missing(lty) && !ck$lty)ifelse(length(lty)>1,lty[l],l) else 1)
         }
       }
       success=TRUE
