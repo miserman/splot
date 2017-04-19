@@ -260,7 +260,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
       seg[[e]]$i=i
       seg[[e]]$l=levels(as.factor(dat[,i]))
       seg[[e]]$ll=length(seg[[e]]$l)
-      if(seg[[e]]$ll>lim && !is.character(dat[,i])){
+      if(seg[[e]]$ll>lim && !(is.character(dat[,i]) || is.factor(dat[,i]))){
         dat[,i]=splt(dat[,i],ck$sp)
         seg[[e]]$s=TRUE
         seg[[e]]$l=levels(as.factor(dat[,i]))
@@ -324,7 +324,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
   }
 #figuring out parts of the plot
   if(missing(colors) || length(colors)<seg$by$ll || grepl('^gr|past|prim|bright|dark',colors[1],TRUE)){
-    colors=if(seg$by$ll>1 && seg$by$ll<9 && !(!missing(colors) && grepl('^gr',colors[1],TRUE))){
+    colors=if((seg$by$ll>1 && seg$by$ll<9) || !(!missing(colors) && grepl('^gr',colors[1],TRUE))){
       if(!missing(colors) && grepl('prim|bright',colors[1],TRUE)){ c('#45ff00','#ba00ff','#000000','#ff0000','#fffd00','#003dff','#00f2f8','#999999','#ff891b')
       }else if(!missing(colors) && grepl('dark',colors[1],TRUE)){ c('#1b8621','#681686','#2a2a2a','#7c0d0d','#b5bc00','#241c80','#1a7e8b','#666666','#b06622')
       }else c('#82c473','#a378c0','#616161','#9f5c61','#d3d280','#6970b2','#78c4c2','#454744','#d98c82')
