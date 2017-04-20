@@ -406,9 +406,10 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
         ifelse(max(m[1,!is.na(m[1,])])>max(m[nrow(m),!is.na(m[nrow(m),])]),'topright','topleft'),'topright'),lpos)
       if(any(is.na(ylim))) next
       oyl=axTicks(2,axp=c(ylim[1],ylim[2],par('yaxp')[3]))
-      if(missing(mar) && (missing(xlas) || xlas>1) && sum(strwidth(colnames(m),units='inch'))>dev.size()[1]-1.5){
+      stw=strwidth(colnames(m),units='inch')
+      if(missing(mar) && (missing(xlas) || xlas>1) && sum(stw)>dev.size()[1]-1.5){
         xlas=3
-        par(mar=c(max(strwidth(colnames(m),units='inch'))*ifelse(labx,5.5,4.8),par('mar')[-1]))
+        par(mar=c(max(stw)*ifelse(labx,5.5,4.8),par('mar')[-1]))
       }
       if(grepl('^b',type,TRUE)){
         if(autori && lb<0){
