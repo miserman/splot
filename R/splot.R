@@ -43,6 +43,8 @@
 #' @param mxl sets the range of the x axis (\code{xlim} of \code{\link[graphics]{plot}}). If not specified, this will be calculated from the data.
 #' @param autori logical: if \code{FALSE}, the origin of plotted bars will be set to 0. Otherwise, bars are adjusted such that they extend to the
 #'   bottom of the y axis.
+#' @param xlas sets the orientation of the x-axis labels. See \code{\link[graphics]{par}}.
+#' @param ylas sets the orientation of the y-axis labels. See \code{\link[graphics]{par}}.
 #' @param lwd sets the width of lines in scatter plots. Default is 2. See \code{\link[graphics]{par}}.
 #' @param pch sets the type of dot to use when plotting points in a scatter plot. Default is 20. See \code{\link[graphics]{par}}.
 #' @param bw sets the smoothing bandwidth when plotting densities. Default is \code{'nrd0'}. See \code{\link[stats]{density}}.
@@ -120,7 +122,7 @@
 #' @importFrom stats density median quantile sd lm confint.default loess na.omit
 splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',data=NULL,su=NULL,levels=list(),
   error='standard',errorColor='#585858',lim=9,model=FALSE,loess=FALSE,save=FALSE,format=cairo_pdf,dims=dev.size(),
-  colors=NULL,myl=NULL,mxl=NULL,autori=TRUE,lwd=2,pch=20,bw='nrd0',adj=2,lpos='auto',lvn=TRUE,title=TRUE,labx=TRUE,
+  colors=NULL,myl=NULL,mxl=NULL,autori=TRUE,xlas=0,ylas=1,lwd=2,pch=20,bw='nrd0',adj=2,lpos='auto',lvn=TRUE,title=TRUE,labx=TRUE,
   laby=TRUE,lty=TRUE,lhz=FALSE,sub=TRUE,leg=TRUE,note=TRUE,sud=TRUE,labels=TRUE,points=TRUE,lines=TRUE,add=NULL,...){
 #parsing input and preparing data
   ck=list(
@@ -419,10 +421,10 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
         p=matrix(rep(seq(c),r),nrow=r,byrow=TRUE)
         plot(NA,ylim=ylim,xlim=if(missing(mxl)) c(1-c*.1,c+c*.1) else mxl,ylab=NA,xlab=NA,main=if(sub) ptxt$sub else NA,axes=FALSE,...)
         for(a in 1:r) lines(m[a,],lwd=lwd,col=colors[a],lty=if(ck$lty && lty)a else if(!missing(lty) && !ck$lty) lty else 1)
-        axis(1,seq(colnames(m)),colnames(m),FALSE)
+        axis(1,seq(colnames(m)),colnames(m),FALSE,las=xlas)
         if(leg) legend(lpos,rownames(m),col=colors,lty=c(1:r),lwd=lwd,horiz=lhz,bty='n')
       }
-      if(grepl('^b',type,TRUE) && autori && lb<0) axis(2,las=1,at=ayl,labels=round(oyl,2)) else axis(2,las=1)
+      if(grepl('^b',type,TRUE) && autori && lb<0) axis(2,las=ylas,at=ayl,labels=round(oyl,2)) else axis(2,las=ylas)
       if(ck$el && !identical(ne,pe)) suppressWarnings(arrows(p,ne,p,pe,lwd=2,col=errorColor,angle=90,code=3,length=.05))
       success=TRUE
     }else if(ck$t==2){
@@ -448,8 +450,8 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
         hist(cdat[[i]][[1]][,'y'],freq=FALSE,main=if(sub) ptxt$sub else NA,ylab=NA,xlab=NA,axes=FALSE,col='#DEDEDE',...)
         lines(m[[1]],lwd=lwd,col='#303030')
       }
-      axis(1)
-      axis(2,las=1)
+      axis(1,las=xlas)
+      axis(2,las=ylas)
       success=TRUE
     }else{
     #scatter
@@ -462,8 +464,8 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
       plot(NA,xlim=if(missing(mxl)) range(xch) else mxl,ylim=if(missing(myl))
         c(min(cy),max(cy)+max(cy)*ifelse(leg && seg$by$ll<lim,seg$by$ll/20,0)) else myl,
         main=if(sub) ptxt$sub else NA,ylab=NA,xlab=NA,axes=FALSE,...)
-      axis(1)
-      axis(2,las=1)
+      axis(1,las=xlas)
+      axis(2,las=ylas)
       if(leg){
         up=xch[cy>=quantile(cy)[4]]
         mr=quantile(xch)
