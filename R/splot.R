@@ -68,6 +68,9 @@
 #'   of them if you want a clean frame).
 #' @param points logical: if \code{FALSE}, the points in a scatter plot are no longer drawn.
 #' @param lines logical: if \code{FALSE}, the prediction lines in a scatter plot are no longer drawn.
+#' @param mar sets the margins of each plot window. Partially set automatically if not specified: \code{c(if(labx)2.5 else 2,if(laby)3 else 3.5,1,0)}.
+#'   If \code{xlas} is not specified, or is greater than 2, and x-axis labels are overly long in bar or line plots,
+#'   \code{mar[1]} is set by the x-axis text length (\code{strwidth(max(colnames(m)))*ifelse(labx,5.5,4.8)}). See \code{\link[graphics]{par}}.
 #' @param add evaluated within the function. Usefull for adding things like lines to a plot while the parameters are still those set by the
 #'  function (e.g., \code{add=\{lines(1:10)\}}).
 #' @param ... passes additional arguments to \code{\link[graphics]{plot}} or \code{\link[graphics]{barplot}}.
@@ -118,12 +121,13 @@
 #'
 #' @export
 #' @importFrom grDevices grey dev.copy dev.size dev.off cairo_pdf
-#' @importFrom graphics axis axTicks hist legend lines mtext plot barplot par points arrows
+#' @importFrom graphics axis axTicks hist legend lines mtext plot barplot par points arrows strwidth
 #' @importFrom stats density median quantile sd lm confint.default loess na.omit
 splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',data=NULL,su=NULL,levels=list(),
   error='standard',errorColor='#585858',lim=9,model=FALSE,loess=FALSE,save=FALSE,format=cairo_pdf,dims=dev.size(),
-  colors=NULL,myl=NULL,mxl=NULL,autori=TRUE,xlas=0,ylas=1,lwd=2,pch=20,bw='nrd0',adj=2,lpos='auto',lvn=TRUE,title=TRUE,labx=TRUE,
-  laby=TRUE,lty=TRUE,lhz=FALSE,sub=TRUE,leg=TRUE,note=TRUE,sud=TRUE,labels=TRUE,points=TRUE,lines=TRUE,add=NULL,...){
+  colors=NULL,myl=NULL,mxl=NULL,autori=TRUE,xlas=0,ylas=1,lwd=2,pch=20,bw='nrd0',adj=2,lpos='auto',lvn=TRUE,title=TRUE,
+  labx=TRUE,laby=TRUE,lty=TRUE,lhz=FALSE,sub=TRUE,leg=TRUE,note=TRUE,sud=TRUE,labels=TRUE,points=TRUE,lines=TRUE,
+  mar='auto',add=NULL,...){
 #parsing input and preparing data
   ck=list(
     t=if(grepl('^b|^l',type,TRUE)) 1 else if(grepl('^d',type,TRUE)) 2 else 3,
@@ -325,8 +329,8 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
     }
   }
 #figuring out parts of the plot
-  if(missing(colors) || length(colors)<seg$by$ll || grepl('^gr|past|prim|bright|dark',colors[1],TRUE)){
-    colors=if((seg$by$ll>1 && seg$by$ll<9) || !(!missing(colors) && grepl('^gr',colors[1],TRUE))){
+  if(missing(colors) || (!missing(colors) && grepl('^gr|past|prim|bright|dark',colors[1],TRUE))){
+    colors=if((missing(colors) && seg$by$ll>1 && seg$by$ll<9) || (!missing(colors) && !grepl('^gr',colors[1],TRUE))){
       if(!missing(colors) && grepl('prim|bright',colors[1],TRUE)){ c('#45ff00','#ba00ff','#000000','#ff0000','#fffd00','#003dff','#00f2f8','#999999','#ff891b')
       }else if(!missing(colors) && grepl('dark',colors[1],TRUE)){ c('#1b8621','#681686','#2a2a2a','#7c0d0d','#b5bc00','#241c80','#1a7e8b','#666666','#b06622')
       }else c('#82c473','#a378c0','#616161','#9f5c61','#d3d280','#6970b2','#78c4c2','#454744','#d98c82')
@@ -350,8 +354,8 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
   success=FALSE
   op=par(
     mfrow=c(max(1,length(seg$l$o)),max(1,length(seg$l$i))),
-    oma=c(if(note=='')1 else 2,if(ck$ly)1 else 0,if(main=='') ifelse(ck$su || ck$c,2.5,0) else 4,0),
-    mar=c(if(ck$lx)2.5 else 2,if(ck$ly)3 else 3.5,1,0),
+    oma=c(if(note=='')1 else 2,if(ck$ly)1 else 0,if(main=='') ifelse(ck$su || ck$c,2.5,0) else 4,0) ,
+    mar=if(missing(mar)) c(if(ck$lx)2.5 else 2,if(ck$ly)3 else 3.5,1,0) else mar,
     mgp=c(3,.3,0),
     font.main=1,
     cex.main=1,
@@ -402,6 +406,11 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
         ifelse(max(m[1,!is.na(m[1,])])>max(m[nrow(m),!is.na(m[nrow(m),])]),'topright','topleft'),'topright'),lpos)
       if(any(is.na(ylim))) next
       oyl=axTicks(2,axp=c(ylim[1],ylim[2],par('yaxp')[3]))
+      atw=max(strwidth(colnames(m),units='inch'))*ifelse(labx,5.5,4.8)
+      if(missing(mar) && (missing(xlas) || xlas>1) && atw>par('mar')[2]/ncol(m)*ncol(m)*10){
+        xlas=3
+        par(mar=c(atw,par('mar')[-1]))
+      }
       if(grepl('^b',type,TRUE)){
         if(autori && lb<0){
           a=abs(lb)
@@ -413,7 +422,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
           ylim=if(missing(myl))
             c(min(aj$m)-max(abs(aj$m-aj$ne))*1.2,max(aj$m)+max(abs(aj$m-aj$pe))*if(leg && seg$by$ll>2)seg$by$ll else 2.2) else myl
         }
-        p=barplot(m,beside=TRUE,legend.text=leg,col=colors[1:length(dimnames(m)[[1]])],axes=FALSE,border=NA,ylab=NA,xlab=NA,
+        p=barplot(m,beside=TRUE,legend.text=leg,col=colors[1:length(dimnames(m)[[1]])],axes=FALSE,axisnames=FALSE,border=NA,ylab=NA,xlab=NA,
           ylim=ylim,xpd=FALSE,main=if(sub) ptxt$sub else NA,args.legend=list(x=lpos,horiz=lhz,xpd=NA,bty='n'),...)
       }else{
         r=nrow(m)
@@ -421,9 +430,9 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
         p=matrix(rep(seq(c),r),nrow=r,byrow=TRUE)
         plot(NA,ylim=ylim,xlim=if(missing(mxl)) c(1-c*.1,c+c*.1) else mxl,ylab=NA,xlab=NA,main=if(sub) ptxt$sub else NA,axes=FALSE,...)
         for(a in 1:r) lines(m[a,],lwd=lwd,col=colors[a],lty=if(ck$lty && lty)a else if(!missing(lty) && !ck$lty) lty else 1)
-        axis(1,seq(colnames(m)),colnames(m),FALSE,las=xlas)
         if(leg) legend(lpos,rownames(m),col=colors,lty=c(1:r),lwd=lwd,horiz=lhz,bty='n')
       }
+      axis(1,apply(p,2,mean),colnames(m),FALSE,las=xlas)
       if(grepl('^b',type,TRUE) && autori && lb<0) axis(2,las=ylas,at=ayl,labels=round(oyl,2)) else axis(2,las=ylas)
       if(ck$el && !identical(ne,pe)) suppressWarnings(arrows(p,ne,p,pe,lwd=2,col=errorColor,angle=90,code=3,length=.05))
       success=TRUE
