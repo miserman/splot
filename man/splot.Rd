@@ -8,11 +8,12 @@ splot(y, x = NULL, by = NULL, between = NULL, cov = NULL, type = "",
   split = "median", data = NULL, su = NULL, levels = list(),
   error = "standard", errorColor = "#585858", lim = 9, model = FALSE,
   loess = FALSE, save = FALSE, format = cairo_pdf, dims = dev.size(),
-  colors = NULL, myl = NULL, mxl = NULL, autori = TRUE, lwd = 2,
-  pch = 20, bw = "nrd0", adj = 2, lpos = "auto", lvn = TRUE,
-  title = TRUE, labx = TRUE, laby = TRUE, lty = TRUE, lhz = FALSE,
-  sub = TRUE, leg = TRUE, note = TRUE, sud = TRUE, labels = TRUE,
-  points = TRUE, lines = TRUE, add = NULL, ...)
+  colors = NULL, myl = NULL, mxl = NULL, autori = TRUE, xlas = 0,
+  ylas = 1, lwd = 2, pch = 20, bw = "nrd0", adj = 2, lpos = "auto",
+  lvn = TRUE, title = TRUE, labx = TRUE, laby = TRUE, lty = TRUE,
+  lhz = FALSE, sub = TRUE, leg = TRUE, note = TRUE, sud = TRUE,
+  labels = TRUE, points = TRUE, lines = TRUE, mar = "auto",
+  add = NULL, ...)
 }
 \arguments{
 \item{y}{required. Primary variable, to be shown on the y axis unless \code{x} is not specified. Can be an object,
@@ -79,6 +80,10 @@ this will be calculated from the data.}
 \item{autori}{logical: if \code{FALSE}, the origin of plotted bars will be set to 0. Otherwise, bars are adjusted such that they extend to the
 bottom of the y axis.}
 
+\item{xlas}{sets the orientation of the x-axis labels. See \code{\link[graphics]{par}}.}
+
+\item{ylas}{sets the orientation of the y-axis labels. See \code{\link[graphics]{par}}.}
+
 \item{lwd}{sets the width of lines in scatter plots. Default is 2. See \code{\link[graphics]{par}}.}
 
 \item{pch}{sets the type of dot to use when plotting points in a scatter plot. Default is 20. See \code{\link[graphics]{par}}.}
@@ -119,6 +124,10 @@ of them if you want a clean frame).}
 \item{points}{logical: if \code{FALSE}, the points in a scatter plot are no longer drawn.}
 
 \item{lines}{logical: if \code{FALSE}, the prediction lines in a scatter plot are no longer drawn.}
+
+\item{mar}{sets the margins of each plot window. Partially set automatically if not specified: \code{c(if(labx)2.5 else 2,if(laby)3 else 3.5,1,0)}.
+If \code{xlas} is not specified, or is greater than 2, and x-axis labels are overly long in bar or line plots,
+\code{mar[1]} is set by the x-axis text length (\code{strwidth(max(colnames(m)))*ifelse(labx,5.5,4.8)}). See \code{\link[graphics]{par}}.}
 
 \item{add}{evaluated within the function. Usefull for adding things like lines to a plot while the parameters are still those set by the
 function (e.g., \code{add=\{lines(1:10)\}}).}

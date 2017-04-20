@@ -9,6 +9,5 @@ Depends: R (>= 3.1), graphics, stats, grDevices
 License: GPL (>= 2)
 LazyData: TRUE
 RoxygenNote: 6.0.1
-Suggests: knitr,
-    rmarkdown
+Suggests: knitr, rmarkdown, devEMF
 VignetteBuilder: knitr
