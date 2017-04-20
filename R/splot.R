@@ -228,18 +228,18 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
     d=numeric(length(x))
     if(s==1){
       txt$split<<-'mean'
-      factor(ifelse(x<=mean(x),'Below Average','Above Average'),ordered=TRUE)
+      factor(ifelse(x<=mean(x),0,1),labels=c('Below Average','Above Average'),ordered=TRUE)
     }else if(s==3){
       txt$split<<-'standard deviation'
       v=c(mean(x)-sd(x),mean(x)+sd(x))
-      factor(ifelse(x<=v[1],'-1 SD',ifelse(x>=v[2],'+1 SD','Mean')),ordered=TRUE)
+      factor(ifelse(x<=v[1],0,ifelse(x>=v[2],2,1)),labels=c('-1 SD','Mean','+1 SD'),ordered=TRUE)
     }else if(s==2){
       txt$split<<-'quantile'
       v=quantile(x)
-      factor(ifelse(x<=v[2],'2nd Quantile',ifelse(x>=v[4],'4th Quantile','Median')),ordered=TRUE)
+      factor(ifelse(x<=v[2],0,ifelse(x>=v[4],2,1)),labels=c('2nd Quantile','Median','4th Quantile'),ordered=TRUE)
     }else{
       txt$split<<-'median'
-      factor(ifelse(x<=median(x),'Under Median','Over Median'),ordered=TRUE)
+      factor(ifelse(x<=median(x),0,1),labels=c('Under Median','Over Median'),ordered=TRUE)
     }
   }
   seg=list(
