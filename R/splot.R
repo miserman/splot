@@ -33,6 +33,7 @@
 #' @param format the type of file to save plots as. default is \code{\link[grDevices]{cairo_pdf}}. See \code{\link[grDevices]{Devices}} for options.
 #' @param dims a vector of 2 values (\code{c(width, height)}) specifying the dimensions of a plot to save in inches or pixels depending on
 #'   \code{format}. Defaults to the dimensions of the plot window.
+#' @param fileName a string with the name of the file to be save (excluding the extention, as this is added depending on \code{format}).
 #' @param lim numeric. Checked against the number of factor levels of each variable. Used to decide which variables should be split, which colors
 #'   to use, and when to turn off the legend. Default is \code{9}. If set over \code{20}, \code{lim} is treated as infinite (set to \code{Inf}).
 #' @param colors sets a color theme or manually specifies colors. Defualt theme is \code{"pastell"}, with \code{"dark"} and \code{"bright"} as
@@ -124,7 +125,7 @@
 #' @importFrom graphics axis axTicks hist legend lines mtext plot barplot par points arrows strwidth
 #' @importFrom stats density median quantile sd lm confint.default loess na.omit
 splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',data=NULL,su=NULL,levels=list(),
-  error='standard',errorColor='#585858',lim=9,model=FALSE,loess=FALSE,save=FALSE,format=cairo_pdf,dims=dev.size(),
+  error='standard',errorColor='#585858',lim=9,model=FALSE,loess=FALSE,save=FALSE,format=cairo_pdf,dims=dev.size(),fileName='splot',
   colors=NULL,myl=NULL,mxl=NULL,autori=TRUE,xlas=0,ylas=1,lwd=2,pch=20,bw='nrd0',adj=2,lpos='auto',lvn=TRUE,title=TRUE,
   labx=TRUE,laby=TRUE,lty=TRUE,lhz=FALSE,sub=TRUE,leg=TRUE,note=TRUE,sud=TRUE,labels=TRUE,points=TRUE,lines=TRUE,
   mar='auto',add=NULL,...){
@@ -513,7 +514,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
       }else if(t=='postscript'){'.ps'
       }else paste0('.',t)
       if(grepl('jpeg|png|tiff|bmp|bit',t) && missing(dims)) dims=dev.size(units='px')
-      fn=paste0(if(main=='') 'splot' else gsub(' ','_',gsub('^ +| +$|  ','',main)),tt)
+      fn=paste0(if(main=='' || !missing(fileName)) fileName else gsub(' ','_',gsub('^ +| +$|  ','',main)),tt)
       dev.copy(format,fn,width=dims[1],height=dims[2])
       dev.off()
       message('image saved: ',getwd(),'/',fn)

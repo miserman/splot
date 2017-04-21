@@ -8,12 +8,12 @@ splot(y, x = NULL, by = NULL, between = NULL, cov = NULL, type = "",
   split = "median", data = NULL, su = NULL, levels = list(),
   error = "standard", errorColor = "#585858", lim = 9, model = FALSE,
   loess = FALSE, save = FALSE, format = cairo_pdf, dims = dev.size(),
-  colors = NULL, myl = NULL, mxl = NULL, autori = TRUE, xlas = 0,
-  ylas = 1, lwd = 2, pch = 20, bw = "nrd0", adj = 2, lpos = "auto",
-  lvn = TRUE, title = TRUE, labx = TRUE, laby = TRUE, lty = TRUE,
-  lhz = FALSE, sub = TRUE, leg = TRUE, note = TRUE, sud = TRUE,
-  labels = TRUE, points = TRUE, lines = TRUE, mar = "auto",
-  add = NULL, ...)
+  fileName = "splot", colors = NULL, myl = NULL, mxl = NULL,
+  autori = TRUE, xlas = 0, ylas = 1, lwd = 2, pch = 20, bw = "nrd0",
+  adj = 2, lpos = "auto", lvn = TRUE, title = TRUE, labx = TRUE,
+  laby = TRUE, lty = TRUE, lhz = FALSE, sub = TRUE, leg = TRUE,
+  note = TRUE, sud = TRUE, labels = TRUE, points = TRUE, lines = TRUE,
+  mar = "auto", add = NULL, ...)
 }
 \arguments{
 \item{y}{required. Primary variable, to be shown on the y axis unless \code{x} is not specified. Can be an object,
@@ -67,6 +67,8 @@ to use, and when to turn off the legend. Default is \code{9}. If set over \code{
 
 \item{dims}{a vector of 2 values (\code{c(width, height)}) specifying the dimensions of a plot to save in inches or pixels depending on
 \code{format}. Defaults to the dimensions of the plot window.}
+
+\item{fileName}{a string with the name of the file to be save (excluding the extention, as this is added depending on \code{format}).}
 
 \item{colors}{sets a color theme or manually specifies colors. Defualt theme is \code{"pastell"}, with \code{"dark"} and \code{"bright"} as
 options. If set to \code{"grey"}, or if \code{by} has more than 9 levels, a grey scale is calculated using \code{\link[grDevices]{grey}}.
