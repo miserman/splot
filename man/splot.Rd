@@ -7,13 +7,13 @@
 splot(y, x = NULL, by = NULL, between = NULL, cov = NULL, type = "",
   split = "median", data = NULL, su = NULL, levels = list(),
   error = "standard", errorColor = "#585858", lim = 9, model = FALSE,
-  loess = FALSE, save = FALSE, format = cairo_pdf, dims = dev.size(),
-  fileName = "splot", colors = NULL, myl = NULL, mxl = NULL,
-  autori = TRUE, xlas = 0, ylas = 1, lwd = 2, pch = 20, bw = "nrd0",
-  adj = 2, lpos = "auto", lvn = TRUE, title = TRUE, labx = TRUE,
-  laby = TRUE, lty = TRUE, lhz = FALSE, sub = TRUE, leg = TRUE,
-  note = TRUE, sud = TRUE, labels = TRUE, points = TRUE, lines = TRUE,
-  mar = "auto", add = NULL, ...)
+  loess = FALSE, mvscale = "none", save = FALSE, format = cairo_pdf,
+  dims = dev.size(), fileName = "splot", colors = NULL, myl = NULL,
+  mxl = NULL, autori = TRUE, xlas = 0, ylas = 1, lwd = 2, pch = 20,
+  bw = "nrd0", adj = 2, lpos = "auto", lvn = TRUE, title = TRUE,
+  labx = TRUE, laby = TRUE, lty = TRUE, lhz = FALSE, sub = TRUE,
+  ndisp = TRUE, leg = TRUE, note = TRUE, sud = TRUE, labels = TRUE,
+  points = TRUE, lines = TRUE, mar = "auto", add = NULL, ...)
 }
 \arguments{
 \item{y}{required. Primary variable, to be shown on the y axis unless \code{x} is not specified. Can be an object,
@@ -60,6 +60,9 @@ to use, and when to turn off the legend. Default is \code{9}. If set over \code{
 \item{model}{logical: if \code{TRUE}, the summary of an interaction model will be printed.}
 
 \item{loess}{logical: if \code{TRUE}, \code{\link[stats]{loess}} lines are drawn instead of regression lines.}
+
+\item{mvscale}{determines whether to center and scale multiple \code{y} variables. Does not center or scale by default. Anything other than
+\code{'none'} will mean center each numeric \code{y} variable. Anything matching \code{'^t|z|sc'} will also scale.}
 
 \item{save}{logical: if \code{TRUE}, an image of the plot is saved to the current working directory.}
 
@@ -113,6 +116,8 @@ through available line types, see \code{\link[graphics]{par}}.}
 \item{lhz}{logical: if \code{FALSE}, the legend grows horizontally.}
 
 \item{sub}{logical: if \code{FALSE}, the small title above each plot showing \code{between} levels is turned off.}
+
+\item{ndisp}{logical: if \code{FALSE}, n per level is no longer displayed in the subheadings.}
 
 \item{leg}{logical: if \code{FALSE}, the legend is turned off.}
 
