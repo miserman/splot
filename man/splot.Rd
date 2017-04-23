@@ -17,7 +17,7 @@ splot(y, x = NULL, by = NULL, between = NULL, cov = NULL, type = "",
 }
 \arguments{
 \item{y}{required. Primary variable, to be shown on the y axis unless \code{x} is not specified. Can be an object,
-name of a column in data, or a formula (see note bellow).}
+name of a column in data, or a formula (see note bellow). Multiple variables can also be included as columns in a matrix or data frame.}
 
 \item{x}{secondary variable, to be shown in on the x axis. If not specified, \code{type} will be set to \code{'density'}.
 If \code{x} is a factor or vector of characters, or has fewer than \code{lim} levels when treated as a factor, \code{type}

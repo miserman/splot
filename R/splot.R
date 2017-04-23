@@ -2,7 +2,7 @@
 #'
 #' A plotting function aimed at automating some common visualization tasks in order to ease data exploration.
 #' @param y required. Primary variable, to be shown on the y axis unless \code{x} is not specified. Can be an object,
-#'   name of a column in data, or a formula (see note bellow).
+#'   name of a column in data, or a formula (see note bellow). Multiple variables can also be included as columns in a matrix or data frame.
 #' @param x secondary variable, to be shown in on the x axis. If not specified, \code{type} will be set to \code{'density'}.
 #'   If \code{x} is a factor or vector of characters, or has fewer than \code{lim} levels when treated as a factor, \code{type}
 #'   will be set to \code{"line"} unless specified.
@@ -142,7 +142,8 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
     ly=!(is.logical(laby) && !laby) || is.character(laby),
     lx=!(is.logical(labx) && !labx) || is.character(labx),
     lty=is.logical(lty),
-    mod=!missing(x) && model
+    mod=!is.null(x) && model,
+    mv=FALSE
   )
   dn=if(ck$d) names(data) else ''
   if(tryCatch(class(y)=='formula',error=function(e)FALSE)){
@@ -205,7 +206,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
   }
   if(length(txt$between)>2) txt$between=txt$between[1:2]
   dat=data.frame(y=tdc(txt$y,data))
-  if(!missing(x)) dat$x=tdc(txt$x,data)
+  if(!is.null(x)) dat$x=tdc(txt$x,data)
   if(!missing(by)) dat$by=tdc(txt$by,data)
   if(!missing(between)) for(i in txt$between) dat=cbind(dat,bet=tdc(i,data))
   if(ck$c) for(i in txt$cov) dat=cbind(dat,cov=tdc(i,data))
@@ -213,6 +214,24 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
   dat=na.omit(dat)
   if(nrow(dat)==0) stop('one of your variables has too many missing values : (',call.=FALSE)
   dn=names(dat)
+  if(sum(grepl('^y',dn))>1 || sum(grepl('^x',dn))>1){
+    ck$mv=TRUE
+    if(missing(lvn)) lvn=FALSE
+    var=if(sum(grepl('y',dn))>1) 'y' else 'x'
+    if(!missing(by)) message('by is ignored when x or y has multiple variables')
+    txt$by=ptxt$by='variable'
+    dn=grep(paste0(var,'\\.'),dn)
+    r=nrow(dat)
+    by=rep(sub('^x\\.|^y\\.','',names(dat)[dn]),each=r)
+    dat=suppressWarnings(data.frame(cbind(
+      sapply(as.matrix(dat[,dn]),rbind),
+      apply(dat[,-dn,drop=FALSE],2,function(c)rep(c,length(dn)))
+    )))
+    dat$by=by
+    for(i in seq(dat)) dat[,i]=ifelse(grepl('[A-z]',dat[1,i]),factor,as.numeric)(dat[,i])
+    names(dat)[1]=var
+    dn=names(dat)
+  }
   if(!'x'%in%dn){
     ck$t=2
     if(!missing(type) && !grepl('^d',type,TRUE)) message('x must be included to show other types of splots')
@@ -249,8 +268,8 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
     f2=list(e=FALSE,s=FALSE,l='',ll=1),
     by=list(e=FALSE,s=FALSE,l='',ll=1)
   )
-  if(!missing(x) && ck$t!=2) if((ck$t==1 || is.character(dat$x) || is.factor(dat$x)|| (missing(type)
-    && nlevels(as.factor(dat$x))<lim)) && !(is.factor(dat$y) || is.character(dat$y) || nlevels(as.factor(dat$y))<9)){
+  if(!is.null(x) && ck$t!=2) if((ck$t==1 || is.character(dat$x) || is.factor(dat$x)|| (missing(type)
+    && nlevels(factor(dat$x))<lim)) && !(is.factor(dat$y) || is.character(dat$y) || nlevels(as.factor(dat$y))<9)){
     if(!is.character(dat$x) && !is.factor(dat$x) && nlevels(as.factor(dat$x))>lim){
       dat$x=splt(dat$x,ck$sp)
       seg$x$s=TRUE
@@ -265,7 +284,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
       e=if(dn[i]=='bet') if(!seg$f1$e) 'f1' else 'f2' else 'by'
       seg[[e]]$e=TRUE
       seg[[e]]$i=i
-      seg[[e]]$l=levels(as.factor(dat[,i]))
+      seg[[e]]$l=levels(factor(dat[,i]))
       seg[[e]]$ll=length(seg[[e]]$l)
       if(seg[[e]]$ll>lim && !(is.character(dat[,i]) || is.factor(dat[,i]))){
         dat[,i]=splt(dat[,i],ck$sp)
@@ -340,7 +359,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
   ylab=if(ck$ly && !is.character(laby)) ptxt$y else if(is.character(laby)) laby else ''
   xlab=if(ck$lx && !is.character(labx)) ptxt$x else if(is.character(labx)) labx else ''
   main=if(is.logical(title) && title) paste(if(ck$t==2)paste('Density of',ptxt$y) else paste(ptxt$y,
-    'by',ptxt$x),if(seg$by$e) paste('at levels of',ptxt$by)) else if (is.character(title)) title else ''
+    'by',ptxt$x),if(seg$by$e && !ck$mv) paste('at levels of',ptxt$by)) else if (is.character(title)) title else ''
   if(is.logical(note)) if(note){
     if(txt$split!='none' || (ck$t==1 && !(is.logical(error) && !error))){
       tv=c(if(seg$x$s) ptxt$x else '',if(seg$by$s) ptxt$by else '',if(seg$f1$s) ptxt$between[1] else '',if(seg$f2$s) ptxt$between[2] else '')
