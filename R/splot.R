@@ -29,6 +29,8 @@
 #' @param errorColor color of the error bars. Default is \code{'#585858'}.
 #' @param model logical: if \code{TRUE}, the summary of an interaction model will be printed.
 #' @param loess logical: if \code{TRUE}, \code{\link[stats]{loess}} lines are drawn instead of regression lines.
+#' @param mvscale determines whether to center and scale multiple \code{y} variables. Does not center or scale by default. Anything other than
+#'   \code{'none'} will mean center each numeric \code{y} variable. Anything matching \code{'^t|z|sc'} will also scale.
 #' @param save logical: if \code{TRUE}, an image of the plot is saved to the current working directory.
 #' @param format the type of file to save plots as. default is \code{\link[grDevices]{cairo_pdf}}. See \code{\link[grDevices]{Devices}} for options.
 #' @param dims a vector of 2 values (\code{c(width, height)}) specifying the dimensions of a plot to save in inches or pixels depending on
@@ -65,6 +67,7 @@
 #' @param leg logical: if \code{FALSE}, the legend is turned off.
 #' @param note logical: if \code{FALSE}, the note at the bottom about splits and/or error bars is turned off.
 #' @param sud logical: if \code{FALSE}, the heading for subset and covariates/line adjustments is turned off.
+#' @param ndisp logical: if \code{FALSE}, n per level is no longer displayed in the subheadings.
 #' @param labels logical: if \code{FALSE}, sets all settable text surrounding the plot to \code{FALSE} (just so you don't have to set all
 #'   of them if you want a clean frame).
 #' @param points logical: if \code{FALSE}, the points in a scatter plot are no longer drawn.
@@ -124,10 +127,10 @@
 #' @importFrom grDevices grey dev.copy dev.size dev.off cairo_pdf
 #' @importFrom graphics axis axTicks hist legend lines mtext plot barplot par points arrows strwidth
 #' @importFrom stats density median quantile sd lm confint.default loess na.omit
-splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',data=NULL,su=NULL,levels=list(),
-  error='standard',errorColor='#585858',lim=9,model=FALSE,loess=FALSE,save=FALSE,format=cairo_pdf,dims=dev.size(),fileName='splot',
+splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',data=NULL,su=NULL,levels=list(),error='standard',
+  errorColor='#585858',lim=9,model=FALSE,loess=FALSE,mvscale='none',save=FALSE,format=cairo_pdf,dims=dev.size(),fileName='splot',
   colors=NULL,myl=NULL,mxl=NULL,autori=TRUE,xlas=0,ylas=1,lwd=2,pch=20,bw='nrd0',adj=2,lpos='auto',lvn=TRUE,title=TRUE,
-  labx=TRUE,laby=TRUE,lty=TRUE,lhz=FALSE,sub=TRUE,leg=TRUE,note=TRUE,sud=TRUE,labels=TRUE,points=TRUE,lines=TRUE,
+  labx=TRUE,laby=TRUE,lty=TRUE,lhz=FALSE,sub=TRUE,ndisp=TRUE,leg=TRUE,note=TRUE,sud=TRUE,labels=TRUE,points=TRUE,lines=TRUE,
   mar='auto',add=NULL,...){
 #parsing input and preparing data
   ck=list(
@@ -228,7 +231,9 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
       apply(dat[,-dn,drop=FALSE],2,function(c)rep(c,length(dn)))
     )))
     dat$by=by
-    for(i in seq(dat)) dat[,i]=ifelse(grepl('[A-z]',dat[1,i]),factor,as.numeric)(dat[,i])
+    for(i in seq(dat)) dat[,i]=ifelse(grepl('[A-z]',dat[1,i]),factor,as.numeric)(matrix(dat[,i]))
+    if(!missing(mvscale) && mvscale!='none') for(g in levels(factor(dat$by)))
+      dat[dat$by==g,1]=scale(dat[dat$by==g,1],scale=grepl('^t|z|sc',mvscale,TRUE))
     names(dat)[1]=var
     dn=names(dat)
   }
@@ -389,7 +394,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
     cl=strsplit(i,'\\^\\^')[[1]]
     ptxt$sub=if(sub) if(length(seg$l$l)>1){
       paste0(if(seg$f1$e) paste0(if(lvn)paste0(ptxt$between[1],': '),cl[1],if(seg$f2$e) paste0(', ',if(lvn)paste0(ptxt$between[2],': '),
-        cl[2]),', '),if(length(names(cdat))>1) paste('n =',sum(sapply(cdat[[i]],nrow))))
+        cl[2])),if(length(names(cdat))>1 && ndisp) paste(', n =',sum(sapply(cdat[[i]],nrow))))
     }else if(is.character(sub)) sub else ''
     if(ck$t==1){
     #bar and line
