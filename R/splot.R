@@ -180,7 +180,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
   )
   txt$between=paste(if(txt$between[1]%in%c('c','list')) txt$between[-1] else txt$between)
   txt$cov=paste(if(txt$cov[1]%in%c('c','list')) txt$cov[-1] else txt$cov)
-  ptxt=lapply(txt,function(i) gsub('_',' ',i))
+  ptxt=lapply(txt,function(i) gsub('_|\\.',' ',i))
   if(ck$t!=1 && ck$c){
     if(!loess && lines && any(grepl(txt$x,txt$cov))){
       txt$cov=txt$cov[grepl(txt$x,txt$cov)]
