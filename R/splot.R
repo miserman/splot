@@ -223,6 +223,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
     var=if(sum(grepl('y',dn))>1) 'y' else 'x'
     if(!missing(by)) message('by is ignored when x or y has multiple variables')
     txt$by=ptxt$by='variable'
+    if(ck$lx && is.character(labx)) ptxt$y=labx
     dn=grep(paste0(var,'\\.'),dn)
     r=nrow(dat)
     by=rep(sub('^x\\.|^y\\.','',names(dat)[dn]),each=r)
