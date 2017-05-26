@@ -381,7 +381,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
   op=par(
     mfrow=c(max(1,length(seg$l$o)),max(1,length(seg$l$i))),
     oma=c(if(note=='')1 else 2,if(ck$ly)1 else 0,if(main=='') ifelse(ck$su || ck$c,2.5,0) else 4,0) ,
-    mar=if(missing(mar)) c(if(ck$lx)2.5 else 2,if(ck$ly)3 else 3.5,1,0) else mar,
+    mar=if(missing(mar)) c(if(ck$lx)2.5 else 0,if(ck$ly)3 else 2,1,0) else mar,
     mgp=c(3,.3,0),
     font.main=1,
     cex.main=1,
