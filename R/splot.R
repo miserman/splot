@@ -72,7 +72,7 @@
 #'   of them if you want a clean frame).
 #' @param points logical: if \code{FALSE}, the points in a scatter plot are no longer drawn.
 #' @param lines logical: if \code{FALSE}, the prediction lines in a scatter plot are no longer drawn.
-#' @param mar sets the margins of each plot window. Partially set automatically if not specified: \code{c(if(labx)2.5 else 2,if(laby)3 else 3.5,1,0)}.
+#' @param mar sets the margins of each plot window. Partially set automatically if not specified: \code{c(if(labx)2.5 else 0,if(laby)3 else 2,1,0)}.
 #'   If \code{xlas} is not specified, or is greater than 2, and x-axis labels are overly long in bar or line plots,
 #'   \code{mar[1]} is set by the x-axis text length (\code{strwidth(max(colnames(m)))*ifelse(labx,5.5,4.8)}). See \code{\link[graphics]{par}}.
 #' @param add evaluated within the function. Usefull for adding things like lines to a plot while the parameters are still those set by the
@@ -133,6 +133,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
   labx=TRUE,laby=TRUE,lty=TRUE,lhz=FALSE,sub=TRUE,ndisp=TRUE,leg=TRUE,note=TRUE,sud=TRUE,labels=TRUE,points=TRUE,lines=TRUE,
   mar='auto',add=NULL,...){
 #parsing input and preparing data
+  if(!labels) title=sud=sub=labx=laby=note=FALSE
   ck=list(
     t=if(grepl('^b|^l',type,TRUE)) 1 else if(grepl('^d',type,TRUE)) 2 else 3,
     tt=!missing(type) && if(grepl('^b|^l',type,TRUE)) FALSE else TRUE,
@@ -243,7 +244,6 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
     if(!missing(type) && !grepl('^d',type,TRUE)) message('x must be included to show other types of splots')
   }
   if(!'by'%in%dn) leg=FALSE
-  if(!labels) title=sud=sub=labx=laby=note=FALSE
   if(lim>20 || (is.logical(lim) && !lim)){
     lim=Inf
     leg=FALSE
@@ -354,6 +354,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
       }
     }
   }
+  if(missing(lvn) && length(seg$l$by)>0 && grepl('[A-z]',seg$l$by[1])) lvn=FALSE
 #figuring out parts of the plot
   if(missing(colors) || (!missing(colors) && grepl('^gr|past|prim|bright|dark',colors[1],TRUE))){
     colors=if((missing(colors) && seg$by$ll>1 && seg$by$ll<9) || (!missing(colors) && !grepl('^gr',colors[1],TRUE))){
@@ -381,7 +382,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
   op=par(
     mfrow=c(max(1,length(seg$l$o)),max(1,length(seg$l$i))),
     oma=c(if(note=='')1 else 2,if(ck$ly)1 else 0,if(main=='') ifelse(ck$su || ck$c,2.5,0) else 4,0) ,
-    mar=if(missing(mar)) c(if(ck$lx)2.5 else 0,if(ck$ly)3 else 2,1,0) else mar,
+    mar=if(missing(mar)) c(if(ck$lx)2.5 else 1,if(ck$ly)3 else 2,1,0) else mar,
     mgp=c(3,.3,0),
     font.main=1,
     cex.main=1,

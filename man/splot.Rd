@@ -132,7 +132,7 @@ of them if you want a clean frame).}
 
 \item{lines}{logical: if \code{FALSE}, the prediction lines in a scatter plot are no longer drawn.}
 
-\item{mar}{sets the margins of each plot window. Partially set automatically if not specified: \code{c(if(labx)2.5 else 2,if(laby)3 else 3.5,1,0)}.
+\item{mar}{sets the margins of each plot window. Partially set automatically if not specified: \code{c(if(labx)2.5 else 0,if(laby)3 else 2,1,0)}.
 If \code{xlas} is not specified, or is greater than 2, and x-axis labels are overly long in bar or line plots,
 \code{mar[1]} is set by the x-axis text length (\code{strwidth(max(colnames(m)))*ifelse(labx,5.5,4.8)}). See \code{\link[graphics]{par}}.}
 
