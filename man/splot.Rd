@@ -6,14 +6,15 @@
 \usage{
 splot(y, x = NULL, by = NULL, between = NULL, cov = NULL, type = "",
   split = "median", data = NULL, su = NULL, levels = list(),
-  error = "standard", errorColor = "#585858", lim = 9, model = FALSE,
-  loess = FALSE, mvscale = "none", save = FALSE, format = cairo_pdf,
-  dims = dev.size(), fileName = "splot", colors = NULL, myl = NULL,
-  mxl = NULL, autori = TRUE, xlas = 0, ylas = 1, lwd = 2, pch = 20,
-  bw = "nrd0", adj = 2, lpos = "auto", lvn = TRUE, title = TRUE,
-  labx = TRUE, laby = TRUE, lty = TRUE, lhz = FALSE, sub = TRUE,
-  ndisp = TRUE, leg = TRUE, note = TRUE, sud = TRUE, labels = TRUE,
-  points = TRUE, lines = TRUE, mar = "auto", add = NULL, ...)
+  error = "standard", error.color = "#585858", lim = 9, model = FALSE,
+  loess = FALSE, mv.scale = "none", mv.as.x = FALSE, save = FALSE,
+  format = cairo_pdf, dims = dev.size(), file.name = "splot",
+  colors = NULL, myl = NULL, mxl = NULL, autori = TRUE, xlas = 0,
+  ylas = 1, lwd = 2, pch = 20, bw = "nrd0", adj = 2, lpos = "auto",
+  lvn = TRUE, title = TRUE, labx = TRUE, laby = TRUE, lty = TRUE,
+  lhz = FALSE, sub = TRUE, ndisp = TRUE, leg = TRUE, note = TRUE,
+  sud = TRUE, labels = TRUE, points = TRUE, lines = TRUE,
+  mar = "auto", add = NULL, ...)
 }
 \arguments{
 \item{y}{required. Primary variable, to be shown on the y axis unless \code{x} is not specified. Can be an object,
@@ -52,7 +53,7 @@ a median split happy \code{levels=list(sex=c('female', 'male', 'other'), happy=c
 \item{error}{determines whether and which type of error bars to show in bar or line plots. If \code{FALSE}, no error bars will be shown.
 Otherwise, the default is \code{"standard error"}, with \code{"confidence intervals"} as an option.}
 
-\item{errorColor}{color of the error bars. Default is \code{'#585858'}.}
+\item{error.color}{color of the error bars. Default is \code{'#585858'}.}
 
 \item{lim}{numeric. Checked against the number of factor levels of each variable. Used to decide which variables should be split, which colors
 to use, and when to turn off the legend. Default is \code{9}. If set over \code{20}, \code{lim} is treated as infinite (set to \code{Inf}).}
@@ -61,8 +62,10 @@ to use, and when to turn off the legend. Default is \code{9}. If set over \code{
 
 \item{loess}{logical: if \code{TRUE}, \code{\link[stats]{loess}} lines are drawn instead of regression lines.}
 
-\item{mvscale}{determines whether to center and scale multiple \code{y} variables. Does not center or scale by default. Anything other than
+\item{mv.scale}{determines whether to center and scale multiple \code{y} variables. Does not center or scale by default. Anything other than
 \code{'none'} will mean center each numeric \code{y} variable. Anything matching \code{'^t|z|sc'} will also scale.}
+
+\item{mv.as.x}{logical: if \code{TRUE}, variable names are displayed on the x axis, and \code{x} is treated as \code{by}.}
 
 \item{save}{logical: if \code{TRUE}, an image of the plot is saved to the current working directory.}
 
@@ -71,7 +74,7 @@ to use, and when to turn off the legend. Default is \code{9}. If set over \code{
 \item{dims}{a vector of 2 values (\code{c(width, height)}) specifying the dimensions of a plot to save in inches or pixels depending on
 \code{format}. Defaults to the dimensions of the plot window.}
 
-\item{fileName}{a string with the name of the file to be save (excluding the extention, as this is added depending on \code{format}).}
+\item{file.name}{a string with the name of the file to be save (excluding the extention, as this is added depending on \code{format}).}
 
 \item{colors}{sets a color theme or manually specifies colors. Defualt theme is \code{"pastell"}, with \code{"dark"} and \code{"bright"} as
 options. If set to \code{"grey"}, or if \code{by} has more than 9 levels, a grey scale is calculated using \code{\link[grDevices]{grey}}.

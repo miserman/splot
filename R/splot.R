@@ -26,16 +26,17 @@
 #'   a median split happy \code{levels=list(sex=c('female', 'male', 'other'), happy=c('not very', 'very'))}).
 #' @param error determines whether and which type of error bars to show in bar or line plots. If \code{FALSE}, no error bars will be shown.
 #'   Otherwise, the default is \code{"standard error"}, with \code{"confidence intervals"} as an option.
-#' @param errorColor color of the error bars. Default is \code{'#585858'}.
+#' @param error.color color of the error bars. Default is \code{'#585858'}.
 #' @param model logical: if \code{TRUE}, the summary of an interaction model will be printed.
 #' @param loess logical: if \code{TRUE}, \code{\link[stats]{loess}} lines are drawn instead of regression lines.
-#' @param mvscale determines whether to center and scale multiple \code{y} variables. Does not center or scale by default. Anything other than
+#' @param mv.scale determines whether to center and scale multiple \code{y} variables. Does not center or scale by default. Anything other than
 #'   \code{'none'} will mean center each numeric \code{y} variable. Anything matching \code{'^t|z|sc'} will also scale.
+#' @param mv.as.x logical: if \code{TRUE}, variable names are displayed on the x axis, and \code{x} is treated as \code{by}.
 #' @param save logical: if \code{TRUE}, an image of the plot is saved to the current working directory.
 #' @param format the type of file to save plots as. default is \code{\link[grDevices]{cairo_pdf}}. See \code{\link[grDevices]{Devices}} for options.
 #' @param dims a vector of 2 values (\code{c(width, height)}) specifying the dimensions of a plot to save in inches or pixels depending on
 #'   \code{format}. Defaults to the dimensions of the plot window.
-#' @param fileName a string with the name of the file to be save (excluding the extention, as this is added depending on \code{format}).
+#' @param file.name a string with the name of the file to be save (excluding the extention, as this is added depending on \code{format}).
 #' @param lim numeric. Checked against the number of factor levels of each variable. Used to decide which variables should be split, which colors
 #'   to use, and when to turn off the legend. Default is \code{9}. If set over \code{20}, \code{lim} is treated as infinite (set to \code{Inf}).
 #' @param colors sets a color theme or manually specifies colors. Defualt theme is \code{"pastell"}, with \code{"dark"} and \code{"bright"} as
@@ -128,10 +129,10 @@
 #' @importFrom graphics axis axTicks hist legend lines mtext plot barplot par points arrows strwidth
 #' @importFrom stats density median quantile sd lm confint.default loess na.omit
 splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',data=NULL,su=NULL,levels=list(),error='standard',
-  errorColor='#585858',lim=9,model=FALSE,loess=FALSE,mvscale='none',save=FALSE,format=cairo_pdf,dims=dev.size(),fileName='splot',
-  colors=NULL,myl=NULL,mxl=NULL,autori=TRUE,xlas=0,ylas=1,lwd=2,pch=20,bw='nrd0',adj=2,lpos='auto',lvn=TRUE,title=TRUE,
-  labx=TRUE,laby=TRUE,lty=TRUE,lhz=FALSE,sub=TRUE,ndisp=TRUE,leg=TRUE,note=TRUE,sud=TRUE,labels=TRUE,points=TRUE,lines=TRUE,
-  mar='auto',add=NULL,...){
+  error.color='#585858',lim=9,model=FALSE,loess=FALSE,mv.scale='none',mv.as.x=FALSE,save=FALSE,format=cairo_pdf,dims=dev.size(),
+  file.name='splot',colors=NULL,myl=NULL,mxl=NULL,autori=TRUE,xlas=0,ylas=1,lwd=2,pch=20,bw='nrd0',adj=2,lpos='auto',lvn=TRUE,
+  title=TRUE,labx=TRUE,laby=TRUE,lty=TRUE,lhz=FALSE,sub=TRUE,ndisp=TRUE,leg=TRUE,note=TRUE,sud=TRUE,labels=TRUE,points=TRUE,
+  lines=TRUE,mar='auto',add=NULL,...){
 #parsing input and preparing data
   if(!labels) title=sud=sub=labx=laby=note=FALSE
   ck=list(
@@ -220,25 +221,35 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
   dat=na.omit(dat)
   if(nrow(dat)==0) stop('one of your variables has too many missing values : (',call.=FALSE)
   dn=names(dat)
-  if(sum(grepl('^y',dn))>1 || sum(grepl('^x',dn))>1){
+  if(sum(grepl('^y',dn))>1){
+  #setting up multiple y variables
     ck$mv=TRUE
     if(missing(lvn)) lvn=FALSE
-    var=if(sum(grepl('y',dn))>1) 'y' else 'x'
-    if(!missing(by)) message('by is ignored when x or y has multiple variables')
-    txt$by=ptxt$by='variable'
+    if(!missing(by)) message('by is ignored when y has multiple variables')
     if(ck$t==2 && ck$lx && is.character(labx)) ptxt$y=labx
-    dn=grep(paste0(var,'\\.'),dn)
+    dn=grep('y\\.',dn)
     r=nrow(dat)
-    by=rep(sub('^x\\.|^y\\.','',names(dat)[dn]),each=r)
+    by=rep(sub('^y\\.','',names(dat)[dn]),each=r)
     dat=suppressWarnings(data.frame(cbind(
       sapply(as.matrix(dat[,dn]),rbind),
       apply(dat[,-dn,drop=FALSE],2,function(c)rep(c,length(dn)))
     )))
-    dat$by=by
+    if(mv.as.x){
+      txt$by=txt$x
+      ptxt$by=ptxt$x
+      txt$x=ptxt$x='variable'
+      dat$by=dat$x
+      dat$x=by
+    }else{
+      txt$by=ptxt$by='variable'
+      dat$by=by
+    }
     for(i in seq(dat)) dat[,i]=ifelse(grepl('[A-z]',dat[1,i]),factor,as.numeric)(matrix(dat[,i]))
-    if(!missing(mvscale) && mvscale!='none') for(g in levels(factor(dat$by)))
-      dat[dat$by==g,1]=scale(dat[dat$by==g,1],scale=grepl('^t|z|sc',mvscale,TRUE))
-    names(dat)[1]=var
+    if(!missing(mv.scale) && mv.scale!='none'){
+      tv=if(mv.as.x) dat$x else dat$by
+      for(g in levels(factor(tv))) dat[tv==g,1]=scale(dat[tv==g,1],scale=grepl('^t|z|sc',mv.scale,TRUE))
+    }
+    names(dat)[1]='y'
     dn=names(dat)
   }
   if(!'x'%in%dn){
@@ -398,7 +409,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
     cl=strsplit(i,'\\^\\^')[[1]]
     ptxt$sub=if(sub) if(length(seg$l$l)>1){
       paste0(if(seg$f1$e) paste0(if(lvn)paste0(ptxt$between[1],': '),cl[1],if(seg$f2$e) paste0(', ',if(lvn)paste0(ptxt$between[2],': '),
-        cl[2])),if(length(names(cdat))>1 && ndisp) paste(', n =',nrow(cdat[[i]][[1]])))
+        cl[2])),if(length(names(cdat))>1 && ndisp) paste(', n =',ifelse(mv.as.x,sum(sapply(cdat[[i]],nrow))/nlevels(dat$x),nrow(cdat[[i]][[1]]))))
     }else if(is.character(sub)) sub else ''
     if(ck$t==1){
     #bar and line
@@ -464,7 +475,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
       }
       axis(1,apply(p,2,mean),colnames(m),FALSE,las=xlas)
       if(grepl('^b',type,TRUE) && autori && lb<0) axis(2,las=ylas,at=ayl,labels=round(oyl,2)) else axis(2,las=ylas)
-      if(ck$el && !identical(ne,pe)) suppressWarnings(arrows(p,ne,p,pe,lwd=2,col=errorColor,angle=90,code=3,length=.05))
+      if(ck$el && !identical(ne,pe)) suppressWarnings(arrows(p,ne,p,pe,lwd=2,col=error.color,angle=90,code=3,length=.05))
       success=TRUE
     }else if(ck$t==2){
     #density
@@ -543,7 +554,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
       }else if(t=='postscript'){'.ps'
       }else paste0('.',t)
       if(grepl('jpeg|png|tiff|bmp|bit',t) && missing(dims)) dims=dev.size(units='px')
-      fn=paste0(if(main=='' || !missing(fileName)) fileName else gsub(' ','_',gsub('^ +| +$|  ','',main)),tt)
+      fn=paste0(if(main=='' || !missing(file.name)) file.name else gsub(' ','_',gsub('^ +| +$|  ','',main)),tt)
       dev.copy(format,fn,width=dims[1],height=dims[2])
       dev.off()
       message('image saved: ',getwd(),'/',fn)
