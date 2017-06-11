@@ -182,6 +182,8 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
   txt$between=paste(if(txt$between[1]%in%c('c','list')) txt$between[-1] else txt$between)
   txt$cov=paste(if(txt$cov[1]%in%c('c','list')) txt$cov[-1] else txt$cov)
   ptxt=lapply(txt,function(i) gsub('_|\\.',' ',i))
+  if(is.character(labx)) ptxt$x=labx
+  if(is.character(laby)) ptxt$y=laby
   if(ck$t!=1 && ck$c){
     if(!loess && lines && any(grepl(txt$x,txt$cov))){
       txt$cov=txt$cov[grepl(txt$x,txt$cov)]
@@ -224,7 +226,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
     var=if(sum(grepl('y',dn))>1) 'y' else 'x'
     if(!missing(by)) message('by is ignored when x or y has multiple variables')
     txt$by=ptxt$by='variable'
-    if(ck$lx && is.character(labx)) ptxt$y=labx
+    if(ck$t==2 && ck$lx && is.character(labx)) ptxt$y=labx
     dn=grep(paste0(var,'\\.'),dn)
     r=nrow(dat)
     by=rep(sub('^x\\.|^y\\.','',names(dat)[dn]),each=r)
@@ -363,8 +365,8 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
       }else c('#82c473','#a378c0','#616161','#9f5c61','#d3d280','#6970b2','#78c4c2','#454744','#d98c82')
     }else grey(.2:seg$by$ll/(seg$by$ll+seg$by$ll*ifelse(seg$by$ll<10,.1,.3)))
   }
-  ylab=if(ck$ly && !is.character(laby)) ptxt$y else if(is.character(laby)) laby else ''
-  xlab=if(ck$lx && !is.character(labx)) ptxt$x else if(is.character(labx)) labx else ''
+  ylab=if(ck$ly) ptxt$y else ''
+  xlab=if(ck$lx) ptxt$x else ''
   main=if(is.logical(title) && title) paste(if(ck$t==2)paste('Density of',ptxt$y) else paste(ptxt$y,
     'by',ptxt$x),if(seg$by$e && !ck$mv) paste('at levels of',ptxt$by)) else if (is.character(title)) title else ''
   if(is.logical(note)) if(note){
@@ -396,7 +398,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
     cl=strsplit(i,'\\^\\^')[[1]]
     ptxt$sub=if(sub) if(length(seg$l$l)>1){
       paste0(if(seg$f1$e) paste0(if(lvn)paste0(ptxt$between[1],': '),cl[1],if(seg$f2$e) paste0(', ',if(lvn)paste0(ptxt$between[2],': '),
-        cl[2])),if(length(names(cdat))>1 && ndisp) paste(', n =',sum(sapply(cdat[[i]],nrow))))
+        cl[2])),if(length(names(cdat))>1 && ndisp) paste(', n =',nrow(cdat[[i]][[1]])))
     }else if(is.character(sub)) sub else ''
     if(ck$t==1){
     #bar and line
@@ -448,7 +450,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
           ayl=oyl+a
           aj=lapply(re,function(r)r+a)
           ylim=if(missing(myl))
-            c(min(aj$m)-max(abs(aj$m-aj$ne))*1.2,max(aj$m)+max(abs(aj$m-aj$pe))*if(leg && seg$by$ll>2)seg$by$ll else 2.2) else myl
+            c(min(aj$m)-max(abs(aj$m-aj$ne))*1.2,max(aj$m)+max(abs(aj$m-aj$pe))*if(leg && seg$by$ll>2)seg$by$ll else 2.2) else myl+a
         }
         p=barplot(m,beside=TRUE,legend.text=leg,col=colors[1:length(dimnames(m)[[1]])],axes=FALSE,axisnames=FALSE,border=NA,ylab=NA,xlab=NA,
           ylim=ylim,xpd=FALSE,main=if(sub) ptxt$sub else NA,args.legend=list(x=lpos,horiz=lhz,xpd=NA,bty='n'),...)
@@ -527,7 +529,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
   },error=function(e){par(op);stop(e)})}
   if(!success){par(op);stop("failed to make any plots with the current input",call.=FALSE)}
   mtext(main,3,2,TRUE,font=2,cex=1.5,col='#303030')
-  mtext(if(sud && (ck$su || ck$c)) gsub(', (?=[a-z0-9]+$)',ifelse(length(ptxt$cov)>2,', & ',' & '),
+  mtext(if(sud && (ck$su || ck$c)) gsub(', (?=[^ ]+$)',ifelse(length(ptxt$cov)>2,', & ',' & '),
     gsub('^ | $','',paste0(if(ck$su) paste('Subset:',txt$su),if(ck$su && ck$c)', ',
     if(ck$c) paste(if(ck$t==1)'Covariates:' else 'Line adjustment:',paste(ptxt$cov,collapse=', ')))),TRUE,TRUE) else '',3,.5,TRUE,cex=.9)
   mtext(if(ck$t==2) 'Density' else ylab,2,-.2,TRUE,font=2,col='#303030')
