@@ -147,7 +147,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
     ly=!(is.logical(laby) && !laby) || is.character(laby),
     lx=!(is.logical(labx) && !labx) || is.character(labx),
     lty=is.logical(lty),
-    mod=!is.null(x) && model,
+    mod=!missing(x) && model,
     mv=FALSE
   )
   dn=if(ck$d) names(data) else ''
@@ -213,7 +213,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
   }
   if(length(txt$between)>2) txt$between=txt$between[1:2]
   dat=data.frame(y=tdc(txt$y,data))
-  if(!is.null(x)) dat$x=tdc(txt$x,data)
+  if(!missing(x)) dat$x=tdc(txt$x,data)
   if(!missing(by)) dat$by=tdc(txt$by,data)
   if(!missing(between)) for(i in txt$between) dat=cbind(dat,bet=tdc(i,data))
   if(ck$c) for(i in txt$cov) dat=cbind(dat,cov=tdc(i,data))
@@ -287,7 +287,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
     f2=list(e=FALSE,s=FALSE,l='',ll=1),
     by=list(e=FALSE,s=FALSE,l='',ll=1)
   )
-  if(!is.null(x) && ck$t!=2) if((ck$t==1 || is.character(dat$x) || is.factor(dat$x)|| (missing(type)
+  if(!missing(x) && ck$t!=2) if((ck$t==1 || is.character(dat$x) || is.factor(dat$x)|| (missing(type)
     && nlevels(factor(dat$x))<lim)) && !(is.factor(dat$y) || is.character(dat$y) || nlevels(as.factor(dat$y))<9)){
     if(!is.character(dat$x) && !is.factor(dat$x) && nlevels(as.factor(dat$x))>lim){
       dat$x=splt(dat$x,ck$sp)
@@ -417,7 +417,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
       seg$x$ll=length(seg$x$l)
       mot=paste0('y~0+',paste(names(cdat[[i]][[1]])[c(2,cvar)],collapse='+'))
       rn=gsub('_|\\.',' ',paste(if(lvn)paste0(ptxt$by,':'),names(cdat[[i]])))
-      rn=gsub('MINUS','–',rn)
+      rn=gsub('MINUS',' - ',rn)
       m=pe=ne=matrix(NA,length(rn),max(c(1,seg$x$ll+seg$l$co)),dimnames=list(rn,c(seg$x$l,if(ck$c) ptxt$cov)))
       for(l in seq(rn)){
         if(l>length(cdat[[i]]) || nlevels(as.factor(as.numeric(cdat[[i]][[l]][,'x'])))<2) next
