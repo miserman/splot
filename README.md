@@ -3,7 +3,7 @@ An R package aimed at automating a few common visualization tasks in order to ea
 
 Associated with the [Language Use and Social Interaction](https://www.depts.ttu.edu/psy/lusi/) (LUSI) lab
 ## resources
-[Documentation](https://miserman.github.io/splot/index.html)
+Documentation: [miserman.github.io/splot](https://miserman.github.io/splot/)
 
 Example: [Exploring data](https://miserman.github.io/splot/explore.html)
 
