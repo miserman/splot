@@ -548,7 +548,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
   },error=function(e){par(op);stop(e)})}
   if(!success){par(op);stop("failed to make any plots with the current input",call.=FALSE)}
   mtext(main,3,2,TRUE,font=2,cex=1.5,col='#303030')
-  mtext(if(sud && (ck$su || ck$c)) gsub(', (?=[^ ]+$)',ifelse(length(ptxt$cov)>2,', & ',' & '),
+  mtext(if(sud && (ck$su || ck$c)) gsub(', (?=[^ \\)]+$)',ifelse(length(ptxt$cov)>2,', & ',' & '),
     gsub('^ | $','',paste0(if(ck$su) paste('Subset:',txt$su),if(ck$su && ck$c)', ',
     if(ck$c) paste(if(ck$t==1)'Covariates:' else 'Line adjustment:',paste(ptxt$cov,collapse=', ')))),TRUE,TRUE) else '',3,.5,TRUE,cex=.9)
   mtext(if(ck$t==2) 'Density' else ylab,2,-.2,TRUE,font=2,col='#303030')
