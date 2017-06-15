@@ -153,7 +153,7 @@ When \code{y} is a formula, other variables will be pulled from it:
 \code{y ~ x * by * between[1] * between[2] + cov[1] + cov[2] + cov[n]}
 }
 \examples{
-#making some prettyish, fake data
+#simulating data
 n=2000
 dat=data.frame(
   by=sample(0:1,n,TRUE),
@@ -179,7 +179,7 @@ splot(y~x*by, data=dat)
 splot(y~x*by*bet1, data=dat)
 splot(y~x*by*bet1*bet2, data=dat)
 
-#Same as the last but entered differently
+#same as the last but entered differently
 splot(y, x, by, c(bet1, bet2), data=dat)
 
 #zooming in on one of the windows
@@ -190,5 +190,13 @@ splot(y~x+x^2, data=dat, su=bet1==1&bet2==0&by==1, add={
   lines(x[order(x)], loess(y~x)$fitted[order(x)], lty=2)
   legend('topright', c('lm', 'loess'), lty=c(1, 2), lwd=c(2, 1), bty='n')
 })
+
+#looking at different versions of x added to y
+splot(cbind(
+  Raw=y+x,
+  Sine=y+sin(x),
+  Cosine=y+cos(x),
+  Tangent=y+tan(x)
+)~x, data=dat, myl=c(-10,15), loess=TRUE, lpos='topright')
 
 }
