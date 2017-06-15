@@ -5,7 +5,7 @@ Associated with the [Language Use and Social Interaction](https://www.depts.ttu.
 ## resources
 Documentation: [miserman.github.io/splot](https://miserman.github.io/splot/)
 
-Example: [Exploring data](https://miserman.github.io/splot/explore.html)
+Examples: [Exploring data](https://miserman.github.io/splot/explore.html) | [Refining a Result](https://miserman.github.io/splot/refine.html)
 
 ## installation
 ```R
