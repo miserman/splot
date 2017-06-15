@@ -1,0 +1,112 @@
+---
+title: "Preparing a Particular Result with splot"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Preparing a Particular Result with splot}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+This example tweaks a few results to prepare them for publication or whatever, using the dataset from a project comparing autobiographies ([osf.io/vwq9p](https://osf.io/vwq9p/)).
+
+*Built with R 
+`r getRversion()`
+on 
+`r format(Sys.time(),'%B %d %Y')`*
+
+***
+# Setting up
+
+First, be sure splot is loaded:
+```{r}
+library(splot)
+```
+
+Then load in the data and attach it:
+```{r}
+data=read.csv('https://osf.io/ey9hs/?action=download')
+attach(data)
+```
+
+***
+# Comparison of Anger Word Usage between all Autobiographies
+Texts are split into 100 segments each (the `index` variable), and are identified by author (the `name` variable).
+
+To look at a particular category across segments of text, we can just plot the category against `index`, with `name` in the `by` position:
+```{r, fig.height=5, fig.width=10, dev='CairoSVG'}
+splot(anger~index*name)
+```
+
+Quite a mess.
+
+With this many levels of `by`, it immediately makes sense to hide the legend and points.
+
+We're also interested in non-linear trends over the course of each text, so we'll switch to loess lines, and we'll use `myl` to zoom in a bit:
+```{r, fig.height=5, fig.width=10, dev='CairoSVG'}
+splot(anger~index*name, leg=FALSE, points=FALSE, loess=TRUE, myl=c(0,1.5))
+```
+
+Much better, but not very informative. 
+
+This project was mostly interested in the Rodger text---how it relates to the Hitler text, and how both of those relate to other autobiographies. As such, it would be nice to know which lines are the Rodger and Hitler texts, and which are (in this case) the highest comparison texts.
+
+To do this, we'll first have to set up line types and colors outside of splot:
+```{r}
+ns=levels(factor(data$name))
+nl=length(ns)
+disp=data.frame(name=ns, lty=rep(1:9, nl)[1:nl])
+disp$col=ifelse(grepl('Hit|Rod', disp$name), '#880101', '#aaaaaa')
+disp$lty[grepl('Hit|Rod', disp$name)]=1:2
+
+#now we have an object with names associated with line types (lty) and colors (col):
+disp[1:10,]
+```
+Now within splot (using the `add` argument), we can always mark the Rodger and Hitler text, and dynamically display a set of comparison texts.
+
+Here, the `mnc` part is calculating the mean of each text across segments, then sorting names by their mean and pulling the highest 2. The lowest 2 could be pulled by changing the `TRUE` to `FALSE`.
+
+In the first `legend` call, the constants are position (set in the first argument), and line weight (`lwd`) and box type (`bty`; `'n'` for none). Dynamic arguments are pulled from the `disp` object we created before, based on the names in `mnc`.
+```{r, fig.height=5, fig.width=10, dev='CairoSVG'}
+splot(anger~index*name, leg=FALSE, points=FALSE, loess=TRUE, myl=c(0,2.2), colors=disp$col, lty=disp$lty, add={
+    mnc=names(sort(apply(sapply(cdat$`^^`, '[[', 'y'), 2, mean)[-grep('Hit|Rod', names(cdat$`^^`))], TRUE)[1:2])
+    legend('topleft', sort(mnc), lty=disp[disp$name%in%mnc, 2], col=disp[disp$name%in%mnc, 3], lwd=2, bty='n')
+    legend('topright', c('Adolf Hitler', 'Elliot Rodger'), lty=1:2, col=disp$col[1], lwd=2, bty='n')
+})
+```
+
+***
+#Comparison of Pronoun Usage
+
+We might want to look at a few variables at the same time. In this dataset, the difference in pronoun use between the Rodger and Hitler text is interesting, so we'll look at personal pronouns (`i, we, you, shehe, they`) and impersonal pronouns (`ipron`) all together:
+```{r, fig.height=5, fig.width=10, dev='CairoSVG'}
+splot(cbind(i, we, you, shehe, they, ipron)~name, type='bar', su=grepl('Hit|Rod', data$name))
+```
+
+To better compare each variable between texts, we can put the variables on the x axis with `mv.as.x=TRUE`, and z-score with `mv.scale=TRUE` to standardize ranges.
+
+While we're at it, we'll also pretty things up with better axis titles, and by removing the subset message (which can be done with `sud=FALSE` or just by subsetting the data), and changing colors and legend position:
+```{r, fig.height=5, fig.width=10, dev='CairoSVG'}
+splot(cbind(i, we, you, shehe, they, ipron)~name, type='bar', mv.as.x=TRUE, mv.scale=TRUE,
+  data=data[grep('Hit|Rod', data$name),], title='Pronoun Usage between Texts', laby='Pronouns (z-scored)',
+  labx='Category', colors='grey', lpos='topright')
+```
+
+***
+#Saving Figures
+
+Now that we have some formatted figures, we might want to use them in other things.
+
+When it comes to rendering, two factors make for the nicest looking figures: anti-aliasing (making lines less pixelated) and scalability (they won't become pixelated with zoomed in on; a feature of formats like pdf, svg, and emf).
+
+**For publication**, pdfs can be included in LaTex documents, emfs can be included Word documents, and svgs can be included in markdown documents like this one.
+
+**For presentation**, emfs can be included in PowerPoint slides, and svgs can be included in markdown slides.
+
+The default format when saving from within splot (`save=TRUE`) is pdf. If you're using RStudio, you can save the same quality of pdf from the Export dropdown.
+
+To save as anti-aliased emfs, you can install and load the `devEMF` package (`install.packages('devEMF'); library('devEMF')`), then just add `format=emf` to the plot you want to save.
+
+***
+<div style='text-align:center'>
+![Brought to you by the [Language Use and Social Interaction](http://www.depts.ttu.edu/psy/lusi/resources.php) lab at Texas Tech University](http://www.depts.ttu.edu/psy/lusi/files/lusi.jpg)
+</div>

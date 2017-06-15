@@ -1,0 +1,139 @@
+---
+title: "Exploring Data with splot"
+output: rmarkdown::html_document
+vignette: >
+  %\VignetteIndexEntry{Exploring Data with splot}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+This example looks at a few different results from a set of studies ([osf.io/963gp](https://osf.io/963gp/)).
+
+*Built with R 
+`r getRversion()`
+on 
+`r format(Sys.time(),'%B %d %Y')`*
+
+***
+# Setting up
+
+First, be sure splot is loaded:
+```{r}
+library('splot')
+```
+
+You can read in data directly from OSF:
+```{r}
+data = read.csv('https://osf.io/crgkn/?action=download')
+```
+
+Or download the file ([osf.io/crgkn](https://osf.io/crgkn/?action=download)) and load it locally:
+```c
+data = read.csv(file.choose())
+```
+
+Then have a look at the data. The first 8 columns are participant and condition variables, which will be particularly useful for splitting:
+```{r}
+data[1:10, 1:8]
+```
+
+And attach the data for convenience:
+```{r}
+attach(data)
+```
+
+
+***
+# Exploring Language Style Matching
+
+One particularly interesting variable to look at in this dataset is Language Style Matching (LSM). These studies had participant reply to a posts which were manipulated in terms of Style (feminine or masculine), Label (female or male), and Topic (relational or life course). the degree to which their language use is similar to those posts might indicate their level engagement with the author.
+
+
+The dataset includes 4 different studies, so we might look at the distribution of LSM within each.
+```{r, fig.height=5, fig.width=10, dev='CairoSVG'}
+splot(LSM7, by=Study)
+```
+
+
+Studies 3 and 4 have lower LSM because the prompts people are matching with were made more extreme in terms of their language style.
+FemComp is the same language composite that was manipulated in the study prompts, so looking at participant's FemComp scores illustrates the difference in prompts:
+```{r, fig.height=5, fig.width=10, dev='CairoSVG'}
+splot(FemComp, by=Study)
+```
+
+
+To make things more manageable, we'll just look at study 4 for now.
+
+As a first step, we can look at LSM between each condition:
+```{r, fig.height=4, fig.width=3.1, fig.show='hold', dev='CairoSVG'}
+splot(LSM7~Topic, su=Study==4, type='bar')
+splot(LSM7~Style, su=Study==4, type='bar')
+splot(LSM7~Label, su=Study==4, type='bar')
+```
+
+
+Differences show up within Topic and Label, so we might look at those together:
+```{r, fig.height=5, fig.width=10, dev='CairoSVG'}
+#setting up variable labels
+lvls=list(
+  Topic=c('Life Course', 'Relational'),
+  Label=c('Male', 'Female'),
+  Style=c('Masculine', 'Feminine')
+)
+
+#lpos moves the legend to a less crowded area
+splot(LSM7~Topic*Label, su=Study==4, levels=lvls, lpos='bottomright')
+```
+
+
+Topic and Label seemed to have more bearing on LSM than Style, which is kind of weird since both Style (manipulated FemComp) and LSM are language composites.
+
+To look into this a little more, we might look at LSM by FemComp:
+```{r, fig.height=5, fig.width=10, dev='CairoSVG'}
+splot(LSM7~FemComp*Topic*Label, su=Study==4, levels=lvls)
+```
+
+
+Here we see the same Label dependent topic difference, but also a weird change in direction with Label.
+
+Maybe the same pattern showed up in study 3...
+```{r, fig.height=5, fig.width=10, dev='CairoSVG'}
+splot(LSM7~FemComp*Topic*Label, su=Study==3, levels=lvls)
+```
+
+
+Still maybe some difference in Topic, but nothing like the Label effect... maybe Style is doing something now?
+```{r, fig.height=5, fig.width=10, dev='CairoSVG'}
+splot(LSM7~FemComp*Topic*Style, su=Study==3, levels=lvls)
+```
+
+Kind of similar : /
+Difficult to make sense of, but kind of interesting.
+
+
+
+Since the data collected two responses from each participant, a nifty thing to do is look at the difference in the LSM between their first and second response:
+```{r, fig.height=5, fig.width=10, dev='CairoSVG'}
+#adjusting some setting makes things look nicer, but the only necessary extra one is lim.
+#here, lim prevents ParticipantID from being split since it has so many levels,
+#lty makes all lines solid, error turns off error bars, and mxl spreads the x labels apart more.
+splot(LSM7~Prompt*ParticipantID, su=Study>2, lim=F, lty=F, error=F, mxl=c(1,2))
+```
+
+
+***
+# Recreate a Figure
+
+A consistent results across studies showed up with the perceived relative socioeconomic status variable (ppSes), a single item asking participants to rate the author in terms of their SES.
+
+The main figure is looking across studies and topics, so we'll have to make a new variable for that:
+```{r, fig.height=5, fig.width=10, dev='CairoSVG'}
+Study_and_Topic = paste0('S', Study, ' ', ifelse(Topic==0, 'Life', 'Relational'))
+
+splot(ppSes~Study_and_Topic*Style, type='bar', colors='grey', levels=lvls)
+```
+
+***
+<div style='text-align:center'>
+![Brought to you by the [Language Use and Social Interaction](http://www.depts.ttu.edu/psy/lusi/resources.php) lab at Texas Tech University](http://www.depts.ttu.edu/psy/lusi/files/lusi.jpg)
+</div>
