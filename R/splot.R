@@ -245,7 +245,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
     if(mv.as.x){
       txt$by=txt$x
       ptxt$by=ptxt$x
-      txt$x=ptxt$x='variable'
+      if(missing(labx)) txt$x=ptxt$x='variable'
       dat$by=dat$x
       dat$x=by
     }else{

@@ -25,3 +25,4 @@ vignettes/
 *.Rbuildignore
 # Utility file
 build.R
+.Rproj.user
