@@ -7,7 +7,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-This example tweaks a few results to prepare them for publication or whatever, using the dataset from a project comparing autobiographies ([osf.io/vwq9p](https://osf.io/vwq9p/)).
+This example tweaks a few results to prepare them for publication or whatever, using the dataset from a project comparing autobiographies (<a href="https://osf.io/vwq9p/" target="_blank">osf.io/vwq9p</a>).
 
 *Built with R 
 `r getRversion()`
@@ -108,5 +108,5 @@ To save as anti-aliased emfs, you can install and load the `devEMF` package (`in
 
 ***
 <div style='text-align:center'>
-![Brought to you by the [Language Use and Social Interaction](http://www.depts.ttu.edu/psy/lusi/resources.php) lab at Texas Tech University](http://www.depts.ttu.edu/psy/lusi/files/lusi.jpg)
+![Brought to you by the <a href="https://www.depts.ttu.edu/psy/lusi/resources.php" target="_blank">Language Use and Social Interaction</a> lab at Texas Tech University](https://www.depts.ttu.edu/psy/lusi/files/lusi.jpg)
 </div>

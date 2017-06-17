@@ -7,7 +7,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-This example looks at a few different results from a set of studies ([osf.io/963gp](https://osf.io/963gp/)).
+This example looks at a few different results from a set of studies (<a href="https://osf.io/963gp/" target="_blank">osf.io/963gp</a>).
 
 *Built with R 
 `r getRversion()`
@@ -135,5 +135,5 @@ splot(ppSes~Study_and_Topic*Style, type='bar', colors='grey', levels=lvls)
 
 ***
 <div style='text-align:center'>
-![Brought to you by the [Language Use and Social Interaction](http://www.depts.ttu.edu/psy/lusi/resources.php) lab at Texas Tech University](http://www.depts.ttu.edu/psy/lusi/files/lusi.jpg)
+![Brought to you by the <a href="https://www.depts.ttu.edu/psy/lusi/resources.php" target="_blank">Language Use and Social Interaction</a> lab at Texas Tech University](https://www.depts.ttu.edu/psy/lusi/files/lusi.jpg)
 </div>
