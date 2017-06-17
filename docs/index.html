@@ -1,324 +1,56 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Split Plot</title>
+<!doctype html>
+<html>
+<head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<link rel="stylesheet" type="text/css" href="R.css" />
-</head><body>
-
-<table width="100%" summary="page for splot"><tr><td>splot</td><td style="text-align: right;">R Documentation</td></tr></table>
-
-<h2>Split Plot</h2>
-
-<h3>Description</h3>
-
-<p>A plotting function aimed at automating some common visualization tasks in order to ease data exploration.
-</p>
-
-
-<h3>Usage</h3>
-
-<pre>
-splot(y, x = NULL, by = NULL, between = NULL, cov = NULL, type = "",
-  split = "median", data = NULL, su = NULL, levels = list(),
-  error = "standard", error.color = "#585858", lim = 9, model = FALSE,
-  loess = FALSE, mv.scale = "none", mv.as.x = FALSE, save = FALSE,
-  format = cairo_pdf, dims = dev.size(), file.name = "splot",
-  colors = NULL, myl = NULL, mxl = NULL, autori = TRUE, xlas = 0,
-  ylas = 1, lwd = 2, pch = 20, bw = "nrd0", adj = 2, lpos = "auto",
-  lvn = TRUE, title = TRUE, labx = TRUE, laby = TRUE, lty = TRUE,
-  lhz = FALSE, sub = TRUE, ndisp = TRUE, leg = TRUE, note = TRUE,
-  sud = TRUE, labels = TRUE, points = TRUE, lines = TRUE,
-  mar = "auto", add = NULL, ...)
-</pre>
-
-
-<h3>Arguments</h3>
-
-<table summary="R argblock">
-<tr valign="top"><td><code>y</code></td>
-<td>
-<p>required. Primary variable, to be shown on the y axis unless <code>x</code> is not specified. Can be an object,
-name of a column in data, or a formula (see note bellow). Multiple variables can also be included as columns in a matrix or data frame.</p>
-</td></tr>
-<tr valign="top"><td><code>x</code></td>
-<td>
-<p>secondary variable, to be shown in on the x axis. If not specified, <code>type</code> will be set to <code>'density'</code>.
-If <code>x</code> is a factor or vector of characters, or has fewer than <code>lim</code> levels when treated as a factor, <code>type</code>
-will be set to <code>"line"</code> unless specified.</p>
-</td></tr>
-<tr valign="top"><td><code>by</code></td>
-<td>
-<p>the 'splitting' variable within each plot, by which the plotted values of <code>x</code> and <code>y</code> will be grouped.</p>
-</td></tr>
-<tr valign="top"><td><code>between</code></td>
-<td>
-<p>A single object or name, or two in a vector (e.g., <code>c(b1, b2)</code>), the levels of which will determine the
-number of plot windows to be shown at once (the cells in a matrix of plots; levels of the first variable as rows, and
-levels of the second as columns).</p>
-</td></tr>
-<tr valign="top"><td><code>cov</code></td>
-<td>
-<p>additional variables used for adjustment. If this is not missing, and <code>type</code> is not specified, <code>type</code> will
-default to <code>"line"</code>. Bar and line plots include all <code>cov</code> variables in their no-intercept regression models (via
-<code>lm</code>, e.g., <code>lm(y ~ 0 + x + cov1 + cov2)</code>) as covariates. If any <code>cov</code> variable matches <code>x</code>,
-<code>line</code> is not <code>FALSE</code>, and <code>loess</code> is not <code>TRUE</code>, these will be included in the regression model to adjust the prediction
-line in a scatter plot (e.g., <code>lm(y ~ x + x^2)</code>).</p>
-</td></tr>
-<tr valign="top"><td><code>type</code></td>
-<td>
-<p>determines the type of plot to make, between <code>"bar"</code>, <code>"line"</code>, <code>"density"</code>, or <code>"scatter"</code>. If
-<code>"density"</code>, <code>x</code> is ignored. Anything including the first letter of each is accpeted (e.g., <code>type='l'</code>).</p>
-</td></tr>
-<tr valign="top"><td><code>split</code></td>
-<td>
-<p>how to split any continuous variables (those with more than <code>lim</code> levels as factors). Default is <code>"median"</code>,
-with <code>"mean"</code>, <code>"standard deviation"</code>, and <code>"quantile"</code> as options.</p>
-</td></tr>
-<tr valign="top"><td><code>data</code></td>
-<td>
-<p>a <code>data.frame</code> to pull variables from. If variables aren't found in <code>data</code>, they will be looked for in the environment.</p>
-</td></tr>
-<tr valign="top"><td><code>su</code></td>
-<td>
-<p>a subset to all variables, applied after they are all retrieved from <code>data</code> or the environment.</p>
-</td></tr>
-<tr valign="top"><td><code>levels</code></td>
-<td>
-<p>a list specifying the factor levels of your variables. Any entry should match the name of your variable, and the length of
-the verctor should match either the original number of levels, or the number of split levels (e.g., assuming original sex levels, and
-a median split happy <code>levels=list(sex=c('female', 'male', 'other'), happy=c('not very', 'very'))</code>).</p>
-</td></tr>
-<tr valign="top"><td><code>error</code></td>
-<td>
-<p>determines whether and which type of error bars to show in bar or line plots. If <code>FALSE</code>, no error bars will be shown.
-Otherwise, the default is <code>"standard error"</code>, with <code>"confidence intervals"</code> as an option.</p>
-</td></tr>
-<tr valign="top"><td><code>error.color</code></td>
-<td>
-<p>color of the error bars. Default is <code>'#585858'</code>.</p>
-</td></tr>
-<tr valign="top"><td><code>lim</code></td>
-<td>
-<p>numeric. Checked against the number of factor levels of each variable. Used to decide which variables should be split, which colors
-to use, and when to turn off the legend. Default is <code>9</code>. If set over <code>20</code>, <code>lim</code> is treated as infinite (set to <code>Inf</code>).</p>
-</td></tr>
-<tr valign="top"><td><code>model</code></td>
-<td>
-<p>logical: if <code>TRUE</code>, the summary of an interaction model will be printed.</p>
-</td></tr>
-<tr valign="top"><td><code>loess</code></td>
-<td>
-<p>logical: if <code>TRUE</code>, <code>loess</code> lines are drawn instead of regression lines.</p>
-</td></tr>
-<tr valign="top"><td><code>mv.scale</code></td>
-<td>
-<p>determines whether to center and scale multiple <code>y</code> variables. Does not center or scale by default. Anything other than
-<code>'none'</code> will mean center each numeric <code>y</code> variable. Anything matching <code>'^t|z|sc'</code> will also scale.</p>
-</td></tr>
-<tr valign="top"><td><code>mv.as.x</code></td>
-<td>
-<p>logical: if <code>TRUE</code>, variable names are displayed on the x axis, and <code>x</code> is treated as <code>by</code>.</p>
-</td></tr>
-<tr valign="top"><td><code>save</code></td>
-<td>
-<p>logical: if <code>TRUE</code>, an image of the plot is saved to the current working directory.</p>
-</td></tr>
-<tr valign="top"><td><code>format</code></td>
-<td>
-<p>the type of file to save plots as. default is <code>cairo_pdf</code>. See <code>Devices</code> for options.</p>
-</td></tr>
-<tr valign="top"><td><code>dims</code></td>
-<td>
-<p>a vector of 2 values (<code>c(width, height)</code>) specifying the dimensions of a plot to save in inches or pixels depending on
-<code>format</code>. Defaults to the dimensions of the plot window.</p>
-</td></tr>
-<tr valign="top"><td><code>file.name</code></td>
-<td>
-<p>a string with the name of the file to be save (excluding the extention, as this is added depending on <code>format</code>).</p>
-</td></tr>
-<tr valign="top"><td><code>colors</code></td>
-<td>
-<p>sets a color theme or manually specifies colors. Defualt theme is <code>"pastell"</code>, with <code>"dark"</code> and <code>"bright"</code> as
-options. If set to <code>"grey"</code>, or if <code>by</code> has more than 9 levels, a grey scale is calculated using <code>grey</code>.
-See the <code>col</code> parameter in <code>par</code> for acceptable manual inputs.</p>
-</td></tr>
-<tr valign="top"><td><code>myl</code></td>
-<td>
-<p>sets the range of the y axis (<code>ylim</code> of <code>plot</code> or <code>barplot</code>). If not specified,
-this will be calculated from the data.</p>
-</td></tr>
-<tr valign="top"><td><code>mxl</code></td>
-<td>
-<p>sets the range of the x axis (<code>xlim</code> of <code>plot</code>). If not specified, this will be calculated from the data.</p>
-</td></tr>
-<tr valign="top"><td><code>autori</code></td>
-<td>
-<p>logical: if <code>FALSE</code>, the origin of plotted bars will be set to 0. Otherwise, bars are adjusted such that they extend to the
-bottom of the y axis.</p>
-</td></tr>
-<tr valign="top"><td><code>xlas</code></td>
-<td>
-<p>sets the orientation of the x-axis labels. See <code>par</code>.</p>
-</td></tr>
-<tr valign="top"><td><code>ylas</code></td>
-<td>
-<p>sets the orientation of the y-axis labels. See <code>par</code>.</p>
-</td></tr>
-<tr valign="top"><td><code>lwd</code></td>
-<td>
-<p>sets the width of lines in scatter plots. Default is 2. See <code>par</code>.</p>
-</td></tr>
-<tr valign="top"><td><code>pch</code></td>
-<td>
-<p>sets the type of dot to use when plotting points in a scatter plot. Default is 20. See <code>par</code>.</p>
-</td></tr>
-<tr valign="top"><td><code>bw</code></td>
-<td>
-<p>sets the smoothing bandwidth when plotting densities. Default is <code>'nrd0'</code>. See <code>density</code>.</p>
-</td></tr>
-<tr valign="top"><td><code>adj</code></td>
-<td>
-<p>adjusts the smoothing of densities (<code>adj * bw</code>). See <code>density</code>.</p>
-</td></tr>
-<tr valign="top"><td><code>lpos</code></td>
-<td>
-<p>set the position of the legend. By default, it will try to choose between the top left and right areas. See <code>legend</code>.</p>
-</td></tr>
-<tr valign="top"><td><code>lvn</code></td>
-<td>
-<p>legend variable name. Logical: if <code>FALSE</code>, the names of by and between variables will not be shown before their level (e.g.,
-for a sex variable with a &quot;female&quot; level, &quot;sex: female&quot; would become &quot;female&quot; in the legend or above each plot window).</p>
-</td></tr>
-<tr valign="top"><td><code>title</code></td>
-<td>
-<p>logical or a character: if <code>FALSE</code>, the main title is turned off. If a character, this will be shown as the main title.</p>
-</td></tr>
-<tr valign="top"><td><code>labx</code></td>
-<td>
-<p>logical or a character: if <code>FALSE</code>, the label on the x axis is turned off. If a character, this will be shown as the
-x axis label.</p>
-</td></tr>
-<tr valign="top"><td><code>laby</code></td>
-<td>
-<p>logical or a character: if <code>FALSE</code>, the label on the y axis is turned off. If a character, this will be shown as the
-y axis label.</p>
-</td></tr>
-<tr valign="top"><td><code>lty</code></td>
-<td>
-<p>logical or a vector: if <code>FALSE</code>, lines are always solid. If a vector, changes line type based on each value. Otherwise loops
-through available line types, see <code>par</code>.</p>
-</td></tr>
-<tr valign="top"><td><code>lhz</code></td>
-<td>
-<p>logical: if <code>FALSE</code>, the legend grows horizontally.</p>
-</td></tr>
-<tr valign="top"><td><code>sub</code></td>
-<td>
-<p>logical: if <code>FALSE</code>, the small title above each plot showing <code>between</code> levels is turned off.</p>
-</td></tr>
-<tr valign="top"><td><code>ndisp</code></td>
-<td>
-<p>logical: if <code>FALSE</code>, n per level is no longer displayed in the subheadings.</p>
-</td></tr>
-<tr valign="top"><td><code>leg</code></td>
-<td>
-<p>logical: if <code>FALSE</code>, the legend is turned off.</p>
-</td></tr>
-<tr valign="top"><td><code>note</code></td>
-<td>
-<p>logical: if <code>FALSE</code>, the note at the bottom about splits and/or error bars is turned off.</p>
-</td></tr>
-<tr valign="top"><td><code>sud</code></td>
-<td>
-<p>logical: if <code>FALSE</code>, the heading for subset and covariates/line adjustments is turned off.</p>
-</td></tr>
-<tr valign="top"><td><code>labels</code></td>
-<td>
-<p>logical: if <code>FALSE</code>, sets all settable text surrounding the plot to <code>FALSE</code> (just so you don't have to set all
-of them if you want a clean frame).</p>
-</td></tr>
-<tr valign="top"><td><code>points</code></td>
-<td>
-<p>logical: if <code>FALSE</code>, the points in a scatter plot are no longer drawn.</p>
-</td></tr>
-<tr valign="top"><td><code>lines</code></td>
-<td>
-<p>logical: if <code>FALSE</code>, the prediction lines in a scatter plot are no longer drawn.</p>
-</td></tr>
-<tr valign="top"><td><code>mar</code></td>
-<td>
-<p>sets the margins of each plot window. Partially set automatically if not specified: <code>c(if(labx)2.5 else 0,if(laby)3 else 2,1,0)</code>.
-If <code>xlas</code> is not specified, or is greater than 2, and x-axis labels are overly long in bar or line plots,
-<code>mar[1]</code> is set by the x-axis text length (<code>strwidth(max(colnames(m)))*ifelse(labx,5.5,4.8)</code>). See <code>par</code>.</p>
-</td></tr>
-<tr valign="top"><td><code>add</code></td>
-<td>
-<p>evaluated within the function. Usefull for adding things like lines to a plot while the parameters are still those set by the
-function (e.g., <code>add={lines(1:10)}</code>).</p>
-</td></tr>
-<tr valign="top"><td><code>...</code></td>
-<td>
-<p>passes additional arguments to <code>plot</code> or <code>barplot</code>.</p>
-</td></tr>
-</table>
-
-
-<h3>Note</h3>
-
-<p>When <code>y</code> is a formula, other variables will be pulled from it:
-</p>
-<p><code>y ~ x * by * between[1] * between[2] + cov[1] + cov[2] + cov[n]</code>
-</p>
-
-
-<h3>Examples</h3>
-
-<pre>
-#simulating data
-n=2000
-dat=data.frame(
-  by=sample(0:1,n,TRUE),
-  bet1=sample(0:1,n,TRUE),
-  bet2=sample(0:1,n,TRUE)
-)
-dat$x=eval(quote(
-  rnorm(n)+by*-.4+by*bet1*-.3+by*bet2*.3+bet1*bet2*.9-.8+rnorm(n,0,by)
-),envir=dat)
-dat$y=eval(quote(
-  x*.2+by*.3+bet2*-.6+bet1*bet2*.8+x*by*bet1*-.5+x*by*bet1*bet2*-.5
-  +rnorm(n,5)+rnorm(n,-1,.1*x^2)
-),envir=dat)
-
-#looking at the distribution of y between bets split by by
-splot(y, by=by, between=c(bet1, bet2), data=dat)
-
-#looking at y by x between bets
-splot(y~x, between=c(bet1, bet2), data=dat)
-
-#sequentially adding levels of split
-splot(y~x*by, data=dat)
-splot(y~x*by*bet1, data=dat)
-splot(y~x*by*bet1*bet2, data=dat)
-
-#same as the last but entered differently
-splot(y, x, by, c(bet1, bet2), data=dat)
-
-#zooming in on one of the windows
-splot(y~x*by, data=dat, su=bet1==1&amp;bet2==0)
-
-#compairing an adjusted lm prediction line with a loess line
-splot(y~x+x^2, data=dat, su=bet1==1&amp;bet2==0&amp;by==1, add={
-  lines(x[order(x)], loess(y~x)$fitted[order(x)], lty=2)
-  legend('topright', c('lm', 'loess'), lty=c(1, 2), lwd=c(2, 1), bty='n')
-})
-
-#looking at different versions of x added to y
-splot(cbind(
-  Raw=y+x,
-  Sine=y+sin(x),
-  Cosine=y+cos(x),
-  Tangent=y+tan(x)
-)~x, data=dat, myl=c(-10,15), loess=TRUE, lpos='topright')
-
-</pre>
-
-
-</body></html>
+<link rel="icon" href="https://github.com/fluidicon.png">
+<title>Splot</title>
+<style type="text/css">
+*{margin:0;padding:0;font-family:"Lucida Sans Unicode","Lucida Grande",Sans-serif;color:#505050}
+iframe{border:none;height:100%;width:100%}
+a:link,a:visited{text-decoration:none}
+#menu a{display:block;padding:15px 10px;background:#adadad;color:#f3f3f3}
+#menu a:hover{background:#505050}
+#menu{position:absolute;left:0;top:0;bottom:0;width:140px;border-right:1px solid #adadad;background:#fff;-webkit-user-select:none;-khtml-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}
+#wrap{position:absolute;top:0;bottom:0;right:0;left:141px;overflow:hidden}
+#menu a.sel{background:#505050}
+.foot{left:0;bottom:0;width:140px;position:fixed;text-align:center}
+@media only screen and (max-height: 350px){h1,h2{display:none}}
+</style>
+</head>
+<body>
+<div id="menu">
+<h1 style="padding:5px 0 5px 10px">Splot</h1>
+<a href="https://miserman.github.io/splot/documentation.html" target="window" onclick="setup(this)">Documentation</a>
+<h2 style="padding:20px 0 5px 10px">Vignettes</h2>
+<a href="https://miserman.github.io/splot/explore.html" target="window" onclick="setup(this)">Explore</a>
+<a href="https://miserman.github.io/splot/refine.html" target="window" onclick="setup(this)">Refine</a>
+</div>
+<div id="wrap">
+<iframe id="window" name="window" src="https://miserman.github.io/splot/documentation.html"></iframe>
+</div>
+<a href="https://github.com/miserman/splot" class="foot">repository</a>
+</body>
+<script type="text/javascript">
+var windowFrame=document.getElementById("window")
+var menuItems=document.getElementById("menu").getElementsByTagName("a")
+var menuLength=menuItems.length
+setup()
+function setup(r){
+	for(var i=menuLength;i--;) menuItems[i].className=""
+	if("object"===typeof(r)){
+		r.className="sel"
+		windowFrame.src=r.href
+		window.location.replace ? window.location.replace("#"+r.innerHTML.toLowerCase()) : window.history.replaceState(void 0,void 0,"#"+r.innerHTML.toLowerCase())
+		return
+	}
+	var tag=window.location.hash
+	if(tag==="") menuItems[0].className="sel"
+	else for(i=menuLength;i--;) if(tag.match(menuItems[i].innerHTML.toLowerCase())){
+	  console.log(menuItems[i])
+	  menuItems[i].className="sel"
+	  windowFrame.src=menuItems[i].href
+	  return
+	}
+}
+</script>
+</html>
