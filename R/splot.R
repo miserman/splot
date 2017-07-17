@@ -434,7 +434,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
         m[rn[l],]=mo$coef[r]
         if(nrow(cdat[[i]][[l]])>2){
           if(ck$e){
-            e=summary(update(mo,~.-0))$coef[c(2,r[-1]),2]
+            e=summary(update(mo,~.-0))$coef[,2][c(2,r[-1])]
             pe[rn[l],]=m[l,]+e
             ne[rn[l],]=m[l,]-e
           }else{
