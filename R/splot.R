@@ -433,8 +433,15 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
         r=1:ncol(m)
         m[rn[l],]=mo$coef[r]
         if(nrow(cdat[[i]][[l]])>2){
-          pe[rn[l],]=if(ck$e) m[l,]+summary(mo)$coef[,2][r] else confint.default(mo)[,2][r]
-          ne[rn[l],]=if(ck$e) m[l,]-summary(mo)$coef[,2][r] else confint.default(mo)[,1][r]
+          if(ck$e){
+            e=summary(update(mo,~.-0))$coef[c(2,r[-1]),2]
+            pe[rn[l],]=m[l,]+e
+            ne[rn[l],]=m[l,]-e
+          }else{
+            e=confint(mo)[r,]
+            pe[rn[l],]=e[,2]
+            ne[rn[l],]=e[,1]
+          }
         }else pe[rn[l],]=ne[rn[l],]=m[rn[l],]
       }
       re=list(m=m,ne=ne,pe=pe)
