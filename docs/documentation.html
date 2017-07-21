@@ -25,7 +25,7 @@ splot(y, x = NULL, by = NULL, between = NULL, cov = NULL, type = "",
   ylas = 1, lwd = 2, pch = 20, bw = "nrd0", adj = 2, lpos = "auto",
   lvn = TRUE, title = TRUE, labx = TRUE, laby = TRUE, lty = TRUE,
   lhz = FALSE, sub = TRUE, ndisp = TRUE, leg = TRUE, note = TRUE,
-  sud = TRUE, labels = TRUE, points = TRUE, lines = TRUE,
+  sud = TRUE, labels = TRUE, points = TRUE, lines = TRUE, byx = TRUE,
   mar = "auto", add = NULL, ...)
 </pre>
 
@@ -65,7 +65,7 @@ line in a scatter plot (e.g., <code>lm(y ~ x + x^2)</code>).</p>
 <tr valign="top"><td><code>type</code></td>
 <td>
 <p>determines the type of plot to make, between <code>"bar"</code>, <code>"line"</code>, <code>"density"</code>, or <code>"scatter"</code>. If
-<code>"density"</code>, <code>x</code> is ignored. Anything including the first letter of each is accpeted (e.g., <code>type='l'</code>).</p>
+<code>"density"</code>, <code>x</code> is ignored. Anything including the first letter of each is accepted (e.g., <code>type='l'</code>).</p>
 </td></tr>
 <tr valign="top"><td><code>split</code></td>
 <td>
@@ -82,9 +82,12 @@ with <code>"mean"</code>, <code>"standard deviation"</code>, and <code>"quantile
 </td></tr>
 <tr valign="top"><td><code>levels</code></td>
 <td>
-<p>a list specifying the factor levels of your variables. Any entry should match the name of your variable, and the length of
-the verctor should match either the original number of levels, or the number of split levels (e.g., assuming original sex levels, and
-a median split happy <code>levels=list(sex=c('female', 'male', 'other'), happy=c('not very', 'very'))</code>).</p>
+<p>a list with entries corresponding to variable names, used to rename and/or reorder factor levels. To reorder a factor, enter a
+vector of either numbers or existing level names in the new order (e.g., <code>levels=list(var=c(3,2,1))</code>). To rename levels of a factor,
+enter a character vector the same length as the number of levels. To rename and reorder, enter a list, with names as the first entry, and
+order as the second entry (e.g., <code>levels=list(var=list(c('a','b','c'),c(3,2,1)))</code>). This happens after variables are split, so
+names and orders should correspond to the new split levels of split variables. For example, if a continuous variable is median split, it now
+has two levels ('Under Median' and 'Over Median'), which are the levels reordering or renaming would apply to.</p>
 </td></tr>
 <tr valign="top"><td><code>error</code></td>
 <td>
@@ -132,11 +135,11 @@ to use, and when to turn off the legend. Default is <code>9</code>. If set over 
 </td></tr>
 <tr valign="top"><td><code>file.name</code></td>
 <td>
-<p>a string with the name of the file to be save (excluding the extention, as this is added depending on <code>format</code>).</p>
+<p>a string with the name of the file to be save (excluding the extension, as this is added depending on <code>format</code>).</p>
 </td></tr>
 <tr valign="top"><td><code>colors</code></td>
 <td>
-<p>sets a color theme or manually specifies colors. Defualt theme is <code>"pastell"</code>, with <code>"dark"</code> and <code>"bright"</code> as
+<p>sets a color theme or manually specifies colors. Default theme is <code>"pastel"</code>, with <code>"dark"</code> and <code>"bright"</code> as
 options. If set to <code>"grey"</code>, or if <code>by</code> has more than 9 levels, a grey scale is calculated using <code>grey</code>.
 See the <code>col</code> parameter in <code>par</code> for acceptable manual inputs.</p>
 </td></tr>
@@ -243,6 +246,11 @@ of them if you want a clean frame).</p>
 <td>
 <p>logical: if <code>FALSE</code>, the prediction lines in a scatter plot are no longer drawn.</p>
 </td></tr>
+<tr valign="top"><td><code>byx</code></td>
+<td>
+<p>logical: if <code>TRUE</code> (default) and <code>by</code> is specified, regressions for bar or line plots compare levels of <code>by</code> for each
+level of <code>x</code>. This makes for more intuitive error bars when comparing levels of <code>by</code> within a level of <code>x</code>.</p>
+</td></tr>
 <tr valign="top"><td><code>mar</code></td>
 <td>
 <p>sets the margins of each plot window. Partially set automatically if not specified: <code>c(if(labx)2.5 else 0,if(laby)3 else 2,1,0)</code>.
@@ -251,7 +259,7 @@ If <code>xlas</code> is not specified, or is greater than 2, and x-axis labels a
 </td></tr>
 <tr valign="top"><td><code>add</code></td>
 <td>
-<p>evaluated within the function. Usefull for adding things like lines to a plot while the parameters are still those set by the
+<p>evaluated within the function. Useful for adding things like lines to a plot while the parameters are still those set by the
 function (e.g., <code>add={lines(1:10)}</code>).</p>
 </td></tr>
 <tr valign="top"><td><code>...</code></td>
@@ -274,11 +282,7 @@ function (e.g., <code>add={lines(1:10)}</code>).</p>
 <pre>
 #simulating data
 n=2000
-dat=data.frame(
-  by=sample(0:1,n,TRUE),
-  bet1=sample(0:1,n,TRUE),
-  bet2=sample(0:1,n,TRUE)
-)
+dat=data.frame(sapply(c('by','bet1','bet2'),function(c)sample(0:1,n,TRUE)))
 dat$x=eval(quote(
   rnorm(n)+by*-.4+by*bet1*-.3+by*bet2*.3+bet1*bet2*.9-.8+rnorm(n,0,by)
 ),envir=dat)
