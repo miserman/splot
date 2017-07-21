@@ -450,7 +450,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
         cdat[[i]][c('x','by')]=cdat[[i]][c('by','x')]
         cdat[[i]]=split(cdat[[i]],cdat[[i]]$by)
       }
-      seg$x$l=levels(dat$x)
+      seg$x$l=levels(as.factor(dat$x))
       seg$x$ll=length(seg$x$l)
       mot=paste0('y~0+',paste(names(cdat[[i]][[1]])[c(2,cvar)],collapse='+'))
       rn=gsub('_|\\.',' ',paste(if(lvn)paste0(ptxt$by,':'),seg$by$l))
