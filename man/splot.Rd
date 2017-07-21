@@ -13,7 +13,7 @@ splot(y, x = NULL, by = NULL, between = NULL, cov = NULL, type = "",
   ylas = 1, lwd = 2, pch = 20, bw = "nrd0", adj = 2, lpos = "auto",
   lvn = TRUE, title = TRUE, labx = TRUE, laby = TRUE, lty = TRUE,
   lhz = FALSE, sub = TRUE, ndisp = TRUE, leg = TRUE, note = TRUE,
-  sud = TRUE, labels = TRUE, points = TRUE, lines = TRUE,
+  sud = TRUE, labels = TRUE, points = TRUE, lines = TRUE, byx = TRUE,
   mar = "auto", add = NULL, ...)
 }
 \arguments{
@@ -37,7 +37,7 @@ default to \code{"line"}. Bar and line plots include all \code{cov} variables in
 line in a scatter plot (e.g., \code{lm(y ~ x + x^2)}).}
 
 \item{type}{determines the type of plot to make, between \code{"bar"}, \code{"line"}, \code{"density"}, or \code{"scatter"}. If
-\code{"density"}, \code{x} is ignored. Anything including the first letter of each is accpeted (e.g., \code{type='l'}).}
+\code{"density"}, \code{x} is ignored. Anything including the first letter of each is accepted (e.g., \code{type='l'}).}
 
 \item{split}{how to split any continuous variables (those with more than \code{lim} levels as factors). Default is \code{"median"},
 with \code{"mean"}, \code{"standard deviation"}, and \code{"quantile"} as options.}
@@ -46,9 +46,12 @@ with \code{"mean"}, \code{"standard deviation"}, and \code{"quantile"} as option
 
 \item{su}{a subset to all variables, applied after they are all retrieved from \code{data} or the environment.}
 
-\item{levels}{a list specifying the factor levels of your variables. Any entry should match the name of your variable, and the length of
-the verctor should match either the original number of levels, or the number of split levels (e.g., assuming original sex levels, and
-a median split happy \code{levels=list(sex=c('female', 'male', 'other'), happy=c('not very', 'very'))}).}
+\item{levels}{a list with entries corresponding to variable names, used to rename and/or reorder factor levels. To reorder a factor, enter a
+vector of either numbers or existing level names in the new order (e.g., \code{levels=list(var=c(3,2,1))}). To rename levels of a factor,
+enter a character vector the same length as the number of levels. To rename and reorder, enter a list, with names as the first entry, and
+order as the second entry (e.g., \code{levels=list(var=list(c('a','b','c'),c(3,2,1)))}). This happens after variables are split, so
+names and orders should correspond to the new split levels of split variables. For example, if a continuous variable is median split, it now
+has two levels ('Under Median' and 'Over Median'), which are the levels reordering or renaming would apply to.}
 
 \item{error}{determines whether and which type of error bars to show in bar or line plots. If \code{FALSE}, no error bars will be shown.
 Otherwise, the default is \code{"standard error"}, with \code{"confidence intervals"} as an option.}
@@ -74,9 +77,9 @@ to use, and when to turn off the legend. Default is \code{9}. If set over \code{
 \item{dims}{a vector of 2 values (\code{c(width, height)}) specifying the dimensions of a plot to save in inches or pixels depending on
 \code{format}. Defaults to the dimensions of the plot window.}
 
-\item{file.name}{a string with the name of the file to be save (excluding the extention, as this is added depending on \code{format}).}
+\item{file.name}{a string with the name of the file to be save (excluding the extension, as this is added depending on \code{format}).}
 
-\item{colors}{sets a color theme or manually specifies colors. Defualt theme is \code{"pastell"}, with \code{"dark"} and \code{"bright"} as
+\item{colors}{sets a color theme or manually specifies colors. Default theme is \code{"pastel"}, with \code{"dark"} and \code{"bright"} as
 options. If set to \code{"grey"}, or if \code{by} has more than 9 levels, a grey scale is calculated using \code{\link[grDevices]{grey}}.
 See the \code{col} parameter in \code{\link[graphics]{par}} for acceptable manual inputs.}
 
@@ -135,11 +138,14 @@ of them if you want a clean frame).}
 
 \item{lines}{logical: if \code{FALSE}, the prediction lines in a scatter plot are no longer drawn.}
 
+\item{byx}{logical: if \code{TRUE} (default) and \code{by} is specified, regressions for bar or line plots compare levels of \code{by} for each
+level of \code{x}. This makes for more intuitive error bars when comparing levels of \code{by} within a level of \code{x}.}
+
 \item{mar}{sets the margins of each plot window. Partially set automatically if not specified: \code{c(if(labx)2.5 else 0,if(laby)3 else 2,1,0)}.
 If \code{xlas} is not specified, or is greater than 2, and x-axis labels are overly long in bar or line plots,
 \code{mar[1]} is set by the x-axis text length (\code{strwidth(max(colnames(m)))*ifelse(labx,5.5,4.8)}). See \code{\link[graphics]{par}}.}
 
-\item{add}{evaluated within the function. Usefull for adding things like lines to a plot while the parameters are still those set by the
+\item{add}{evaluated within the function. Useful for adding things like lines to a plot while the parameters are still those set by the
 function (e.g., \code{add=\{lines(1:10)\}}).}
 
 \item{...}{passes additional arguments to \code{\link[graphics]{plot}} or \code{\link[graphics]{barplot}}.}
@@ -155,11 +161,7 @@ When \code{y} is a formula, other variables will be pulled from it:
 \examples{
 #simulating data
 n=2000
-dat=data.frame(
-  by=sample(0:1,n,TRUE),
-  bet1=sample(0:1,n,TRUE),
-  bet2=sample(0:1,n,TRUE)
-)
+dat=data.frame(sapply(c('by','bet1','bet2'),function(c)sample(0:1,n,TRUE)))
 dat$x=eval(quote(
   rnorm(n)+by*-.4+by*bet1*-.3+by*bet2*.3+bet1*bet2*.9-.8+rnorm(n,0,by)
 ),envir=dat)
