@@ -7,7 +7,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-This example tweaks a few results to prepare them for publication or whatever, using the dataset from a project comparing autobiographies (<a href="https://osf.io/vwq9p/" target="_blank">osf.io/vwq9p</a>).
+This example tweaks a few results to prepare them for publication or whatever, using the dataset from a project comparing autobiographies: <a href="https://osf.io/vwq9p/" target="_blank">osf.io/vwq9p</a>.
 
 *Built with R 
 `r getRversion()`
