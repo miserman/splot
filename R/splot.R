@@ -162,22 +162,22 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
   )
   dn=if(ck$d) names(data) else ''
   if(tryCatch(class(y)=='formula',error=function(e)FALSE)){
-    f=paste(deparse(y),collapse='')
-    y=gsub('~.*$|\\\"| ','',f)
-    v=strsplit(gsub('^.*~|\\\"| ','',f),'\\+')[[1]]
-    if(grepl('\\*',f)){
-      r=strsplit(v[sapply(v,function(i)grepl('\\*',i))],'\\*')[[1]]
+    f=as.character(y)[-1]
+    y=f[1]
+    f=strsplit(f[-1],' \\+ ')[[1]]
+    if(any(grepl('\\*',f))){
+      r=strsplit(f[1],' \\* ')[[1]]
       if(length(r)>0) x=r[1]
       if(length(r)>1) by=r[2]
       if(length(r)>2) between=r[3]
       if(length(r)>3) between=c(r[3],r[4])
-      v=v[!grepl('\\*',v)]
+      f=f[!grepl('\\*',f)]
     }else{
-      x=v[1]
-      v=v[-1]
+      x=f[1]
+      f=f[-1]
     }
-    if(length(v)>0){
-      cov=v
+    if(length(f)>0){
+      cov=f
       ck$c=TRUE
     }
   }
@@ -591,7 +591,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
   },error=function(e){par(op);stop(e)})}
   if(!success){par(op);stop("failed to make any plots with the current input",call.=FALSE)}
   mtext(main,3,2,TRUE,font=2,cex=1.5,col='#303030')
-  mtext(if(sud && (ck$su || ck$c)) gsub(', (?=[^ \\)]+$)',ifelse(length(ptxt$cov)>2,', & ',' & '),
+  mtext(if(sud && (ck$su || ck$c)) gsub(', (?=[A-z0-9 ]+$)',ifelse(length(ptxt$cov)>2,', & ',' & '),
     gsub('^ | $','',paste0(if(ck$su) paste('Subset:',txt$su),if(ck$su && ck$c)', ',
       if(ck$c) paste(if(ck$t==1)'Covariates:' else 'Line adjustment:',paste(ptxt$cov,collapse=', ')))),TRUE,TRUE) else '',3,.5,TRUE,cex=.9)
   mtext(if(ck$t==2) 'Density' else ylab,2,-.2,TRUE,font=2,col='#303030')
