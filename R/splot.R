@@ -457,27 +457,28 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
       mot=paste0('y~0+',paste(names(cdat[[i]][[1]])[c(2,cvar)],collapse='+'))
       rn=gsub('_|\\.',' ',paste(if(lvn)paste0(ptxt$by,':'),seg$by$l))
       rn=gsub('MINUS',' - ',rn)
-      m=pe=ne=matrix(NA,length(rn),max(c(1,seg$x$ll+seg$l$co)),dimnames=list(rn,c(seg$x$l,if(ck$c) ptxt$cov)))
+      m=pe=ne=matrix(NA,length(rn),max(c(1,seg$x$ll)),dimnames=list(rn,seg$x$l))
       if(flipped) m=pe=ne=t(m)
       rn=rownames(m)
       for(l in seq_along(rn)){
         if(l>length(cdat[[i]]) || length(unique(cdat[[i]][[l]][,'x']))<2) next
         ri=rn[l]
         mo=lm(mot,data=cdat[[i]][[l]])
-        fcf=which(seg$by$l%in%sub('x','',names(mo$coef)))
-        m[ri,fcf]=mo$coef
+        su=which(seg$by$l%in%sub('x','',names(mo$coef)))
+        sus=seq_along(su)
+        m[ri,su]=mo$coef[sus]
         if(nrow(cdat[[i]][[l]])>2){
           if(ck$e){
-            e=summary(update(mo,~.-0))$coef[,2]
+            e=summary(update(mo,~.-0))$coef[sus,2]
             e=e[c(2,seq_along(e)[-1])]
-            pe[ri,fcf]=m[l,fcf]+e
-            ne[ri,fcf]=m[l,fcf]-e
+            pe[ri,su]=m[l,su]+e
+            ne[ri,su]=m[l,su]-e
           }else{
-            e=confint(mo)
-            pe[ri,fcf]=e[,2]
-            ne[ri,fcf]=e[,1]
+            e=confint(mo)[sus,]
+            pe[ri,su]=e[,2]
+            ne[ri,su]=e[,1]
           }
-        }else pe[ri,]=ne[ri,]=m[ri,]
+        }
       }
       re=if(flipped) list(m=t(m),ne=t(ne),pe=t(pe)) else list(m=m,ne=ne,pe=pe)
       re=lapply(re,function(s)s[,seq_len(seg$x$ll),drop=FALSE])
