@@ -243,7 +243,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
     by=rep(sub('^y\\.','',colnames(dat)[dn]),each=r)
     dat=data.frame(
       y=unlist(dat[,dn]),
-      apply(dat[,-dn,drop=FALSE],2,function(c)rep(c,length(dn)))
+      apply(dat[,-dn,drop=FALSE],2,function(c)rep.int(c,length(dn)))
     )
     if(mv.as.x){
       txt$by=txt$x
@@ -255,11 +255,12 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
       txt$by=ptxt$by='variable'
       dat$by=by
     }
+    dn=colnames(dat)
+    for(c in seq_along(dn)) dat[,c]=ifelse(any(grepl('[A-z]',dat[,c])),as.factor,as.numeric)(matrix(dat[,c]))
     if(!missing(mv.scale) && mv.scale!='none'){
       tv=if(mv.as.x) dat$x else dat$by
       for(g in levels(as.factor(tv))) dat[tv==g,1]=scale(dat[tv==g,1],scale=grepl('^t|z|sc',mv.scale,TRUE))
     }
-    dn=colnames(dat)
   }
   if(!'x'%in%dn){
     ck$t=2
