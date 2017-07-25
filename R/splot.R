@@ -243,7 +243,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
     by=rep(sub('^y\\.','',colnames(dat)[dn]),each=r)
     dat=data.frame(
       y=unlist(dat[,dn]),
-      matrix(rep(dat[,-dn],length(dn)),length(by),byrow=TRUE,dimnames=list(c(),colnames(dat)[-dn]))
+      apply(dat[,-dn,drop=FALSE],2,function(c)rep(c,length(dn)))
     )
     if(mv.as.x){
       txt$by=txt$x
