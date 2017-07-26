@@ -469,11 +469,12 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
       m=pe=ne=matrix(NA,length(rn),max(c(1,seg$x$ll)),dimnames=list(rn,seg$x$l))
       if(flipped) m=pe=ne=t(m)
       rn=rownames(m)
+      cn=if(seg$by$e && flipped) seg$by$l else colnames(m)
       for(l in seq_along(rn)){
         if(l>length(cdat[[i]]) || length(unique(cdat[[i]][[l]][,'x']))<2) next
         ri=rn[l]
         mo=lm(mot,data=cdat[[i]][[l]])
-        su=which(seg$by$l%in%sub('x','',names(mo$coef)))
+        su=which(cn%in%sub('x','',names(mo$coef)))
         sus=seq_along(su)
         m[ri,su]=mo$coef[sus]
         if(nrow(cdat[[i]][[l]])>2){
