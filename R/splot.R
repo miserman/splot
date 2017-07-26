@@ -78,6 +78,7 @@
 #' @param lines logical: if \code{FALSE}, the prediction lines in a scatter plot are no longer drawn.
 #' @param byx logical: if \code{TRUE} (default) and \code{by} is specified, regressions for bar or line plots compare levels of \code{by} for each
 #'   level of \code{x}. This makes for more intuitive error bars when comparing levels of \code{by} within a level of \code{x}.
+#' @param drop logical: if \code{FALSE}, \code{x} levels with no data are still displayed in bar or line plots.
 #' @param mar sets the margins of each plot window. Partially set automatically if not specified: \code{c(if(labx)2.5 else 0,if(laby)3 else 2,1,0)}.
 #'   If \code{xlas} is not specified, or is greater than 2, and x-axis labels are overly long in bar or line plots,
 #'   \code{mar[1]} is set by the x-axis text length (\code{strwidth(max(colnames(m)))*ifelse(labx,5.5,4.8)}). See \code{\link[graphics]{par}}.
@@ -141,7 +142,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
   error.color='#585858',lim=9,model=FALSE,loess=FALSE,mv.scale='none',mv.as.x=FALSE,save=FALSE,format=cairo_pdf,dims=dev.size(),
   file.name='splot',colors=NULL,myl=NULL,mxl=NULL,autori=TRUE,xlas=0,ylas=1,lwd=2,pch=20,bw='nrd0',adj=2,lpos='auto',lvn=TRUE,
   title=TRUE,labx=TRUE,laby=TRUE,lty=TRUE,lhz=FALSE,sub=TRUE,ndisp=TRUE,leg=TRUE,note=TRUE,sud=TRUE,labels=TRUE,points=TRUE,
-  lines=TRUE,byx=TRUE,mar='auto',add=NULL,...){
+  lines=TRUE,byx=TRUE,drop=TRUE,mar='auto',add=NULL,...){
   #parsing input and preparing data
   if(!labels) title=sud=sub=labx=laby=note=FALSE
   ck=list(
@@ -396,7 +397,6 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
     }
   }
   if(ck$mlvn && length(seg$l$by)>0 && !any(grepl('^[0-9]',seg$l$by))) lvn=FALSE
-
   if(length(names(cdat))>1 && ndisp && seg$f1$e){
     sf=paste0(dat[,seg$f1$i],'^^',if(seg$f2$e)dat[,seg$f2$i])
     seg$n=sapply(split(dat,sf),nrow)
@@ -490,7 +490,10 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
         }
       }
       re=if(flipped) list(m=t(m),ne=t(ne),pe=t(pe)) else list(m=m,ne=ne,pe=pe)
-      re=lapply(re,function(s)s[,seq_len(seg$x$ll),drop=FALSE])
+      if(drop){
+        mm=apply(re$m,2,function(c)!all(is.na(c)))
+        re=lapply(re,function(s)s[,mm,drop=FALSE])
+      }
       m=re$m
       ne=re$ne
       pe=re$pe

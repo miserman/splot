@@ -14,7 +14,7 @@ splot(y, x = NULL, by = NULL, between = NULL, cov = NULL, type = "",
   lvn = TRUE, title = TRUE, labx = TRUE, laby = TRUE, lty = TRUE,
   lhz = FALSE, sub = TRUE, ndisp = TRUE, leg = TRUE, note = TRUE,
   sud = TRUE, labels = TRUE, points = TRUE, lines = TRUE, byx = TRUE,
-  mar = "auto", add = NULL, ...)
+  drop = TRUE, mar = "auto", add = NULL, ...)
 }
 \arguments{
 \item{y}{required. Primary variable, to be shown on the y axis unless \code{x} is not specified. Can be an object,
@@ -140,6 +140,8 @@ of them if you want a clean frame).}
 
 \item{byx}{logical: if \code{TRUE} (default) and \code{by} is specified, regressions for bar or line plots compare levels of \code{by} for each
 level of \code{x}. This makes for more intuitive error bars when comparing levels of \code{by} within a level of \code{x}.}
+
+\item{drop}{logical: if \code{FALSE}, \code{x} levels with no data are still displayed in bar or line plots.}
 
 \item{mar}{sets the margins of each plot window. Partially set automatically if not specified: \code{c(if(labx)2.5 else 0,if(laby)3 else 2,1,0)}.
 If \code{xlas} is not specified, or is greater than 2, and x-axis labels are overly long in bar or line plots,
