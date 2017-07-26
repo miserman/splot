@@ -239,8 +239,9 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
     if(!missing(by)) message('by is ignored when y has multiple variables')
     if(ck$t==2 && ck$lx && is.character(labx)) ptxt$y=labx
     dn=grep('y\\.',dn)
+    ck$mvn=colnames(dat)[dn]
     r=nrow(dat)
-    by=rep(sub('^y\\.','',colnames(dat)[dn]),each=r)
+    by=rep(sub('^y\\.','',ck$mvn),each=r)
     dat=data.frame(
       y=unlist(dat[,dn]),
       apply(dat[,-dn,drop=FALSE],2,function(c)rep.int(c,length(dn)))
@@ -380,20 +381,27 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
           tds=data.frame(td[if(seg$by$e) td[,seg$by$i]==s else rep(TRUE,nrow(td)),])
           if(nrow(tds)>0){
             colnames(tds)[1]='y'
-            if(!paste0(o,'^^',i) %in% names(cdat)){
+            cl=paste0(o,'^^',i)
+            if(!cl %in% names(cdat)){
               seg$l$o=levels(as.factor(c(o,seg$l$o)))
               seg$l$i=levels(as.factor(c(i,seg$l$i)))
-              cdat[[paste0(o,'^^',i)]]=list()
+              cdat[[cl]]=list()
             }
             seg$l$by=levels(as.factor(c(s,seg$l$by)))
-            seg$l$l=c(paste0(o,'^^',i),seg$l$l)
-            cdat[[paste0(o,'^^',i)]][[s]]=tds
+            seg$l$l=c(cl,seg$l$l)
+            cdat[[cl]][[s]]=tds
           }
         }
       }
     }
   }
   if(ck$mlvn && length(seg$l$by)>0 && !any(grepl('^[0-9]',seg$l$by))) lvn=FALSE
+
+  if(length(names(cdat))>1 && ndisp && seg$f1$e){
+    sf=paste0(dat[,seg$f1$i],'^^',if(seg$f2$e)dat[,seg$f2$i])
+    seg$n=sapply(split(dat,sf),nrow)
+    if(ck$mv) seg$n=seg$n/length(ck$mvn)
+  }
   #figuring out parts of the plot
   if(missing(colors) || (!missing(colors) && grepl('^gr|past|prim|bright|dark',colors[1],TRUE))){
     colors=if((missing(colors) && seg$by$ll>1 && seg$by$ll<9) || (!missing(colors) && !grepl('^gr',colors[1],TRUE))){
@@ -441,7 +449,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
       if(seg$f1$e) paste0(
         if(lvn || (ck$mlvn && grepl('^[0-9]',cl[1]))) paste0(ptxt$between[1],': '),cl[1],
         if(seg$f2$e) paste0(', ',if(lvn || (ck$mlvn && grepl('^[0-9]',cl[2]))) paste0(ptxt$between[2],': '),cl[2])
-      ),if(length(names(cdat))>1 && ndisp) paste(', n =',ifelse(mv.as.x,sum(sapply(cdat[[i]],nrow))/nlevels(dat$x),sum(sapply(cdat[[i]],nrow))))
+      ),if(length(names(cdat))>1 && ndisp) paste(', n =',seg$n[[i]])
     ) else if(is.character(sub)) sub else ''
     if(ck$t==1){
       #bar and line
