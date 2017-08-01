@@ -319,12 +319,12 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
       e=if(dn[i]=='bet') if(!seg$f1$e) 'f1' else 'f2' else 'by'
       seg[[e]]$e=TRUE
       seg[[e]]$i=i
-      seg[[e]]$l=levels(as.factor(dat[,i]))
+      seg[[e]]$l=sort(unique(dat[,i]))
       seg[[e]]$ll=length(seg[[e]]$l)
       if(seg[[e]]$ll>lim && !(is.character(dat[,i]) || is.factor(dat[,i]))){
         dat[,i]=splt(dat[,i],ck$sp)
         seg[[e]]$s=TRUE
-        seg[[e]]$l=levels(as.factor(dat[,i]))
+        seg[[e]]$l=sort(unique(dat[,i]))
         seg[[e]]$ll=length(seg[[e]]$l)
       }
     }
@@ -459,6 +459,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
       cn=if(seg$by$e && flipped) seg$by$l else colnames(m)
       for(l in seq_len(dl)){
         td=if(dl==1) cdat[[i]] else cdat[[i]][[l]]
+        if(nrow(td)<2) next
         ri=rn[l]
         mo=lm(mot,data=td)
         su=which(cn%in%sub('x','',names(mo$coef)))
