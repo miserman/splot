@@ -298,6 +298,9 @@ dat$y=eval(quote(
 #looking at the distribution of y between bets split by by
 splot(y, by=by, between=c(bet1, bet2), data=dat)
 
+#looking at quantile splits of y in y by x
+splot(y~x*y, split='quantile', data=dat)
+
 #looking at y by x between bets
 splot(y~x, between=c(bet1, bet2), data=dat)
 

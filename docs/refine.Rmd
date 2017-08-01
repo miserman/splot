@@ -22,7 +22,7 @@ First, be sure splot is loaded:
 library(splot)
 ```
 
-Then load in the data and attach it:
+Then load in the data and attach it (can take a little while):
 ```{r}
 data=read.csv('https://osf.io/ey9hs/?action=download')
 attach(data)
