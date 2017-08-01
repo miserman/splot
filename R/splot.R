@@ -369,7 +369,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
             }else vl$labels=ln
           }
           dat[,sl$i]=do.call(factor,vl)
-          if('l'%in%names(sl)) seg[[lc[which(ns%in%n)]]]$l=vl$labels
+          if('l'%in%names(sl)) seg[[lc[which(ns%in%n)]]]$l=levels(dat[,sl$i])
         }else warning(n,' has ',vl,' levels and you only provided ',length(ln),call.=FALSE)
       }
     }
