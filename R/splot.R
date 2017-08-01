@@ -459,7 +459,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
       cn=if(seg$by$e && flipped) seg$by$l else colnames(m)
       for(l in seq_len(dl)){
         td=if(dl==1) cdat[[i]] else cdat[[i]][[l]]
-        if(nrow(td)<2) next
+        if(nrow(td)<2 || length(unique(td$x))<2) next
         ri=rn[l]
         mo=lm(mot,data=td)
         su=which(cn%in%sub('x','',names(mo$coef)))
