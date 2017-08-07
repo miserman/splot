@@ -36,7 +36,7 @@ splot(y, x = NULL, by = NULL, between = NULL, cov = NULL, type = "",
 <tr valign="top"><td><code>y</code></td>
 <td>
 <p>required. Primary variable, to be shown on the y axis unless <code>x</code> is not specified. Can be an object,
-name of a column in data, or a formula (see note bellow). Multiple variables can also be included as columns in a matrix or data frame.</p>
+name of a column in data, or a formula (see note). Multiple variables can also be included in a matrix-like object.</p>
 </td></tr>
 <tr valign="top"><td><code>x</code></td>
 <td>
@@ -50,17 +50,15 @@ will be set to <code>"line"</code> unless specified.</p>
 </td></tr>
 <tr valign="top"><td><code>between</code></td>
 <td>
-<p>A single object or name, or two in a vector (e.g., <code>c(b1, b2)</code>), the levels of which will determine the
+<p>a single object or name, or two in a vector (e.g., <code>c(b1, b2)</code>), the levels of which will determine the
 number of plot windows to be shown at once (the cells in a matrix of plots; levels of the first variable as rows, and
 levels of the second as columns).</p>
 </td></tr>
 <tr valign="top"><td><code>cov</code></td>
 <td>
-<p>additional variables used for adjustment. If this is not missing, and <code>type</code> is not specified, <code>type</code> will
-default to <code>"line"</code>. Bar and line plots include all <code>cov</code> variables in their no-intercept regression models (via
-<code>lm</code>, e.g., <code>lm(y ~ 0 + x + cov1 + cov2)</code>) as covariates. If any <code>cov</code> variable matches <code>x</code>,
-<code>line</code> is not <code>FALSE</code>, and <code>loess</code> is not <code>TRUE</code>, these will be included in the regression model to adjust the prediction
-line in a scatter plot (e.g., <code>lm(y ~ x + x^2)</code>).</p>
+<p>additional variables used for adjustment. Bar and line plots include all <code>cov</code> variables in their regression models (via
+<code>lm</code>, e.g., <code>lm(y ~ 0 + x + cov1 + cov2)</code>) as covariates. Scatter plots with lines include all <code>cov</code> variables
+in the regression model to adjust the prediction line (e.g., <code>lm(y ~ x + x^2)</code>).</p>
 </td></tr>
 <tr valign="top"><td><code>type</code></td>
 <td>
@@ -109,7 +107,7 @@ to use, and when to turn off the legend. Default is <code>9</code>. If set over 
 </td></tr>
 <tr valign="top"><td><code>loess</code></td>
 <td>
-<p>logical: if <code>TRUE</code>, <code>loess</code> lines are drawn instead of regression lines.</p>
+<p>logical: if <code>TRUE</code>, <code>loess</code> lines are drawn instead of <code>lm</code> lines.</p>
 </td></tr>
 <tr valign="top"><td><code>mv.scale</code></td>
 <td>
@@ -279,6 +277,10 @@ function (e.g., <code>add={lines(1:10)}</code>).</p>
 </p>
 <p><code>y ~ x * by * between[1] * between[2] + cov[1] + cov[2] + cov[n]</code>
 </p>
+<p>If <code>y</code> has multiple variables, <code>by</code> is used to identify the variable (it becomes a factor with variable names as levels),
+so anything entered as <code>by</code> is treated as <code>between[1]</code>, <code>between[1]</code> is moved to <code>between[2]</code>, and <code>between[2]</code>
+is discarded with a message.
+</p>
 
 
 <h3>Examples</h3>
@@ -316,7 +318,8 @@ splot(y, x, by, c(bet1, bet2), data=dat)
 splot(y~x*by, data=dat, su=bet1==1&amp;bet2==0)
 
 #compairing an adjusted lm prediction line with a loess line
-splot(y~x+x^2, data=dat, su=bet1==1&amp;bet2==0&amp;by==1, add={
+#this could also be entered as y ~ poly(x,3)
+splot(y~x+x^2+x^3, data=dat, su=bet1==1&amp;bet2==0&amp;by==1, add={
   lines(x[order(x)], loess(y~x)$fitted[order(x)], lty=2)
   legend('topright', c('lm', 'loess'), lty=c(1, 2), lwd=c(2, 1), bty='n')
 })

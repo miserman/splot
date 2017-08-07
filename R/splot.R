@@ -2,19 +2,17 @@
 #'
 #' A plotting function aimed at automating some common visualization tasks in order to ease data exploration.
 #' @param y required. Primary variable, to be shown on the y axis unless \code{x} is not specified. Can be an object,
-#'   name of a column in data, or a formula (see note bellow). Multiple variables can also be included as columns in a matrix or data frame.
+#'   name of a column in data, or a formula (see note). Multiple variables can also be included in a matrix-like object.
 #' @param x secondary variable, to be shown in on the x axis. If not specified, \code{type} will be set to \code{'density'}.
 #'   If \code{x} is a factor or vector of characters, or has fewer than \code{lim} levels when treated as a factor, \code{type}
 #'   will be set to \code{"line"} unless specified.
 #' @param by the 'splitting' variable within each plot, by which the plotted values of \code{x} and \code{y} will be grouped.
-#' @param between A single object or name, or two in a vector (e.g., \code{c(b1, b2)}), the levels of which will determine the
+#' @param between a single object or name, or two in a vector (e.g., \code{c(b1, b2)}), the levels of which will determine the
 #'   number of plot windows to be shown at once (the cells in a matrix of plots; levels of the first variable as rows, and
 #'   levels of the second as columns).
-#' @param cov additional variables used for adjustment. If this is not missing, and \code{type} is not specified, \code{type} will
-#'   default to \code{"line"}. Bar and line plots include all \code{cov} variables in their no-intercept regression models (via
-#'   \code{\link[stats]{lm}}, e.g., \code{lm(y ~ 0 + x + cov1 + cov2)}) as covariates. If any \code{cov} variable matches \code{x},
-#'   \code{line} is not \code{FALSE}, and \code{loess} is not \code{TRUE}, these will be included in the regression model to adjust the prediction
-#'   line in a scatter plot (e.g., \code{lm(y ~ x + x^2)}).
+#' @param cov additional variables used for adjustment. Bar and line plots include all \code{cov} variables in their regression models (via
+#'   \code{\link[stats]{lm}}, e.g., \code{lm(y ~ 0 + x + cov1 + cov2)}) as covariates. Scatter plots with lines include all \code{cov} variables
+#'   in the regression model to adjust the prediction line (e.g., \code{lm(y ~ x + x^2)}).
 #' @param type determines the type of plot to make, between \code{"bar"}, \code{"line"}, \code{"density"}, or \code{"scatter"}. If
 #'   \code{"density"}, \code{x} is ignored. Anything including the first letter of each is accepted (e.g., \code{type='l'}).
 #' @param split how to split any continuous variables (those with more than \code{lim} levels as factors). Default is \code{"median"},
@@ -31,7 +29,7 @@
 #'   Otherwise, the default is \code{"standard error"}, with \code{"confidence intervals"} as an option.
 #' @param error.color color of the error bars. Default is \code{'#585858'}.
 #' @param model logical: if \code{TRUE}, the summary of an interaction model will be printed.
-#' @param loess logical: if \code{TRUE}, \code{\link[stats]{loess}} lines are drawn instead of regression lines.
+#' @param loess logical: if \code{TRUE}, \code{\link[stats]{loess}} lines are drawn instead of \code{\link[stats]{lm}} lines.
 #' @param mv.scale determines whether to center and scale multiple \code{y} variables. Does not center or scale by default. Anything other than
 #'   \code{'none'} will mean center each numeric \code{y} variable. Anything matching \code{'^t|z|sc'} will also scale.
 #' @param mv.as.x logical: if \code{TRUE}, variable names are displayed on the x axis, and \code{x} is treated as \code{by}.
@@ -91,6 +89,10 @@
 #'
 #' \code{y ~ x * by * between[1] * between[2] + cov[1] + cov[2] + cov[n]}
 #'
+#' If \code{y} has multiple variables, \code{by} is used to identify the variable (it becomes a factor with variable names as levels),
+#' so anything entered as \code{by} is treated as \code{between[1]}, \code{between[1]} is moved to \code{between[2]}, and \code{between[2]}
+#' is discarded with a message.
+#'
 #' @examples
 #' #simulating data
 #' n=2000
@@ -124,7 +126,8 @@
 #' splot(y~x*by, data=dat, su=bet1==1&bet2==0)
 #'
 #' #compairing an adjusted lm prediction line with a loess line
-#' splot(y~x+x^2, data=dat, su=bet1==1&bet2==0&by==1, add={
+#' #this could also be entered as y ~ poly(x,3)
+#' splot(y~x+x^2+x^3, data=dat, su=bet1==1&bet2==0&by==1, add={
 #'   lines(x[order(x)], loess(y~x)$fitted[order(x)], lty=2)
 #'   legend('topright', c('lm', 'loess'), lty=c(1, 2), lwd=c(2, 1), bty='n')
 #' })
@@ -196,18 +199,6 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
   )
   txt$between=paste(if(txt$between[1]%in%c('c','list')) txt$between[-1] else txt$between)
   txt$cov=paste(if(txt$cov[1]%in%c('c','list')) txt$cov[-1] else txt$cov)
-  ptxt=lapply(txt,function(i) gsub('_|\\.',' ',i))
-  if(is.character(labx)) ptxt$x=labx
-  if(is.character(laby)) ptxt$y=laby
-  if(ck$t!=1 && ck$c){
-    if(!loess && lines && any(grepl(txt$x,txt$cov))){
-      txt$cov=txt$cov[grepl(txt$x,txt$cov)]
-    }else if(ck$tt){
-      txt$cov='NULL'
-      ck$c=FALSE
-      message('covariates will only be included in bar or line plots')
-    }else ck$t=1
-  }
   tdc=function(x,data){
     s=TRUE
     if(!is.null(data)){
@@ -232,6 +223,12 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
   if(!missing(between)) for(i in txt$between) dat=cbind(dat,bet=tdc(i,data))
   if(ck$c) for(i in txt$cov) dat=cbind(dat,cov=tdc(i,data))
   if(ck$su) dat=if(ck$d) dat[eval(substitute(su),data),] else dat[su,]
+  if(NCOL(dat$x)>1){
+    ck$c=TRUE
+    txt$cov=c(txt$x,txt$cov)
+    dat$cov=cbind(dat$cov,dat$x[,-1])
+    dat$x=dat$x[,1]
+  }
   rm(data)
   dat=na.omit(dat)
   if(nrow(dat)==0) stop('this combination of variables/splits has no complete cases',call.=FALSE)
@@ -240,8 +237,15 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
     #setting up multiple y variables
     ck$mv=TRUE
     if(ck$mlvn) lvn=FALSE
-    if(!missing(by)) message('by is ignored when y has multiple variables')
-    if(ck$t==2 && ck$lx && is.character(labx)) ptxt$y=labx
+    if(!missing(by)){
+      txt$between=c(txt$by,txt$between)
+      if(length(txt$between)>2){
+        message('multiple y variables moves by to between, so the second level of between was dropped')
+        txt$between=txt$between[1:2]
+        dat=dat[-grep('bet',colnames(dat))[2]]
+      }
+      dat$bet=cbind(as.character(dat$by),as.character(dat$bet))
+    }
     dn=grep('y\\.',dn)
     ck$mvn=colnames(dat)[dn]
     td=dat
@@ -250,21 +254,23 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
     if(ncol(td)>length(dn)) dat=cbind(dat,apply(td[,-dn,drop=FALSE],2,function(c)rep.int(c,length(dn))))
     if(mv.as.x){
       txt$by=txt$x
-      ptxt$by=ptxt$x
-      if(missing(labx)) txt$x=ptxt$x='variable'
+      if(missing(labx)) txt$x='variable'
       dat$by=dat$x
       dat$x=by
     }else{
-      txt$by=ptxt$by='variable'
+      txt$by='variable'
       dat$by=by
     }
     dn=colnames(dat)
-    for(c in seq_along(dn)) dat[,c]=ifelse(any(grepl('[A-z]',dat[,c])),as.factor,as.numeric)(matrix(dat[,c]))
+    for(c in seq_along(dn)) dat[,c]=ifelse(any(grepl('[a-df-z]',dat[,c],TRUE)),as.factor,as.numeric)(matrix(dat[,c]))
     if(!missing(mv.scale) && mv.scale!='none'){
       tv=if(mv.as.x) dat$x else dat$by
       for(g in levels(as.factor(tv))) dat[tv==g,1]=scale(dat[tv==g,1],scale=grepl('^t|z|sc',mv.scale,TRUE))
     }
   }
+  ptxt=lapply(txt,function(i) gsub('_|\\.',' ',i))
+  if(is.character(labx)) ptxt$x=labx
+  if(is.character(laby)) ptxt$y=laby
   if(!'x'%in%dn){
     ck$t=2
     if(!missing(type) && !grepl('^d',type,TRUE)) message('x must be included to show other types of splots')
@@ -316,7 +322,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
   if(any(grepl('^b',dn))){
     svar=which(grepl('^b',dn))
     for(i in svar){
-      e=if(dn[i]=='bet') if(!seg$f1$e) 'f1' else 'f2' else 'by'
+      e=if(grepl('bet',dn[i])) if(!seg$f1$e) 'f1' else 'f2' else 'by'
       seg[[e]]$e=TRUE
       seg[[e]]$i=i
       seg[[e]]$l=sort(unique(dat[,i]))
@@ -330,6 +336,8 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
     }
   }
   fmod=NULL
+  mod=c(txt$y,txt$x,txt$by,txt$between,txt$cov)
+  colnames(odat)=mod[mod!='NULL']
   if(ck$t!=2 && model) tryCatch({
     mod=paste0(txt$y,'~',txt$x,
       if(seg$by$e) paste0('*',txt$by),
@@ -337,7 +345,6 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
       if(seg$f2$e) paste0('*',txt$between[2]),
       if(length(cvar)>0) paste0('+',paste0(txt$cov,collapse='+'))
     )
-    colnames(odat)=strsplit(mod,'~|\\*|\\+')[[1]]
     fmod=lm(mod,data=odat)
     if(model){
       s=summary(fmod)
@@ -381,7 +388,6 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
   cdat=split(dat,dsf)
   if(seg$by$e) cdat=lapply(cdat,function(s)split(s,s$by))
   seg[['l']]=list(by=levels(as.factor(dat$by)),l=unique(dsf))
-
   if(ck$mlvn && length(seg$l$by)>0 && (seg$by$s || !any(grepl('^[0-9]',seg$l$by)))) lvn=FALSE
   if(length(names(cdat))>1 && ndisp && seg$f1$e){
     sf=paste0(dat[,seg$f1$i],'^^',if(seg$f2$e)dat[,seg$f2$i])
@@ -398,8 +404,9 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
   }
   ylab=if(ck$ly) ptxt$y else ''
   xlab=if(ck$lx) ptxt$x else ''
-  main=if(is.logical(title) && title) paste(if(ck$t==2)paste('Density of',ptxt$y) else paste(ptxt$y,
-    'by',ptxt$x),if(seg$by$e && !ck$mv) paste('at levels of',ptxt$by)) else if (is.character(title)) title else ''
+  main=if(is.logical(title) && title) paste0(if(ck$t==2)paste('Density of',ptxt$y) else paste(ptxt$y,
+    'by',ptxt$x),if(seg$by$e && !ck$mv) paste(' at levels of',ptxt$by), if(length(ptxt$between)!=0) paste(' between',
+      paste(ptxt$between,collapse=' & '))) else if (is.character(title)) title else ''
   if(is.logical(note)) if(note){
     if(txt$split!='none' || (ck$t==1 && ck$el)){
       tv=c(if(seg$x$s) ptxt$x else '',if(seg$by$s) ptxt$by else '',if(seg$f1$s) ptxt$between[1] else '',if(seg$f2$s) ptxt$between[2] else '')
@@ -577,16 +584,18 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
         y=td[,'y']
         if(points) points(x,y,pch=pch,col=if(seg$by$ll==1 && colors[1]=='#2E2E2E') '#999999' else colors[l])
         if(lines){
-          fit=if(ck$c) lm(y~x+td[,cvar])$fitted else ifelse(loess,stats::loess,lm)(y~x)$fitted
+          fit=if(ck$c) lm(y~x+apply(td[,cvar,drop=FALSE],2,as.numeric))$fitted else ifelse(loess,stats::loess,lm)(y~x)$fitted
           lines(x[order(x)],fit[order(x)],col=colors[l],lwd=lwd,lty=if(ck$lty && lty)
             l else if(!missing(lty) && !ck$lty)ifelse(length(lty)>1,lty[l],l) else 1)
         }
       }
       success=TRUE
     }
-    if(!missing(add)) tryCatch(eval(substitute(add),envir=odat),error=function(e)warning('error from add: ',e$message,call.=FALSE))
+    if(!missing(add)) tryCatch({
+      eval(substitute(add),envir=cbind(dat,odat))
+    },error=function(e)warning('error from add: ',e$message,call.=FALSE))
   },error=function(e){par(op);stop(e)})}
-  if(!success){par(op);stop("failed to make any plots with the current input",call.=FALSE)}
+  if(!success){par(op);dev.off();stop("failed to make any plots with the current input",call.=FALSE)}
   mtext(main,3,2,TRUE,font=2,cex=1.5,col='#303030')
   mtext(if(sud && (ck$su || ck$c)) gsub(', (?=[A-z0-9 ]+$)',ifelse(length(ptxt$cov)>2,', & ',' & '),
     gsub('^ | $','',paste0(if(ck$su) paste('Subset:',txt$su),if(ck$su && ck$c)', ',
@@ -597,7 +606,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
   par(op)
   if(save || (missing(save) && any(!missing(format),!missing(dims)))) tryCatch({
     t=substitute(format)
-    tt=if(grepl('cairo',t)){paste0('.',strsplit(deparse(t),'_')[[1]][2])
+    tt=if(any(grepl('cairo',t))){paste0('.',strsplit(deparse(t),'_')[[1]][2])
     }else if(t=='postscript') '.ps' else paste0('.',t)
     if(grepl('jpeg|png|tiff|bmp|bit',t) && missing(dims)) dims=dev.size(units='px')
     fn=paste0(if(main=='' || !missing(file.name)) file.name else gsub(' ','_',gsub('^ +| +$|  ','',main)),tt)

@@ -18,7 +18,7 @@ splot(y, x = NULL, by = NULL, between = NULL, cov = NULL, type = "",
 }
 \arguments{
 \item{y}{required. Primary variable, to be shown on the y axis unless \code{x} is not specified. Can be an object,
-name of a column in data, or a formula (see note bellow). Multiple variables can also be included as columns in a matrix or data frame.}
+name of a column in data, or a formula (see note). Multiple variables can also be included in a matrix-like object.}
 
 \item{x}{secondary variable, to be shown in on the x axis. If not specified, \code{type} will be set to \code{'density'}.
 If \code{x} is a factor or vector of characters, or has fewer than \code{lim} levels when treated as a factor, \code{type}
@@ -26,15 +26,13 @@ will be set to \code{"line"} unless specified.}
 
 \item{by}{the 'splitting' variable within each plot, by which the plotted values of \code{x} and \code{y} will be grouped.}
 
-\item{between}{A single object or name, or two in a vector (e.g., \code{c(b1, b2)}), the levels of which will determine the
+\item{between}{a single object or name, or two in a vector (e.g., \code{c(b1, b2)}), the levels of which will determine the
 number of plot windows to be shown at once (the cells in a matrix of plots; levels of the first variable as rows, and
 levels of the second as columns).}
 
-\item{cov}{additional variables used for adjustment. If this is not missing, and \code{type} is not specified, \code{type} will
-default to \code{"line"}. Bar and line plots include all \code{cov} variables in their no-intercept regression models (via
-\code{\link[stats]{lm}}, e.g., \code{lm(y ~ 0 + x + cov1 + cov2)}) as covariates. If any \code{cov} variable matches \code{x},
-\code{line} is not \code{FALSE}, and \code{loess} is not \code{TRUE}, these will be included in the regression model to adjust the prediction
-line in a scatter plot (e.g., \code{lm(y ~ x + x^2)}).}
+\item{cov}{additional variables used for adjustment. Bar and line plots include all \code{cov} variables in their regression models (via
+\code{\link[stats]{lm}}, e.g., \code{lm(y ~ 0 + x + cov1 + cov2)}) as covariates. Scatter plots with lines include all \code{cov} variables
+in the regression model to adjust the prediction line (e.g., \code{lm(y ~ x + x^2)}).}
 
 \item{type}{determines the type of plot to make, between \code{"bar"}, \code{"line"}, \code{"density"}, or \code{"scatter"}. If
 \code{"density"}, \code{x} is ignored. Anything including the first letter of each is accepted (e.g., \code{type='l'}).}
@@ -63,7 +61,7 @@ to use, and when to turn off the legend. Default is \code{9}. If set over \code{
 
 \item{model}{logical: if \code{TRUE}, the summary of an interaction model will be printed.}
 
-\item{loess}{logical: if \code{TRUE}, \code{\link[stats]{loess}} lines are drawn instead of regression lines.}
+\item{loess}{logical: if \code{TRUE}, \code{\link[stats]{loess}} lines are drawn instead of \code{\link[stats]{lm}} lines.}
 
 \item{mv.scale}{determines whether to center and scale multiple \code{y} variables. Does not center or scale by default. Anything other than
 \code{'none'} will mean center each numeric \code{y} variable. Anything matching \code{'^t|z|sc'} will also scale.}
@@ -159,6 +157,10 @@ A plotting function aimed at automating some common visualization tasks in order
 When \code{y} is a formula, other variables will be pulled from it:
 
 \code{y ~ x * by * between[1] * between[2] + cov[1] + cov[2] + cov[n]}
+
+If \code{y} has multiple variables, \code{by} is used to identify the variable (it becomes a factor with variable names as levels),
+so anything entered as \code{by} is treated as \code{between[1]}, \code{between[1]} is moved to \code{between[2]}, and \code{between[2]}
+is discarded with a message.
 }
 \examples{
 #simulating data
@@ -193,7 +195,8 @@ splot(y, x, by, c(bet1, bet2), data=dat)
 splot(y~x*by, data=dat, su=bet1==1&bet2==0)
 
 #compairing an adjusted lm prediction line with a loess line
-splot(y~x+x^2, data=dat, su=bet1==1&bet2==0&by==1, add={
+#this could also be entered as y ~ poly(x,3)
+splot(y~x+x^2+x^3, data=dat, su=bet1==1&bet2==0&by==1, add={
   lines(x[order(x)], loess(y~x)$fitted[order(x)], lty=2)
   legend('topright', c('lm', 'loess'), lty=c(1, 2), lwd=c(2, 1), bty='n')
 })
