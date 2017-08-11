@@ -6,15 +6,15 @@
 \usage{
 splot(y, x = NULL, by = NULL, between = NULL, cov = NULL, type = "",
   split = "median", data = NULL, su = NULL, levels = list(),
-  error = "standard", error.color = "#585858", lim = 9, model = FALSE,
-  loess = FALSE, mv.scale = "none", mv.as.x = FALSE, save = FALSE,
-  format = cairo_pdf, dims = dev.size(), file.name = "splot",
-  colors = NULL, myl = NULL, mxl = NULL, autori = TRUE, xlas = 0,
-  ylas = 1, lwd = 2, pch = 20, bw = "nrd0", adj = 2, lpos = "auto",
-  lvn = TRUE, title = TRUE, labx = TRUE, laby = TRUE, lty = TRUE,
-  lhz = FALSE, sub = TRUE, ndisp = TRUE, leg = TRUE, note = TRUE,
-  sud = TRUE, labels = TRUE, points = TRUE, lines = TRUE, byx = TRUE,
-  drop = TRUE, mar = "auto", add = NULL, ...)
+  error = "standard", error.color = "#585858", lim = 9, lines = TRUE,
+  mv.scale = "none", mv.as.x = FALSE, save = FALSE, format = cairo_pdf,
+  dims = dev.size(), file.name = "splot", colors = NULL, myl = NULL,
+  mxl = NULL, autori = TRUE, xlas = 0, ylas = 1, lwd = 2, pch = 20,
+  bw = "nrd0", adj = 2, lpos = "auto", lvn = TRUE, title = TRUE,
+  labx = TRUE, laby = TRUE, lty = TRUE, lhz = FALSE, sub = TRUE,
+  ndisp = TRUE, leg = TRUE, note = TRUE, sud = TRUE, labels = TRUE,
+  points = TRUE, points.first = TRUE, byx = TRUE, drop = TRUE,
+  model = FALSE, mar = "auto", add = NULL, ...)
 }
 \arguments{
 \item{y}{required. Primary variable, to be shown on the y axis unless \code{x} is not specified. Can be an object,
@@ -59,9 +59,10 @@ Otherwise, the default is \code{"standard error"}, with \code{"confidence interv
 \item{lim}{numeric. Checked against the number of factor levels of each variable. Used to decide which variables should be split, which colors
 to use, and when to turn off the legend. Default is \code{9}. If set over \code{20}, \code{lim} is treated as infinite (set to \code{Inf}).}
 
-\item{model}{logical: if \code{TRUE}, the summary of an interaction model will be printed.}
-
-\item{loess}{logical: if \code{TRUE}, \code{\link[stats]{loess}} lines are drawn instead of \code{\link[stats]{lm}} lines.}
+\item{lines}{logical or a string specifying the type of lines to be drawn in scatter plots. By default (and whenever \code{cov} is not missing),
+a prediction line is fitted with \code{\link[stats]{lm}}. For (potentially) bendy lines, \code{'loess'} (matching \code{'^lo|^p|^cu'}) will use
+\code{\link[stats]{loess}}, and \code{'spline'} (\code{'^sm|^sp|^in'}) will use \code{\link[stats]{smooth.spline}}. \code{'connected'}
+(\code{'^e|^co|^d'}) will draw lines connecting all points, and \code{FALSE} will not draw any lines.}
 
 \item{mv.scale}{determines whether to center and scale multiple \code{y} variables. Does not center or scale by default. Anything other than
 \code{'none'} will mean center each numeric \code{y} variable. Anything matching \code{'^t|z|sc'} will also scale.}
@@ -134,12 +135,15 @@ of them if you want a clean frame).}
 
 \item{points}{logical: if \code{FALSE}, the points in a scatter plot are no longer drawn.}
 
-\item{lines}{logical: if \code{FALSE}, the prediction lines in a scatter plot are no longer drawn.}
+\item{points.first}{logical: if \code{FALSE}, points are plotted after lines are drawn in a scatter plot, placing lines behind points. This does
+not apply to points or lines added in \code{add}, as that is always evaluated after the main points and lines are drawn.}
 
 \item{byx}{logical: if \code{TRUE} (default) and \code{by} is specified, regressions for bar or line plots compare levels of \code{by} for each
 level of \code{x}. This makes for more intuitive error bars when comparing levels of \code{by} within a level of \code{x}.}
 
 \item{drop}{logical: if \code{FALSE}, \code{x} levels with no data are still displayed in bar or line plots.}
+
+\item{model}{logical: if \code{TRUE}, the summary of an interaction model will be printed.}
 
 \item{mar}{sets the margins of each plot window. Partially set automatically if not specified: \code{c(if(labx)2.5 else 0,if(laby)3 else 2,1,0)}.
 If \code{xlas} is not specified, or is greater than 2, and x-axis labels are overly long in bar or line plots,
@@ -207,6 +211,6 @@ splot(cbind(
   Sine=y+sin(x),
   Cosine=y+cos(x),
   Tangent=y+tan(x)
-)~x, data=dat, myl=c(-10,15), loess=TRUE, lpos='topright')
+)~x, data=dat, myl=c(-10,15), lines='loess', lpos='topright')
 
 }

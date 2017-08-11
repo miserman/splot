@@ -28,8 +28,12 @@
 #' @param error determines whether and which type of error bars to show in bar or line plots. If \code{FALSE}, no error bars will be shown.
 #'   Otherwise, the default is \code{"standard error"}, with \code{"confidence intervals"} as an option.
 #' @param error.color color of the error bars. Default is \code{'#585858'}.
-#' @param model logical: if \code{TRUE}, the summary of an interaction model will be printed.
-#' @param loess logical: if \code{TRUE}, \code{\link[stats]{loess}} lines are drawn instead of \code{\link[stats]{lm}} lines.
+#' @param lim numeric. Checked against the number of factor levels of each variable. Used to decide which variables should be split, which colors
+#'   to use, and when to turn off the legend. Default is \code{9}. If set over \code{20}, \code{lim} is treated as infinite (set to \code{Inf}).
+#' @param lines logical or a string specifying the type of lines to be drawn in scatter plots. By default (and whenever \code{cov} is not missing),
+#'   a prediction line is fitted with \code{\link[stats]{lm}}. For (potentially) bendy lines, \code{'loess'} (matching \code{'^lo|^p|^cu'}) will use
+#'   \code{\link[stats]{loess}}, and \code{'spline'} (\code{'^sm|^sp|^in'}) will use \code{\link[stats]{smooth.spline}}. \code{'connected'}
+#'   (\code{'^e|^co|^d'}) will draw lines connecting all points, and \code{FALSE} will not draw any lines.
 #' @param mv.scale determines whether to center and scale multiple \code{y} variables. Does not center or scale by default. Anything other than
 #'   \code{'none'} will mean center each numeric \code{y} variable. Anything matching \code{'^t|z|sc'} will also scale.
 #' @param mv.as.x logical: if \code{TRUE}, variable names are displayed on the x axis, and \code{x} is treated as \code{by}.
@@ -38,8 +42,6 @@
 #' @param dims a vector of 2 values (\code{c(width, height)}) specifying the dimensions of a plot to save in inches or pixels depending on
 #'   \code{format}. Defaults to the dimensions of the plot window.
 #' @param file.name a string with the name of the file to be save (excluding the extension, as this is added depending on \code{format}).
-#' @param lim numeric. Checked against the number of factor levels of each variable. Used to decide which variables should be split, which colors
-#'   to use, and when to turn off the legend. Default is \code{9}. If set over \code{20}, \code{lim} is treated as infinite (set to \code{Inf}).
 #' @param colors sets a color theme or manually specifies colors. Default theme is \code{"pastel"}, with \code{"dark"} and \code{"bright"} as
 #'   options. If set to \code{"grey"}, or if \code{by} has more than 9 levels, a grey scale is calculated using \code{\link[grDevices]{grey}}.
 #'   See the \code{col} parameter in \code{\link[graphics]{par}} for acceptable manual inputs.
@@ -73,10 +75,12 @@
 #' @param labels logical: if \code{FALSE}, sets all settable text surrounding the plot to \code{FALSE} (just so you don't have to set all
 #'   of them if you want a clean frame).
 #' @param points logical: if \code{FALSE}, the points in a scatter plot are no longer drawn.
-#' @param lines logical: if \code{FALSE}, the prediction lines in a scatter plot are no longer drawn.
+#' @param points.first logical: if \code{FALSE}, points are plotted after lines are drawn in a scatter plot, placing lines behind points. This does
+#'   not apply to points or lines added in \code{add}, as that is always evaluated after the main points and lines are drawn.
 #' @param byx logical: if \code{TRUE} (default) and \code{by} is specified, regressions for bar or line plots compare levels of \code{by} for each
 #'   level of \code{x}. This makes for more intuitive error bars when comparing levels of \code{by} within a level of \code{x}.
 #' @param drop logical: if \code{FALSE}, \code{x} levels with no data are still displayed in bar or line plots.
+#' @param model logical: if \code{TRUE}, the summary of an interaction model will be printed.
 #' @param mar sets the margins of each plot window. Partially set automatically if not specified: \code{c(if(labx)2.5 else 0,if(laby)3 else 2,1,0)}.
 #'   If \code{xlas} is not specified, or is greater than 2, and x-axis labels are overly long in bar or line plots,
 #'   \code{mar[1]} is set by the x-axis text length (\code{strwidth(max(colnames(m)))*ifelse(labx,5.5,4.8)}). See \code{\link[graphics]{par}}.
@@ -138,17 +142,17 @@
 #'   Sine=y+sin(x),
 #'   Cosine=y+cos(x),
 #'   Tangent=y+tan(x)
-#' )~x, data=dat, myl=c(-10,15), loess=TRUE, lpos='topright')
+#' )~x, data=dat, myl=c(-10,15), lines='loess', lpos='topright')
 #'
 #' @export
 #' @importFrom grDevices grey dev.copy dev.size dev.off cairo_pdf
 #' @importFrom graphics axis axTicks hist legend lines mtext plot barplot par points arrows strwidth
-#' @importFrom stats density median quantile sd lm confint update loess na.omit as.formula
+#' @importFrom stats density median quantile sd lm confint update loess smooth.spline na.omit as.formula predict
 splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',data=NULL,su=NULL,levels=list(),error='standard',
-  error.color='#585858',lim=9,model=FALSE,loess=FALSE,mv.scale='none',mv.as.x=FALSE,save=FALSE,format=cairo_pdf,dims=dev.size(),
+  error.color='#585858',lim=9,lines=TRUE,mv.scale='none',mv.as.x=FALSE,save=FALSE,format=cairo_pdf,dims=dev.size(),
   file.name='splot',colors=NULL,myl=NULL,mxl=NULL,autori=TRUE,xlas=0,ylas=1,lwd=2,pch=20,bw='nrd0',adj=2,lpos='auto',lvn=TRUE,
   title=TRUE,labx=TRUE,laby=TRUE,lty=TRUE,lhz=FALSE,sub=TRUE,ndisp=TRUE,leg=TRUE,note=TRUE,sud=TRUE,labels=TRUE,points=TRUE,
-  lines=TRUE,byx=TRUE,drop=TRUE,mar='auto',add=NULL,...){
+  points.first=TRUE,byx=TRUE,drop=TRUE,model=FALSE,mar='auto',add=NULL,...){
   #parsing input and preparing data
   if(!labels) title=sud=sub=labx=laby=note=FALSE
   ck=list(
@@ -582,12 +586,17 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
         td=if(dl==1) cdat[[i]] else cdat[[i]][[l]]
         x=td[,'x']
         y=td[,'y']
-        if(points) points(x,y,pch=pch,col=if(seg$by$ll==1 && colors[1]=='#2E2E2E') '#999999' else colors[l])
-        if(lines){
-          fit=if(ck$c) lm(y~x+apply(td[,cvar,drop=FALSE],2,as.numeric))$fitted else ifelse(loess,stats::loess,lm)(y~x)$fitted
-          lines(x[order(x)],fit[order(x)],col=colors[l],lwd=lwd,lty=if(ck$lty && lty)
-            l else if(!missing(lty) && !ck$lty)ifelse(length(lty)>1,lty[l],l) else 1)
+        if(points && points.first) points(x,y,pch=pch,col=if(seg$by$ll==1 && colors[1]=='#2E2E2E') '#999999' else colors[l])
+        if(!is.logical(lines) || lines){
+          lines=if(is.logical(lines) || ck$c || grepl('^li|^lm|^st',lines,TRUE)) 'l' else if(grepl('^lo|^p|^cu',lines,TRUE)) 'p' else
+            if(grepl('^sm|^sp|^in',lines,TRUE)) 's' else if(grepl('^e|^co|^d',lines,TRUE)) 'e' else 'l'
+          fit=if(ck$c) lm(y~x+apply(td[,cvar,drop=FALSE],2,as.numeric))$fitted else
+            if(lines=='e') y else predict(switch(lines,l=lm,p=loess,s=smooth.spline)(y~x))
+          or=order(x)
+          fit=if(lines=='s') fit$y else fit=fit[or]
+          lines(x[or],fit,col=colors[l],lwd=lwd,lty=if(ck$lty && lty) l else if(!missing(lty) && !ck$lty) ifelse(length(lty)>1,lty[l],l) else 1)
         }
+        if(points && !points.first) points(x,y,pch=pch,col=if(seg$by$ll==1 && colors[1]=='#2E2E2E') '#999999' else colors[l])
       }
       success=TRUE
     }

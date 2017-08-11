@@ -18,15 +18,15 @@
 <pre>
 splot(y, x = NULL, by = NULL, between = NULL, cov = NULL, type = "",
   split = "median", data = NULL, su = NULL, levels = list(),
-  error = "standard", error.color = "#585858", lim = 9, model = FALSE,
-  loess = FALSE, mv.scale = "none", mv.as.x = FALSE, save = FALSE,
-  format = cairo_pdf, dims = dev.size(), file.name = "splot",
-  colors = NULL, myl = NULL, mxl = NULL, autori = TRUE, xlas = 0,
-  ylas = 1, lwd = 2, pch = 20, bw = "nrd0", adj = 2, lpos = "auto",
-  lvn = TRUE, title = TRUE, labx = TRUE, laby = TRUE, lty = TRUE,
-  lhz = FALSE, sub = TRUE, ndisp = TRUE, leg = TRUE, note = TRUE,
-  sud = TRUE, labels = TRUE, points = TRUE, lines = TRUE, byx = TRUE,
-  drop = TRUE, mar = "auto", add = NULL, ...)
+  error = "standard", error.color = "#585858", lim = 9, lines = TRUE,
+  mv.scale = "none", mv.as.x = FALSE, save = FALSE, format = cairo_pdf,
+  dims = dev.size(), file.name = "splot", colors = NULL, myl = NULL,
+  mxl = NULL, autori = TRUE, xlas = 0, ylas = 1, lwd = 2, pch = 20,
+  bw = "nrd0", adj = 2, lpos = "auto", lvn = TRUE, title = TRUE,
+  labx = TRUE, laby = TRUE, lty = TRUE, lhz = FALSE, sub = TRUE,
+  ndisp = TRUE, leg = TRUE, note = TRUE, sud = TRUE, labels = TRUE,
+  points = TRUE, points.first = TRUE, byx = TRUE, drop = TRUE,
+  model = FALSE, mar = "auto", add = NULL, ...)
 </pre>
 
 
@@ -101,13 +101,12 @@ Otherwise, the default is <code>"standard error"</code>, with <code>"confidence 
 <p>numeric. Checked against the number of factor levels of each variable. Used to decide which variables should be split, which colors
 to use, and when to turn off the legend. Default is <code>9</code>. If set over <code>20</code>, <code>lim</code> is treated as infinite (set to <code>Inf</code>).</p>
 </td></tr>
-<tr valign="top"><td><code>model</code></td>
+<tr valign="top"><td><code>lines</code></td>
 <td>
-<p>logical: if <code>TRUE</code>, the summary of an interaction model will be printed.</p>
-</td></tr>
-<tr valign="top"><td><code>loess</code></td>
-<td>
-<p>logical: if <code>TRUE</code>, <code>loess</code> lines are drawn instead of <code>lm</code> lines.</p>
+<p>logical or a string specifying the type of lines to be drawn in scatter plots. By default (and whenever <code>cov</code> is not missing),
+a prediction line is fitted with <code>lm</code>. For (potentially) bendy lines, <code>'loess'</code> (matching <code>'^lo|^p|^cu'</code>) will use
+<code>loess</code>, and <code>'spline'</code> (<code>'^sm|^sp|^in'</code>) will use <code>smooth.spline</code>. <code>'connected'</code>
+(<code>'^e|^co|^d'</code>) will draw lines connecting all points, and <code>FALSE</code> will not draw any lines.</p>
 </td></tr>
 <tr valign="top"><td><code>mv.scale</code></td>
 <td>
@@ -240,9 +239,10 @@ of them if you want a clean frame).</p>
 <td>
 <p>logical: if <code>FALSE</code>, the points in a scatter plot are no longer drawn.</p>
 </td></tr>
-<tr valign="top"><td><code>lines</code></td>
+<tr valign="top"><td><code>points.first</code></td>
 <td>
-<p>logical: if <code>FALSE</code>, the prediction lines in a scatter plot are no longer drawn.</p>
+<p>logical: if <code>FALSE</code>, points are plotted after lines are drawn in a scatter plot, placing lines behind points. This does
+not apply to points or lines added in <code>add</code>, as that is always evaluated after the main points and lines are drawn.</p>
 </td></tr>
 <tr valign="top"><td><code>byx</code></td>
 <td>
@@ -252,6 +252,10 @@ level of <code>x</code>. This makes for more intuitive error bars when comparing
 <tr valign="top"><td><code>drop</code></td>
 <td>
 <p>logical: if <code>FALSE</code>, <code>x</code> levels with no data are still displayed in bar or line plots.</p>
+</td></tr>
+<tr valign="top"><td><code>model</code></td>
+<td>
+<p>logical: if <code>TRUE</code>, the summary of an interaction model will be printed.</p>
 </td></tr>
 <tr valign="top"><td><code>mar</code></td>
 <td>
@@ -330,7 +334,7 @@ splot(cbind(
   Sine=y+sin(x),
   Cosine=y+cos(x),
   Tangent=y+tan(x)
-)~x, data=dat, myl=c(-10,15), loess=TRUE, lpos='topright')
+)~x, data=dat, myl=c(-10,15), lines='loess', lpos='topright')
 
 </pre>
 
