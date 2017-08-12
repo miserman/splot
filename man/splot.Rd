@@ -13,8 +13,9 @@ splot(y, x = NULL, by = NULL, between = NULL, cov = NULL, type = "",
   bw = "nrd0", adj = 2, lpos = "auto", lvn = TRUE, title = TRUE,
   labx = TRUE, laby = TRUE, lty = TRUE, lhz = FALSE, sub = TRUE,
   ndisp = TRUE, leg = TRUE, note = TRUE, sud = TRUE, labels = TRUE,
-  points = TRUE, points.first = TRUE, byx = TRUE, drop = TRUE,
-  model = FALSE, mar = "auto", add = NULL, ...)
+  labels.filter = "_|\\\\.", points = TRUE, points.first = TRUE,
+  byx = TRUE, drop = TRUE, model = FALSE, mar = "auto", add = NULL,
+  ...)
 }
 \arguments{
 \item{y}{required. Primary variable, to be shown on the y axis unless \code{x} is not specified. Can be an object,
@@ -132,6 +133,10 @@ through available line types, see \code{\link[graphics]{par}}.}
 
 \item{labels}{logical: if \code{FALSE}, sets all settable text surrounding the plot to \code{FALSE} (just so you don't have to set all
 of them if you want a clean frame).}
+
+\item{labels.filter}{a regular expression string to be replaced in label texts with a blank space. Default is \code{'_|\\\\.'}; underscores and
+periods appearing in the text of labels are replace with blank spaces. Quotation marks are removed in addition to the \code{labels.filter}
+string. Set to \code{FALSE} to prevent all filtering.}
 
 \item{points}{logical: if \code{FALSE}, the points in a scatter plot are no longer drawn.}
 

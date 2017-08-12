@@ -74,6 +74,9 @@
 #' @param ndisp logical: if \code{FALSE}, n per level is no longer displayed in the subheadings.
 #' @param labels logical: if \code{FALSE}, sets all settable text surrounding the plot to \code{FALSE} (just so you don't have to set all
 #'   of them if you want a clean frame).
+#' @param labels.filter a regular expression string to be replaced in label texts with a blank space. Default is \code{'_|\\\\.'}; underscores and
+#'   periods appearing in the text of labels are replace with blank spaces. Quotation marks are removed in addition to the \code{labels.filter}
+#'   string. Set to \code{FALSE} to prevent all filtering.
 #' @param points logical: if \code{FALSE}, the points in a scatter plot are no longer drawn.
 #' @param points.first logical: if \code{FALSE}, points are plotted after lines are drawn in a scatter plot, placing lines behind points. This does
 #'   not apply to points or lines added in \code{add}, as that is always evaluated after the main points and lines are drawn.
@@ -151,11 +154,12 @@
 splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',data=NULL,su=NULL,levels=list(),error='standard',
   error.color='#585858',lim=9,lines=TRUE,mv.scale='none',mv.as.x=FALSE,save=FALSE,format=cairo_pdf,dims=dev.size(),
   file.name='splot',colors=NULL,myl=NULL,mxl=NULL,autori=TRUE,xlas=0,ylas=1,lwd=2,pch=20,bw='nrd0',adj=2,lpos='auto',lvn=TRUE,
-  title=TRUE,labx=TRUE,laby=TRUE,lty=TRUE,lhz=FALSE,sub=TRUE,ndisp=TRUE,leg=TRUE,note=TRUE,sud=TRUE,labels=TRUE,points=TRUE,
-  points.first=TRUE,byx=TRUE,drop=TRUE,model=FALSE,mar='auto',add=NULL,...){
+  title=TRUE,labx=TRUE,laby=TRUE,lty=TRUE,lhz=FALSE,sub=TRUE,ndisp=TRUE,leg=TRUE,note=TRUE,sud=TRUE,labels=TRUE,
+  labels.filter='_|\\.',points=TRUE,points.first=TRUE,byx=TRUE,drop=TRUE,model=FALSE,mar='auto',add=NULL,...){
   #parsing input and preparing data
   if(!labels) title=sud=sub=labx=laby=note=FALSE
   ck=list(
+    ff=list(bet=FALSE,cov=FALSE),
     t=if(grepl('^b|^l',type,TRUE)) 1 else if(grepl('^d',type,TRUE)) 2 else 3,
     tt=!missing(type) && if(grepl('^b|^l',type,TRUE)) FALSE else TRUE,
     d=!missing(data) && !is.null(data),
@@ -172,7 +176,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
     mlvn=missing(lvn)
   )
   dn=if(ck$d) names(data) else ''
-  if(tryCatch(any(grepl('~',y)),error=function(e)FALSE)){
+  if(any(grepl('~',substitute(y),fixed=TRUE))){
     f=as.character(as.formula(y))[-1]
     y=f[1]
     f=strsplit(f[-1],' \\+ ')[[1]]
@@ -180,7 +184,10 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
       r=strsplit(f[1],' \\* ')[[1]]
       if(length(r)>0) x=r[1]
       if(length(r)>1) by=r[2]
-      if(length(r)>2) between=r[3]
+      if(length(r)>2){
+        ck$ff$bet=TRUE
+        between=r[3]
+      }
       if(length(r)>3) between=c(r[3],r[4])
       f=f[!grepl('\\*',f)]
     }else{
@@ -189,43 +196,38 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
     }
     if(length(f)>0){
       cov=f
-      ck$c=TRUE
+      ck$c=ck$ff$cov=TRUE
     }
   }
   txt=list(
     split='none',
-    y=gsub('\\\"','',deparse(substitute(y))),
-    x=gsub('\\\"','',deparse(substitute(x))),
-    by=gsub('\\\"','',deparse(substitute(by))),
-    between=as.list(substitute(between)),
+    y=deparse(substitute(y)),
+    x=deparse(substitute(x)),
+    by=deparse(substitute(by)),
+    bet=as.list(substitute(between)),
     cov=as.list(substitute(cov)),
     su=deparse(substitute(su))
   )
-  txt$between=paste(if(txt$between[1]%in%c('c','list')) txt$between[-1] else txt$between)
-  txt$cov=paste(if(txt$cov[1]%in%c('c','list')) txt$cov[-1] else txt$cov)
-  tdc=function(x,data){
-    s=TRUE
-    if(!is.null(data)){
-      o=tryCatch(eval(parse(text=x),envir=data),error=function(e){warning(e);s<<-FALSE})
-      if(!s || length(o)<2){
-        s=TRUE
-        if(length(o)<2)
-          o=tryCatch(eval(parse(text=eval(parse(text=x))),envir=data),error=function(e){warning(e);s<<-FALSE})
-        if(!s || length(o)<2){
-          s=TRUE
-          o=tryCatch(eval(parse(text=x)),error=function(e){warning(e);s<<-FALSE})
-        }
-      }
-    }else o=tryCatch(eval(parse(text=x),envir=globalenv()),error=function(e){warning(e);s<<-FALSE})
-    if(!s || length(o)<2){stop(paste('Could not find',x),call.=FALSE)}
-    o
+  txt[c('bet','cov')]=lapply(c('bet','cov'),function(l){
+    paste(if(!ck$ff[[l]] && length(txt[[l]])>1) txt[[l]][-1] else txt[[l]])
+  })
+  if(length(txt$bet)>2) txt$bet=txt$bet[1:2]
+  tdc=function(x){
+    if(is.character(x)) x=parse(text=x)
+    tx=tryCatch(eval(x,data,globalenv()),error=function(e)NULL)
+    if(is.character(tx) && length(tx)<2){
+      x=parse(text=tx)
+      tx=tryCatch(eval(x,data,globalenv()),error=function(e)NULL)
+    }
+    if(is.null(tx)) stop('could not find ',x,call.=FALSE)
+    tx
   }
-  if(length(txt$between)>2) txt$between=txt$between[1:2]
-  dat=data.frame(y=tdc(txt$y,data))
-  if(!missing(x)) dat$x=tdc(txt$x,data)
-  if(!missing(by)) dat$by=tdc(txt$by,data)
-  if(!missing(between)) for(i in txt$between) dat=cbind(dat,bet=tdc(i,data))
-  if(ck$c) for(i in txt$cov) dat=cbind(dat,cov=tdc(i,data))
+  dat=data.frame(y=tdc(txt$y))
+  for(n in names(txt)[-c(1,2,7)]){
+    l=length(txt[[n]])
+    if(l==0 || any(txt[[n]]=='NULL')) next
+    if(l==1) dat[,n]=tdc(txt[[n]]) else for(sn in txt[[n]]) dat[,paste0(n,'.',sn)]=tdc(sn)
+  }
   if(ck$su) dat=if(ck$d) dat[eval(substitute(su),data),] else dat[su,]
   if(NCOL(dat$x)>1){
     ck$c=TRUE
@@ -236,16 +238,16 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
   rm(data)
   dat=na.omit(dat)
   if(nrow(dat)==0) stop('this combination of variables/splits has no complete cases',call.=FALSE)
-  dn=names(dat)
+  dn=colnames(dat)
   if(sum(grepl('^y',dn))>1){
     #setting up multiple y variables
     ck$mv=TRUE
     if(ck$mlvn) lvn=FALSE
     if(!missing(by)){
-      txt$between=c(txt$by,txt$between)
-      if(length(txt$between)>2){
+      txt$bet=c(txt$by,txt$bet)
+      if(length(txt$bet)>2){
         message('multiple y variables moves by to between, so the second level of between was dropped')
-        txt$between=txt$between[1:2]
+        txt$bet=txt$bet[1:2]
         dat=dat[-grep('bet',colnames(dat))[2]]
       }
       dat$bet=cbind(as.character(dat$by),as.character(dat$bet))
@@ -266,13 +268,12 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
       dat$by=by
     }
     dn=colnames(dat)
-    for(c in seq_along(dn)) dat[,c]=ifelse(any(grepl('[a-df-z]',dat[,c],TRUE)),as.factor,as.numeric)(matrix(dat[,c]))
     if(!missing(mv.scale) && mv.scale!='none'){
       tv=if(mv.as.x) dat$x else dat$by
       for(g in levels(as.factor(tv))) dat[tv==g,1]=scale(dat[tv==g,1],scale=grepl('^t|z|sc',mv.scale,TRUE))
     }
   }
-  ptxt=lapply(txt,function(i) gsub('_|\\.',' ',i))
+  ptxt=if(is.character(labels.filter)) lapply(txt,function(i) gsub(labels.filter,' ',gsub('\\\\"|"','',i),perl=TRUE)) else txt
   if(is.character(labx)) ptxt$x=labx
   if(is.character(laby)) ptxt$y=laby
   if(!'x'%in%dn){
@@ -340,13 +341,13 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
     }
   }
   fmod=NULL
-  mod=c(txt$y,txt$x,txt$by,txt$between,txt$cov)
-  colnames(odat)=mod[mod!='NULL']
+  mod=c(txt$y,txt$x,txt$by,txt$bet,txt$cov)
+  colnames(odat)=gsub('\\"','',mod[mod!='NULL'])
   if(ck$t!=2 && model) tryCatch({
     mod=paste0(txt$y,'~',txt$x,
       if(seg$by$e) paste0('*',txt$by),
-      if(seg$f1$e) paste0('*',txt$between[1]),
-      if(seg$f2$e) paste0('*',txt$between[2]),
+      if(seg$f1$e) paste0('*',txt$bet[1]),
+      if(seg$f2$e) paste0('*',txt$bet[2]),
       if(length(cvar)>0) paste0('+',paste0(txt$cov,collapse='+'))
     )
     fmod=lm(mod,data=odat)
@@ -358,7 +359,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
   },error=function(e)warning(paste('summary model failed:',e$message),call.=FALSE))
   if(!missing(levels)) tryCatch({
     lc=c('x','by','f1','f2')
-    ns=c(txt$x,txt$by,txt$between[1],txt$between[2])
+    ns=c(txt$x,txt$by,txt$bet[1],txt$bet[2])
     for(n in names(levels)){
       if(any(ns%in%n)){
         sl=seg[[lc[which(ns%in%n)]]]
@@ -409,11 +410,11 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
   ylab=if(ck$ly) ptxt$y else ''
   xlab=if(ck$lx) ptxt$x else ''
   main=if(is.logical(title) && title) paste0(if(ck$t==2)paste('Density of',ptxt$y) else paste(ptxt$y,
-    'by',ptxt$x),if(seg$by$e && !ck$mv) paste(' at levels of',ptxt$by), if(length(ptxt$between)!=0) paste(' between',
-      paste(ptxt$between,collapse=' & '))) else if (is.character(title)) title else ''
+    'by',ptxt$x),if(seg$by$e && !ck$mv) paste(' at levels of',ptxt$by), if(length(ptxt$bet)!=0) paste(' between',
+      paste(ptxt$bet,collapse=' & '))) else if (is.character(title)) title else ''
   if(is.logical(note)) if(note){
     if(txt$split!='none' || (ck$t==1 && ck$el)){
-      tv=c(if(seg$x$s) ptxt$x else '',if(seg$by$s) ptxt$by else '',if(seg$f1$s) ptxt$between[1] else '',if(seg$f2$s) ptxt$between[2] else '')
+      tv=c(if(seg$x$s) ptxt$x else '',if(seg$by$s) ptxt$by else '',if(seg$f1$s) ptxt$bet[1] else '',if(seg$f2$s) ptxt$bet[2] else '')
       tv=tv[tv!='']
       tv=gsub(', (?=[a-z0-9]+$)',ifelse(length(tv)>2,', & ',' & '),paste(tv,collapse=', '),TRUE,TRUE)
       note=paste0(
@@ -444,8 +445,8 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
     cl=strsplit(i,'^^',fixed=TRUE)[[1]]
     ptxt$sub=if(sub) if(length(seg$l$l)>1) paste0(
       if(seg$f1$e) paste0(
-        if(lvn || (ck$mlvn && grepl('^[0-9]',cl[1]))) paste0(ptxt$between[1],': '),cl[1],
-        if(seg$f2$e) paste0(', ',if(lvn || (ck$mlvn && grepl('^[0-9]',cl[2]))) paste0(ptxt$between[2],': '),cl[2])
+        if(lvn || (ck$mlvn && grepl('^[0-9]',cl[1]))) paste0(ptxt$bet[1],': '),cl[1],
+        if(seg$f2$e) paste0(', ',if(lvn || (ck$mlvn && grepl('^[0-9]',cl[2]))) paste0(ptxt$bet[2],': '),cl[2])
       ),if(length(names(cdat))>1 && ndisp) paste(', n =',seg$n[[i]])
     ) else if(is.character(sub)) sub else ''
     if(ck$t==1){
@@ -569,7 +570,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
       td=if(dl==1) cdat[[i]] else do.call(rbind,cdat[[i]])
       cx=td[,'x']
       cy=td[,'y']
-      xch=if(is.numeric(cx)) cx else as.numeric(factor(cx))
+      xch=if(is.numeric(cx)) cx else as.numeric(as.factor(cx))
       plot(NA,xlim=if(missing(mxl)) range(xch,na.rm=TRUE) else mxl,ylim=if(missing(myl))
         c(min(cy),max(cy)+max(cy)*ifelse(leg && seg$by$ll<lim,seg$by$ll/20,0)) else myl,
         main=if(sub) ptxt$sub else NA,ylab=NA,xlab=NA,axes=FALSE,...)
@@ -587,14 +588,14 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
         x=td[,'x']
         y=td[,'y']
         if(points && points.first) points(x,y,pch=pch,col=if(seg$by$ll==1 && colors[1]=='#2E2E2E') '#999999' else colors[l])
+        lines=substitute(lines)
         if(!is.logical(lines) || lines){
-          lines=if(is.logical(lines) || ck$c || grepl('^li|^lm|^st',lines,TRUE)) 'l' else if(grepl('^lo|^p|^cu',lines,TRUE)) 'p' else
-            if(grepl('^sm|^sp|^in',lines,TRUE)) 's' else if(grepl('^e|^co|^d',lines,TRUE)) 'e' else 'l'
+          lines=if(is.logical(lines) || ck$c || grepl('^li|^lm|^st',lines,TRUE)) 'li' else if(grepl('^lo|^p|^cu',lines,TRUE)) 'lo' else
+            if(grepl('^sm|^sp|^in',lines,TRUE)) 'sm' else if(grepl('^e|^co|^d',lines,TRUE)) 'e' else 'li'
           fit=if(ck$c) lm(y~x+apply(td[,cvar,drop=FALSE],2,as.numeric))$fitted else
-            if(lines=='e') y else predict(switch(lines,l=lm,p=loess,s=smooth.spline)(y~x))
-          or=order(x)
-          fit=if(lines=='s') fit$y else fit=fit[or]
-          lines(x[or],fit,col=colors[l],lwd=lwd,lty=if(ck$lty && lty) l else if(!missing(lty) && !ck$lty) ifelse(length(lty)>1,lty[l],l) else 1)
+            if(lines=='e') y else predict(switch(lines,li=lm,lo=loess,sm=smooth.spline)(y~x))
+          if(lines=='sm') {xo=fit$x; fit=fit$y} else {or=order(x); xo=x[or]; fit=fit[or]}
+          lines(xo,fit,col=colors[l],lwd=lwd,lty=if(ck$lty && lty) l else if(!missing(lty) && !ck$lty) ifelse(length(lty)>1,lty[l],l) else 1)
         }
         if(points && !points.first) points(x,y,pch=pch,col=if(seg$by$ll==1 && colors[1]=='#2E2E2E') '#999999' else colors[l])
       }
@@ -605,6 +606,8 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
     },error=function(e)warning('error from add: ',e$message,call.=FALSE))
   },error=function(e){par(op);stop(e)})}
   if(!success){par(op);dev.off();stop("failed to make any plots with the current input",call.=FALSE)}
+  if(ck$t==3 && is.character(lines) && (!is.logical(note) || note)) note=paste0(if(is.logical(note)) '' else note,
+    paste0('Line type: ',switch(lines,li='lm',lo='loess',sm='spline',e='connected'),'.'))
   mtext(main,3,2,TRUE,font=2,cex=1.5,col='#303030')
   mtext(if(sud && (ck$su || ck$c)) gsub(', (?=[A-z0-9 ]+$)',ifelse(length(ptxt$cov)>2,', & ',' & '),
     gsub('^ | $','',paste0(if(ck$su) paste('Subset:',txt$su),if(ck$su && ck$c)', ',

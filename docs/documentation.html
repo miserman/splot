@@ -25,8 +25,9 @@ splot(y, x = NULL, by = NULL, between = NULL, cov = NULL, type = "",
   bw = "nrd0", adj = 2, lpos = "auto", lvn = TRUE, title = TRUE,
   labx = TRUE, laby = TRUE, lty = TRUE, lhz = FALSE, sub = TRUE,
   ndisp = TRUE, leg = TRUE, note = TRUE, sud = TRUE, labels = TRUE,
-  points = TRUE, points.first = TRUE, byx = TRUE, drop = TRUE,
-  model = FALSE, mar = "auto", add = NULL, ...)
+  labels.filter = "_|\\.", points = TRUE, points.first = TRUE,
+  byx = TRUE, drop = TRUE, model = FALSE, mar = "auto", add = NULL,
+  ...)
 </pre>
 
 
@@ -234,6 +235,12 @@ through available line types, see <code>par</code>.</p>
 <td>
 <p>logical: if <code>FALSE</code>, sets all settable text surrounding the plot to <code>FALSE</code> (just so you don't have to set all
 of them if you want a clean frame).</p>
+</td></tr>
+<tr valign="top"><td><code>labels.filter</code></td>
+<td>
+<p>a regular expression string to be replaced in label texts with a blank space. Default is <code>'_|\\.'</code>; underscores and
+periods appearing in the text of labels are replace with blank spaces. Quotation marks are removed in addition to the <code>labels.filter</code>
+string. Set to <code>FALSE</code> to prevent all filtering.</p>
 </td></tr>
 <tr valign="top"><td><code>points</code></td>
 <td>
