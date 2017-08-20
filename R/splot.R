@@ -359,7 +359,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
   },error=function(e)warning(paste('summary model failed:',e$message),call.=FALSE))
   if(!missing(levels)) tryCatch({
     lc=c('x','by','f1','f2')
-    ns=c(txt$x,txt$by,txt$bet[1],txt$bet[2])
+    ns=vapply(c(txt$x,txt$by,txt$bet[1],txt$bet[2]),function(t)gsub('\\"','',t),character(1))
     for(n in names(levels)){
       if(any(ns%in%n)){
         sl=seg[[lc[which(ns%in%n)]]]
