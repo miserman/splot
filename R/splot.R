@@ -237,7 +237,7 @@
 #'   Sine=y+sin(x),
 #'   Cosine=y+cos(x),
 #'   Tangent=y+tan(x)
-#' )~x, data=dat, myl=c(-10,15), lines='loess', leg='topright', laby='y + versions of x')
+#' )~x, data=dat, myl=c(-10,15), lines='loess', laby='y + versions of x')
 #'
 #' @export
 #' @importFrom grDevices grey dev.copy dev.size dev.off cairo_pdf
