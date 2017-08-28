@@ -18,16 +18,18 @@
 <pre>
 splot(y, x = NULL, by = NULL, between = NULL, cov = NULL, type = "",
   split = "median", data = NULL, su = NULL, levels = list(),
-  error = "standard", error.color = "#585858", lim = 9, lines = TRUE,
+  levels.sort = TRUE, error = "standard", error.color = "#585858",
+  error.lwd = 2, lim = 9, lines = TRUE, ..., line.type = "l",
   mv.scale = "none", mv.as.x = FALSE, save = FALSE, format = cairo_pdf,
   dims = dev.size(), file.name = "splot", colors = NULL, myl = NULL,
-  mxl = NULL, autori = TRUE, xlas = 0, ylas = 1, lwd = 2, pch = 20,
-  bw = "nrd0", adj = 2, lpos = "auto", lvn = TRUE, title = TRUE,
-  labx = TRUE, laby = TRUE, lty = TRUE, lhz = FALSE, sub = TRUE,
-  ndisp = TRUE, leg = TRUE, note = TRUE, sud = TRUE, labels = TRUE,
-  labels.filter = "_|\\.", points = TRUE, points.first = TRUE,
-  byx = TRUE, drop = TRUE, model = FALSE, mar = "auto", add = NULL,
-  ...)
+  mxl = NULL, autori = TRUE, xlas = 0, ylas = 1, bw = "nrd0",
+  adj = 2, leg = "outside", lpos = "auto", lvn = TRUE, title = TRUE,
+  labx = TRUE, laby = TRUE, lty = TRUE, lwd = 2, sub = TRUE,
+  ndisp = TRUE, note = TRUE, cex = c(title = 1.5, leg = 1, note = 0.7),
+  sud = TRUE, labels = TRUE, labels.filter = "_|\\.",
+  labels.trim = 20, points = TRUE, points.first = TRUE, byx = TRUE,
+  drop = c(x = TRUE, by = TRUE, bet = TRUE), prat = NULL, model = FALSE,
+  options = NULL, add = NULL)
 </pre>
 
 
@@ -42,38 +44,42 @@ name of a column in data, or a formula (see note). Multiple variables can also b
 <tr valign="top"><td><code>x</code></td>
 <td>
 <p>secondary variable, to be shown in on the x axis. If not specified, <code>type</code> will be set to <code>'density'</code>.
-If <code>x</code> is a factor or vector of characters, or has fewer than <code>lim</code> levels when treated as a factor, <code>type</code>
-will be set to <code>"line"</code> unless specified.</p>
+If <code>x</code> is a factor or vector of characters, or has fewer than <code>lim</code> levels when treated as a factor,
+<code>type</code> will be set to <code>"line"</code> unless specified.</p>
 </td></tr>
 <tr valign="top"><td><code>by</code></td>
 <td>
-<p>the 'splitting' variable within each plot, by which the plotted values of <code>x</code> and <code>y</code> will be grouped.</p>
+<p>the 'splitting' variable within each plot, by which the plotted values of <code>x</code> and <code>y</code> will be
+grouped.</p>
 </td></tr>
 <tr valign="top"><td><code>between</code></td>
 <td>
-<p>a single object or name, or two in a vector (e.g., <code>c(b1, b2)</code>), the levels of which will determine the
-number of plot windows to be shown at once (the cells in a matrix of plots; levels of the first variable as rows, and
-levels of the second as columns).</p>
+<p>a single object or name, or two in a vector (e.g., <code>c(b1, b2)</code>), the levels of which will determine
+the number of plot windows to be shown at once (the cells in a matrix of plots; levels of the first variable as rows,
+and levels of the second as columns).</p>
 </td></tr>
 <tr valign="top"><td><code>cov</code></td>
 <td>
-<p>additional variables used for adjustment. Bar and line plots include all <code>cov</code> variables in their regression models (via
-<code>lm</code>, e.g., <code>lm(y ~ 0 + x + cov1 + cov2)</code>) as covariates. Scatter plots with lines include all <code>cov</code> variables
-in the regression model to adjust the prediction line (e.g., <code>lm(y ~ x + x^2)</code>).</p>
+<p>additional variables used for adjustment. Bar and line plots include all <code>cov</code> variables in their
+regression models (via <code>lm</code>, e.g., <code>lm(y ~ 0 + x + cov1 + cov2)</code>) as covariates. Scatter plots
+with lines include all <code>cov</code> variables in the regression model to adjust the prediction line (e.g.,
+<code>lm(y ~ x + x^2)</code>).</p>
 </td></tr>
 <tr valign="top"><td><code>type</code></td>
 <td>
-<p>determines the type of plot to make, between <code>"bar"</code>, <code>"line"</code>, <code>"density"</code>, or <code>"scatter"</code>. If
-<code>"density"</code>, <code>x</code> is ignored. Anything including the first letter of each is accepted (e.g., <code>type='l'</code>).</p>
+<p>determines the type of plot to make, between <code>"bar"</code>, <code>"line"</code>, <code>"density"</code>, or
+<code>"scatter"</code>. If <code>"density"</code>, <code>x</code> is ignored. Anything including the first letter of each is accepted
+(e.g., <code>type='l'</code>).</p>
 </td></tr>
 <tr valign="top"><td><code>split</code></td>
 <td>
-<p>how to split any continuous variables (those with more than <code>lim</code> levels as factors). Default is <code>"median"</code>,
-with <code>"mean"</code>, <code>"standard deviation"</code>, and <code>"quantile"</code> as options.</p>
+<p>how to split any continuous variables (those with more than <code>lim</code> levels as factors). Default is
+<code>"median"</code>, with <code>"mean"</code>, <code>"standard deviation"</code>, and <code>"quantile"</code> as options.</p>
 </td></tr>
 <tr valign="top"><td><code>data</code></td>
 <td>
-<p>a <code>data.frame</code> to pull variables from. If variables aren't found in <code>data</code>, they will be looked for in the environment.</p>
+<p>a <code>data.frame</code> to pull variables from. If variables aren't found in <code>data</code>, they will be looked for
+in the environment.</p>
 </td></tr>
 <tr valign="top"><td><code>su</code></td>
 <td>
@@ -81,38 +87,69 @@ with <code>"mean"</code>, <code>"standard deviation"</code>, and <code>"quantile
 </td></tr>
 <tr valign="top"><td><code>levels</code></td>
 <td>
-<p>a list with entries corresponding to variable names, used to rename and/or reorder factor levels. To reorder a factor, enter a
-vector of either numbers or existing level names in the new order (e.g., <code>levels=list(var=c(3,2,1))</code>). To rename levels of a factor,
-enter a character vector the same length as the number of levels. To rename and reorder, enter a list, with names as the first entry, and
-order as the second entry (e.g., <code>levels=list(var=list(c('a','b','c'),c(3,2,1)))</code>). This happens after variables are split, so
-names and orders should correspond to the new split levels of split variables. For example, if a continuous variable is median split, it now
-has two levels ('Under Median' and 'Over Median'), which are the levels reordering or renaming would apply to.</p>
+<p>a list with entries corresponding to variable names, used to rename and/or reorder factor levels. To
+reorder a factor, enter a vector of either numbers or existing level names in the new order (e.g.,
+<code>levels=list(var=c(3,2,1))</code>). To rename levels of a factor, enter a character vector the same length as the number
+of levels. To rename and reorder, enter a list, with names as the first entry, and order as the second entry (e.g.,
+<code>levels=list(var=list(c('a','b','c'),c(3,2,1)))</code>). This happens after variables are split, so names and orders
+should correspond to the new split levels of split variables. For example, if a continuous variable is median split,
+it now has two levels ('Under Median' and 'Over Median'), which are the levels reordering or renaming would apply to.</p>
+</td></tr>
+<tr valign="top"><td><code>levels.sort</code></td>
+<td>
+<p>logical: if <code>FALSE</code>, the levels of x, by, and between are no longer sorted; levels will be
+presented in the order in which they appear within each variable.</p>
 </td></tr>
 <tr valign="top"><td><code>error</code></td>
 <td>
-<p>determines whether and which type of error bars to show in bar or line plots. If <code>FALSE</code>, no error bars will be shown.
-Otherwise, the default is <code>"standard error"</code>, with <code>"confidence intervals"</code> as an option.</p>
+<p>string: sets the type of error bars to show in bar or line plots, or turns them off. If <code>FALSE</code>, no error
+bars will be shown. Otherwise, the default is <code>"standard error"</code> (<code>'^s'</code>), with <code>"confidence intervals"</code>
+(anything else) as an option.</p>
 </td></tr>
 <tr valign="top"><td><code>error.color</code></td>
 <td>
 <p>color of the error bars. Default is <code>'#585858'</code>.</p>
 </td></tr>
+<tr valign="top"><td><code>error.lwd</code></td>
+<td>
+<p>line weight of error bars. Default is 2.</p>
+</td></tr>
 <tr valign="top"><td><code>lim</code></td>
 <td>
-<p>numeric. Checked against the number of factor levels of each variable. Used to decide which variables should be split, which colors
-to use, and when to turn off the legend. Default is <code>9</code>. If set over <code>20</code>, <code>lim</code> is treated as infinite (set to <code>Inf</code>).</p>
+<p>numeric. Checked against the number of factor levels of each variable. Used to decide which variables should
+be split, which colors to use, and when to turn off the legend. Default is <code>9</code>. If set over <code>20</code>, <code>lim</code>
+is treated as infinite (set to <code>Inf</code>).</p>
 </td></tr>
 <tr valign="top"><td><code>lines</code></td>
 <td>
-<p>logical or a string specifying the type of lines to be drawn in scatter plots. By default (and whenever <code>cov</code> is not missing),
-a prediction line is fitted with <code>lm</code>. For (potentially) bendy lines, <code>'loess'</code> (matching <code>'^lo|^p|^cu'</code>) will use
-<code>loess</code>, and <code>'spline'</code> (<code>'^sm|^sp|^in'</code>) will use <code>smooth.spline</code>. <code>'connected'</code>
-(<code>'^e|^co|^d'</code>) will draw lines connecting all points, and <code>FALSE</code> will not draw any lines.</p>
+<p>logical or a string specifying the type of lines to be drawn in scatter plots. By default (and whenever
+<code>cov</code> is not missing), a prediction line is fitted with <code>lm</code>. For (potentially) bendy lines,
+<code>'loess'</code> (matching <code>'^lo|^p|^cu'</code>) will use <code>loess</code>, and <code>'spline'</code>
+(<code>'^sm|^sp|^in'</code>) will use <code>smooth.spline</code>. <code>'connected'</code> (<code>'^e|^co|^d'</code>) will draw
+lines connecting all points, and <code>FALSE</code> will not draw any lines.</p>
+</td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+<p>passes additional arguments to <code>par</code> or <code>legend</code>. The
+<code>par</code> options <code>col, mfrow, oma, mar, mgp, font.main, cex.main, font.lab, tcl, pch, lwd,</code> and
+<code>xpd</code> are all set within the function, but will be overwritten if they are included in the call. For example,
+<code>col</code> sets font colors in this case (as opposed to <code>colors</code> which sets line and point colors). The default is
+<code>'#303030'</code> for a nice dark grey, but maybe you want to lighten that up: <code>col='#606060'</code>. After arguments have
+been applied to <code>par</code>, if any have not been used and match a <code>legend</code> argument,
+these will be applied to <code>legend</code>.</p>
+</td></tr>
+<tr valign="top"><td><code>line.type</code></td>
+<td>
+<p>a character setting the style of line (e.g., with points at joints) to be drawn in line plots. Default
+is <code>'b'</code> if <code>error</code> is <code>FALSE</code>, and <code>'l'</code> otherwise. See the <code>line</code> argument of
+<code>plot.default</code> for options. <code>line.type='c'</code> can look nice when there aren't a lot of
+overlapping error bars.</p>
 </td></tr>
 <tr valign="top"><td><code>mv.scale</code></td>
 <td>
-<p>determines whether to center and scale multiple <code>y</code> variables. Does not center or scale by default. Anything other than
-<code>'none'</code> will mean center each numeric <code>y</code> variable. Anything matching <code>'^t|z|sc'</code> will also scale.</p>
+<p>determines whether to center and scale multiple <code>y</code> variables. Does not center or scale by default.
+Anything other than <code>'none'</code> will mean center each numeric <code>y</code> variable. Anything matching <code>'^t|z|sc'</code>
+will also scale.</p>
 </td></tr>
 <tr valign="top"><td><code>mv.as.x</code></td>
 <td>
@@ -124,92 +161,100 @@ a prediction line is fitted with <code>lm</code>. For (potentially) bendy lines,
 </td></tr>
 <tr valign="top"><td><code>format</code></td>
 <td>
-<p>the type of file to save plots as. default is <code>cairo_pdf</code>. See <code>Devices</code> for options.</p>
+<p>the type of file to save plots as. default is <code>cairo_pdf</code>. See
+<code>Devices</code> for options.</p>
 </td></tr>
 <tr valign="top"><td><code>dims</code></td>
 <td>
-<p>a vector of 2 values (<code>c(width, height)</code>) specifying the dimensions of a plot to save in inches or pixels depending on
-<code>format</code>. Defaults to the dimensions of the plot window.</p>
+<p>a vector of 2 values (<code>c(width, height)</code>) specifying the dimensions of a plot to save in inches or
+pixels depending on <code>format</code>. Defaults to the dimensions of the plot window.</p>
 </td></tr>
 <tr valign="top"><td><code>file.name</code></td>
 <td>
-<p>a string with the name of the file to be save (excluding the extension, as this is added depending on <code>format</code>).</p>
+<p>a string with the name of the file to be save (excluding the extension, as this is added depending on
+<code>format</code>).</p>
 </td></tr>
 <tr valign="top"><td><code>colors</code></td>
 <td>
-<p>sets a color theme or manually specifies colors. Default theme is <code>"pastel"</code>, with <code>"dark"</code> and <code>"bright"</code> as
-options. If set to <code>"grey"</code>, or if <code>by</code> has more than 9 levels, a grey scale is calculated using <code>grey</code>.
-See the <code>col</code> parameter in <code>par</code> for acceptable manual inputs.</p>
+<p>sets a color theme or manually specifies colors. Default theme is <code>"pastel"</code>, with <code>"dark"</code> and
+<code>"bright"</code> as options. If set to <code>"grey"</code>, or if <code>by</code> has more than 9 levels, a grey scale is calculated
+using <code>grey</code>. See the <code>col</code> parameter in <code>par</code> for acceptable manual
+inputs.</p>
 </td></tr>
 <tr valign="top"><td><code>myl</code></td>
 <td>
-<p>sets the range of the y axis (<code>ylim</code> of <code>plot</code> or <code>barplot</code>). If not specified,
-this will be calculated from the data.</p>
+<p>sets the range of the y axis (<code>ylim</code> of <code>plot</code> or <code>barplot</code>).
+If not specified, this will be calculated from the data.</p>
 </td></tr>
 <tr valign="top"><td><code>mxl</code></td>
 <td>
-<p>sets the range of the x axis (<code>xlim</code> of <code>plot</code>). If not specified, this will be calculated from the data.</p>
+<p>sets the range of the x axis (<code>xlim</code> of <code>plot</code>). If not specified, this will be
+calculated from the data.</p>
 </td></tr>
 <tr valign="top"><td><code>autori</code></td>
 <td>
-<p>logical: if <code>FALSE</code>, the origin of plotted bars will be set to 0. Otherwise, bars are adjusted such that they extend to the
-bottom of the y axis.</p>
+<p>logical: if <code>FALSE</code>, the origin of plotted bars will be set to 0. Otherwise, bars are adjusted such
+that they extend to the bottom of the y axis.</p>
 </td></tr>
-<tr valign="top"><td><code>xlas</code></td>
+<tr valign="top"><td><code>xlas, ylas</code></td>
 <td>
-<p>sets the orientation of the x-axis labels. See <code>par</code>.</p>
-</td></tr>
-<tr valign="top"><td><code>ylas</code></td>
-<td>
-<p>sets the orientation of the y-axis labels. See <code>par</code>.</p>
-</td></tr>
-<tr valign="top"><td><code>lwd</code></td>
-<td>
-<p>sets the width of lines in scatter plots. Default is 2. See <code>par</code>.</p>
-</td></tr>
-<tr valign="top"><td><code>pch</code></td>
-<td>
-<p>sets the type of dot to use when plotting points in a scatter plot. Default is 20. See <code>par</code>.</p>
+<p>numeric: sets the orientation of the x- and y-axis labels. See <code>par</code>.</p>
 </td></tr>
 <tr valign="top"><td><code>bw</code></td>
 <td>
-<p>sets the smoothing bandwidth when plotting densities. Default is <code>'nrd0'</code>. See <code>density</code>.</p>
+<p>sets the smoothing bandwidth when plotting densities. Default is <code>'nrd0'</code>. See
+<code>density</code>.</p>
 </td></tr>
 <tr valign="top"><td><code>adj</code></td>
 <td>
 <p>adjusts the smoothing of densities (<code>adj * bw</code>). See <code>density</code>.</p>
 </td></tr>
+<tr valign="top"><td><code>leg</code></td>
+<td>
+<p>sets the legend inside or outside the plot frames (when a character matching <code>'^i'</code>, or a character matching
+<code>'^o'</code> or a number respectively), or turns it off (when <code>FALSE</code>). When inside, a legend is drawn in each plot
+frame. When outside, a single legend is drawn either to the right of all plot frames, or within an empty plot frame. By
+default, this will be determined automatically, tending to set legends outside when there are multiple levels of
+<code>between</code>. A number will try and set the legend in an empty frame within the grid of plot frames. If there are no empty
+frames, the legend will just go to the side as if <code>leg='outside'</code>.</p>
+</td></tr>
 <tr valign="top"><td><code>lpos</code></td>
 <td>
-<p>set the position of the legend. By default, it will try to choose between the top left and right areas. See <code>legend</code>.</p>
+<p>sets the position of the legend within its frame (whether inside or outside of the plot frames) based on keywords
+(see <code>legend</code>. By default, when the legend is outside, <code>lpos</code> is either <code>'right'</code> when the
+legend is in a right-hand column, or <code>'center'</code> when in an empty plot frame. When the legend is inside and <code>lpos</code>
+is not specified, the legend will be placed automatically based on the data.</p>
 </td></tr>
 <tr valign="top"><td><code>lvn</code></td>
 <td>
-<p>legend variable name. Logical: if <code>FALSE</code>, the names of by and between variables will not be shown before their level (e.g.,
-for a sex variable with a &quot;female&quot; level, &quot;sex: female&quot; would become &quot;female&quot; in the legend or above each plot window).</p>
+<p>legend variable name. Logical: if <code>FALSE</code>, the names of by and between variables will not be shown before
+their level (e.g., for a sex variable with a &quot;female&quot; level, &quot;sex: female&quot; would become &quot;female&quot; in the legend or above
+each plot window).</p>
 </td></tr>
 <tr valign="top"><td><code>title</code></td>
 <td>
-<p>logical or a character: if <code>FALSE</code>, the main title is turned off. If a character, this will be shown as the main title.</p>
+<p>logical or a character: if <code>FALSE</code>, the main title is turned off. If a character, this will be shown as
+the main title.</p>
 </td></tr>
 <tr valign="top"><td><code>labx</code></td>
 <td>
-<p>logical or a character: if <code>FALSE</code>, the label on the x axis is turned off. If a character, this will be shown as the
-x axis label.</p>
+<p>logical or a character: if <code>FALSE</code>, the label on the x axis is turned off. If a character, this will be
+shown as the x axis label.</p>
 </td></tr>
 <tr valign="top"><td><code>laby</code></td>
 <td>
-<p>logical or a character: if <code>FALSE</code>, the label on the y axis is turned off. If a character, this will be shown as the
-y axis label.</p>
+<p>logical or a character: if <code>FALSE</code>, the label on the y axis is turned off. If a character, this will be
+shown as the y axis label.</p>
 </td></tr>
 <tr valign="top"><td><code>lty</code></td>
 <td>
-<p>logical or a vector: if <code>FALSE</code>, lines are always solid. If a vector, changes line type based on each value. Otherwise loops
-through available line types, see <code>par</code>.</p>
+<p>logical or a vector: if <code>FALSE</code>, lines are always solid. If a vector, changes line type based on each
+value. Otherwise loops through available line types, see <code>par</code>.</p>
 </td></tr>
-<tr valign="top"><td><code>lhz</code></td>
+<tr valign="top"><td><code>lwd</code></td>
 <td>
-<p>logical: if <code>FALSE</code>, the legend grows horizontally.</p>
+<p>numeric: sets the weight of lines in line, density, and scatter plots. Default is 2. See
+<code>par</code>.</p>
 </td></tr>
 <tr valign="top"><td><code>sub</code></td>
 <td>
@@ -219,13 +264,16 @@ through available line types, see <code>par</code>.</p>
 <td>
 <p>logical: if <code>FALSE</code>, n per level is no longer displayed in the subheadings.</p>
 </td></tr>
-<tr valign="top"><td><code>leg</code></td>
-<td>
-<p>logical: if <code>FALSE</code>, the legend is turned off.</p>
-</td></tr>
 <tr valign="top"><td><code>note</code></td>
 <td>
-<p>logical: if <code>FALSE</code>, the note at the bottom about splits and/or error bars is turned off.</p>
+<p>logical: if <code>FALSE</code>, the note at the bottom about splits and/or lines or error bars is turned off.</p>
+</td></tr>
+<tr valign="top"><td><code>cex</code></td>
+<td>
+<p>named numeric vector: <code>c(title,leg,note)</code>. Sets the font size of the title, legend, and note. In addition,
+<code>cex.lab</code> sets the x and y label size, <code>cex.sub</code> sets the subset/covariate subheading size, <code>cex.axis</code>
+sets the axis label size, and <code>cex.main</code> sets the between level/n heading size; these are passed to
+<code>par</code>. See the input section.</p>
 </td></tr>
 <tr valign="top"><td><code>sud</code></td>
 <td>
@@ -233,14 +281,19 @@ through available line types, see <code>par</code>.</p>
 </td></tr>
 <tr valign="top"><td><code>labels</code></td>
 <td>
-<p>logical: if <code>FALSE</code>, sets all settable text surrounding the plot to <code>FALSE</code> (just so you don't have to set all
-of them if you want a clean frame).</p>
+<p>logical: if <code>FALSE</code>, sets all settable text surrounding the plot to <code>FALSE</code> (just so you don't
+have to set all of them if you want a clean frame).</p>
 </td></tr>
 <tr valign="top"><td><code>labels.filter</code></td>
 <td>
-<p>a regular expression string to be replaced in label texts with a blank space. Default is <code>'_|\\.'</code>; underscores and
-periods appearing in the text of labels are replace with blank spaces. Quotation marks are removed in addition to the <code>labels.filter</code>
-string. Set to <code>FALSE</code> to prevent all filtering.</p>
+<p>a regular expression string to be replaced in label texts with a blank space. Default is
+<code>'_|\\.'</code>; underscores and periods appearing in the text of labels are replace with blank spaces. Set to
+<code>FALSE</code> to prevent all filtering.</p>
+</td></tr>
+<tr valign="top"><td><code>labels.trim</code></td>
+<td>
+<p>numeric or logical: the maximum length of label texts (in number of characters). Default is 20, with
+any longer labels being trimmed. Set to <code>FALSE</code> to prevent any trimming.</p>
 </td></tr>
 <tr valign="top"><td><code>points</code></td>
 <td>
@@ -248,49 +301,102 @@ string. Set to <code>FALSE</code> to prevent all filtering.</p>
 </td></tr>
 <tr valign="top"><td><code>points.first</code></td>
 <td>
-<p>logical: if <code>FALSE</code>, points are plotted after lines are drawn in a scatter plot, placing lines behind points. This does
-not apply to points or lines added in <code>add</code>, as that is always evaluated after the main points and lines are drawn.</p>
+<p>logical: if <code>FALSE</code>, points are plotted after lines are drawn in a scatter plot, placing lines
+behind points. This does not apply to points or lines added in <code>add</code>, as that is always evaluated after the main
+points and lines are drawn.</p>
 </td></tr>
 <tr valign="top"><td><code>byx</code></td>
 <td>
-<p>logical: if <code>TRUE</code> (default) and <code>by</code> is specified, regressions for bar or line plots compare levels of <code>by</code> for each
-level of <code>x</code>. This makes for more intuitive error bars when comparing levels of <code>by</code> within a level of <code>x</code>.</p>
+<p>logical: if <code>TRUE</code> (default) and <code>by</code> is specified, regressions for bar or line plots compare levels
+of <code>by</code> for each level of <code>x</code>. This makes for more intuitive error bars when comparing levels of <code>by</code>
+within a level of <code>x</code>.</p>
 </td></tr>
 <tr valign="top"><td><code>drop</code></td>
 <td>
-<p>logical: if <code>FALSE</code>, <code>x</code> levels with no data are still displayed in bar or line plots.</p>
+<p>named logical vector: <code>c(x,by,bet)</code>. Specifies how levels with no data should be treated. All are
+<code>TRUE</code> by default, meaning only levels with data will be presented, and the layout of <code>between</code> levels
+will be minimized. <code>x</code> only applies to bar or line plots. <code>by</code> relates to levels presented in the legend.
+If <code>bet</code> is <code>FALSE</code>, the layout of <code>between</code> variables will be strict, with levels of <code>between[1]</code>
+as rows, and levels of <code>between[2]</code> as columns &ndash; if there are no data at an intersection of levels, the corresponding
+pannel will be blank. See the input section.</p>
+</td></tr>
+<tr valign="top"><td><code>prat</code></td>
+<td>
+<p>panel ratio, referring to the ratio between plot frames and the legend frame when the legend is out. A single
+number will make all panels of equal width. A vector of two numbers will adjust the ratio between plot pannels and the
+legend pannel (e.g., <code>prat=c(3,1)</code> makes all plot pannels a relative width of 3, and the legend frame a relative
+width of 1).</p>
 </td></tr>
 <tr valign="top"><td><code>model</code></td>
 <td>
 <p>logical: if <code>TRUE</code>, the summary of an interaction model will be printed.</p>
 </td></tr>
-<tr valign="top"><td><code>mar</code></td>
+<tr valign="top"><td><code>options</code></td>
 <td>
-<p>sets the margins of each plot window. Partially set automatically if not specified: <code>c(if(labx)2.5 else 0,if(laby)3 else 2,1,0)</code>.
-If <code>xlas</code> is not specified, or is greater than 2, and x-axis labels are overly long in bar or line plots,
-<code>mar[1]</code> is set by the x-axis text length (<code>strwidth(max(colnames(m)))*ifelse(labx,5.5,4.8)</code>). See <code>par</code>.</p>
+<p>a list with named arguments, usefull for setting temporary defaults if you plan on using some of the same
+options for multiple plots (e.g., <code>opt=list(type='bar', colors='grey', bg='#999999'); splot(x~y, options=opt)</code>).
+use <code>quote</code> to include options that are to be evaluated within the function (e.g.,
+<code>opt=list(su=quote(y&gt;0))</code>).</p>
 </td></tr>
 <tr valign="top"><td><code>add</code></td>
 <td>
-<p>evaluated within the function. Useful for adding things like lines to a plot while the parameters are still those set by the
-function (e.g., <code>add={lines(1:10)}</code>).</p>
-</td></tr>
-<tr valign="top"><td><code>...</code></td>
-<td>
-<p>passes additional arguments to <code>plot</code> or <code>barplot</code>.</p>
+<p>evaluated within the function. Useful for adding things like lines to a plot while the parameters are still
+those set by the function (e.g., <code>add=abline(v=mean(x),xpd=FALSE)</code> for a vertical line at the mean of x).</p>
 </td></tr>
 </table>
 
 
-<h3>Note</h3>
+<h3>Input</h3>
 
-<p>When <code>y</code> is a formula, other variables will be pulled from it:
+<p><strong>formulas</strong>
+</p>
+<p>When <code>y</code> is a formula (has a <code>~</code>), other variables will be pulled from it:
 </p>
 <p><code>y ~ x * by * between[1] * between[2] + cov[1] + cov[2] + cov[n]</code>
 </p>
-<p>If <code>y</code> has multiple variables, <code>by</code> is used to identify the variable (it becomes a factor with variable names as levels),
-so anything entered as <code>by</code> is treated as <code>between[1]</code>, <code>between[1]</code> is moved to <code>between[2]</code>, and <code>between[2]</code>
-is discarded with a message.
+<p>If <code>y</code> has multiple variables, <code>by</code> is used to identify the variable (it becomes a factor with variable names
+as levels), so anything entered as <code>by</code> is treated as <code>between[1]</code>, <code>between[1]</code> is moved to
+<code>between[2]</code>, and <code>between[2]</code> is discarded with a message.
+</p>
+<p><strong>named vectors</strong>
+</p>
+<p>Named vector arguments like <code>cex</code> and <code>drop</code> can be set with a single value, positionally, or with names.
+If a single value is entered (e.g., <code>drop=FALSE</code>), this will be applied to each level (i.e.,
+<code>c(x=FALSE,by=FALSE,bet=FALSE)</code>). If more than one value is entered, these will be treated positionally (e.g.,
+<code>cex=c(2,1.2)</code> would be read as <code>c(title=2,leg=1.2,note=.7)</code>). If values are named, only named values will be set,
+with other defaults retained (e.g., <code>cex=c(note=1.2)</code> would be read as <code>c(title=1.5,leg=1,note=1.2)</code>).
+</p>
+
+
+<h3>Note</h3>
+
+<p><strong>x-axis levels text</strong>
+</p>
+<p>If the text of x-axis levels (those corresponding to the levels of <code>x</code>) are too long, they are hidden before
+overlapping. To try and avoid this, by default longer texts are trimmed (dictated by <code>labels.trim</code>), and at some
+point the orientation of level text is changed (settable with <code>xlas</code>), but you may still see level text missing.
+To make these visible, you can reduce <code>labels.trim</code> from the default of 20 (or rename the levels of that variable),
+make the level text vertical (<code>xlas=3</code>), or expand your plot window if possible.
+</p>
+<p><strong>missing levels, lines, and/or error bars</strong>
+</p>
+<p>By default (if <code>drop=TRUE</code>), levels of <code>x</code> with no data are dropped, so you may not see every level of your
+variable, at all or at a level of <code>by</code> or <code>between</code>. Sometimes error bars cannot be estimated (if, say, there
+is only one observation at the given level), but lines are still drawn in these cases, so you may sometimes see levels
+without error bars even when error bars are turned on. Sometimes (particularly when <code>drop['x']</code> is <code>FALSE</code>),
+you might see floating error bars with no lines drawn to them, or what appear to be completely empty levels. This happens,
+when there is a missing level of <code>x</code> between two non-missing levels, potentially making an orphaned level (if a
+non-missing level is surrounded by missing levels). If there are no error bars for this orphaned level, by default
+nothing will be drawn to indicate it. If you set <code>line.type</code> to <code>'b'</code> (or any other type with points), a point
+will be drawn at such error-bar-less orphaned levels.
+</p>
+<p><strong>unexpected failures</strong>
+</p>
+<p>splot tries to clean up after itself in the case of an error, but you may still run into errors that break things before
+this can happen. If after a failed plot you find that you're unable to make any new plots, you might try entering
+<code>dev.off()</code> into the console. If new plots look off (splot's <code>par</code> settings didn't get reset),
+you may have to close the plot window to reset <code>par</code> (if you're using RStudio, Plots &gt;
+&quot;Remove Plot...&quot; or &quot;Clear All...&quot;), or restart R.
 </p>
 
 
@@ -341,7 +447,7 @@ splot(cbind(
   Sine=y+sin(x),
   Cosine=y+cos(x),
   Tangent=y+tan(x)
-)~x, data=dat, myl=c(-10,15), lines='loess', lpos='topright')
+)~x, data=dat, myl=c(-10,15), lines='loess', leg='topright', laby='y + versions of x')
 
 </pre>
 

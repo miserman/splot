@@ -95,8 +95,7 @@ attach(data)
 
 First, we can look at distributions in a few different ways:
 ```{r, fig.height=3, fig.width=10, dev='CairoSVG'}
-#lpos sets the legend position when it isn't automatically placed out of the way.
-splot(data[,metrics], lpos='topright')
+splot(data[,metrics])
 ```
 ```{r, fig.height=3, fig.width=10, dev='CairoSVG'}
 #mv.scale z-scores multiple y variables to make them easier to compare.
@@ -127,8 +126,9 @@ splot(data[,metrics]~prompt, between=Study, su=Study>2, mv.scale=T)
 In Studies 3 and 4, each participant replied to two prompts, so we can look at changes in their matching from one prompt to another (it looks pretty random, which is generally what we want):
 ```{r, fig.height=6, fig.width=10, dev='CairoSVG'}
 #lim is the only necessary additional argument -- it keeps ParticipantID from being split.
-#lty makes all of the lines solid, and mxl spreads the replies out a little.
-splot(Canberra~reply*ParticipantID, su=Study==4, lim=F, lty=1, mxl=c(1,2))
+#lty makes all of the lines solid, line.type prevents a point from being drawn at the end
+#of each line, and mxl spreads the replies out a little more.
+splot(Canberra~reply*ParticipantID, su=Study==4, lim=FALSE, lty=1, line.type='l', mxl=c(1,2))
 ```
 
 ***
@@ -153,7 +153,7 @@ It can sometimes help to look at the same pattern a different way, and compare i
 #levels reorders the prompt variable to make the trends a little easier to see.
 splot(
   cbind(TextQuality, Behavioral, pp_like, relativeSes)~prompt, between=Study,
-  mv.scale=T, lpos='topright', levels=list(prompt=c(4,2,1,3))
+  mv.scale=T, levels=list(prompt=c(4,2,1,3))
 )
 ```
 

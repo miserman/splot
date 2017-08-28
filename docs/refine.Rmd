@@ -39,14 +39,19 @@ splot(anger~index*name)
 
 Quite a mess.
 
-With this many levels of `by`, it immediately makes sense to hide the legend and points.
-
-We're also interested in non-linear trends over the course of each text, so we'll switch to loess lines, and we'll use `myl` to zoom in a bit:
+We could arange the legend and get rid of points to clean things up a bit:
 ```{r, fig.height=5, fig.width=10, dev='CairoSVG'}
-splot(anger~index*name, leg=FALSE, points=FALSE, lines='loess', myl=c(0,1.5))
+#lpos positions, ncol changes the number of columns, and cex['leg'] changes the font size of the legend.
+splot(anger~index*name, lpos='top', ncol=4, cex=c(leg=.8), points=FALSE)
+```
+With this many levels of `by`, the legend isn't very useful in its current form, so we might just remove it.
+
+We're also interested in non-linear trends over the course of each text, so we'll switch to loess lines, and we'll use `myl` to zoom in (restrict the range) a bit:
+```{r, fig.height=5, fig.width=10, dev='CairoSVG'}
+splot(anger~index*name, leg=FALSE, points=FALSE, lines='loess', myl=c(-.05,1.7))
 ```
 
-Much better, but not very informative. 
+Much better, but still not very informative. 
 
 This project was mostly interested in the Rodger text---how it relates to the Hitler text, and how both of those relate to other autobiographies. As such, it would be nice to know which lines are the Rodger and Hitler texts, and which are (in this case) the highest comparison texts.
 
@@ -74,12 +79,34 @@ splot(anger~index*name, leg=FALSE, points=FALSE, lines='loess', myl=c(0,2.2), co
 })
 ```
 
+If we were planning on applying these settings to several graphs (if, say, we wanted to look at several different `y` variables individually), we could add the consistent stuff to an options list:
+```{r}
+#quote() prevents things from being evaluated outside of the function.
+opt = list(
+  leg = FALSE,
+  points = FALSE,
+  lines = 'loess',
+  colors = disp$col,
+  lty = disp$lty,
+  add = quote({
+    mnc=names(sort(apply(sapply(cdat$`^^`, '[[', 'y'), 2, mean)[-grep('Hit|Rod', names(cdat$`^^`))], TRUE)[1:2])
+    legend('topleft', sort(mnc), lty=disp[disp$name%in%mnc, 2], col=disp[disp$name%in%mnc, 3], lwd=2, bty='n')
+    legend('topright', c('Adolf Hitler', 'Elliot Rodger'), lty=1:2, col=disp$col[1], lwd=2, bty='n')
+  })
+)
+```
+
+This can save some room at least:
+```{r, fig.height=5, fig.width=10, dev='CairoSVG'}
+splot(death~index*name, myl=c(0,1.35), options=opt)
+```
+
 ***
 #Comparison of Pronoun Usage
 
 We might want to look at a few variables at the same time. In this dataset, the difference in pronoun use between the Rodger and Hitler text is interesting, so we'll look at personal pronouns (`i, we, you, shehe, they`) and impersonal pronouns (`ipron`) all together:
 ```{r, fig.height=5, fig.width=10, dev='CairoSVG'}
-splot(cbind(i, we, you, shehe, they, ipron)~name, type='bar', su=grepl('Hit|Rod', data$name))
+splot(cbind(i, we, you, shehe, they, ipron)~name, type='bar', su=grepl('Hit|Rod', name))
 ```
 
 To better compare each variable between texts, we can put the variables on the x axis with `mv.as.x=TRUE`, and z-score with `mv.scale=TRUE` to standardize ranges.
@@ -96,13 +123,13 @@ splot(cbind(i, we, you, shehe, they, ipron)~name, type='bar', mv.as.x=TRUE, mv.s
 
 Now that we have some formatted figures, we might want to use them in other things.
 
-When it comes to rendering, two factors make for the nicest looking figures: anti-aliasing (making lines less pixelated) and scalability (they won't become pixelated with zoomed in on; a feature of formats like pdf, svg, and emf).
+When it comes to rendering, two factors make for the nicest looking figures: anti-aliasing (making lines less pixelated) and scalability (they won't become pixelated with zoomed in on; a feature of vector-based formats like pdf, svg, and emf). Using vector-based formats means you can preserve the scale of a plot without losing quality; that is, if you want larger text and more compact elements, you can adjust your plot window and rerender the plot until the proportions look right. Even if the window is very small, you can blow the vector based image up to any size.
 
 **For publication**, pdfs can be included in LaTex documents, emfs can be included Word documents, and svgs can be included in markdown documents like this one.
 
 **For presentation**, emfs can be included in PowerPoint slides, and svgs can be included in markdown slides.
 
-The default format when saving from within splot (`save=TRUE`) is pdf. If you're using RStudio, you can save the same quality of pdf from the Export dropdown.
+The default format when saving from within splot (`save=TRUE`) is pdf (using `cairo_pdf`). If you're using RStudio, you can save the same quality of pdf from the Export dropdown.
 
 To save as anti-aliased emfs, you can install and load the `devEMF` package (`install.packages('devEMF'); library('devEMF')`), then just add `format=emf` to the plot you want to save.
 
