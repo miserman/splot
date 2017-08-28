@@ -656,13 +656,13 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
     if(ck$lp) lpos=if(ck$legcol) 'right' else 'center'
   }
   seg[c('dmat','lc')]=lapply(seg[c('dmat','lc')],t)
-  if(missing(prat)){
-    seg$prat=if(ck$legcol){
+  seg$prat=if(missing(prat)){
+    if(ck$legcol){
       lw=max(.4,strwidth(ptxt$l.by,'i'))+if(all(seg$dim==1)) .5 else .2
       fw=(dev.size(units='in')[1]-lw)/seg$dim[2]
       c(fw,max(fw/10,lw))
     }else 1
-  }
+  }else prat
   op=list(
     oma=c(sum(note!='',ck$lx),ck$ly,sum((main!='')*2+if(sum(seg$dim)>2) .5 else 0,ck$sud),0),
     mar=c(if(ck$lx) 2.5 else 1.5,if(ck$ly) 3 else 2,(ck$sud && (ck$su || ck$c))*ifelse(seg$ll>1,2,.5)+
