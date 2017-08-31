@@ -249,7 +249,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
   mv.as.x=FALSE,save=FALSE,format=cairo_pdf,dims=dev.size(),file.name='splot',colors=NULL,myl=NULL,mxl=NULL,autori=TRUE,
   xlas=0,ylas=1,bw='nrd0',adj=2,leg='outside',lpos='auto',lvn=TRUE,title=TRUE,labx=TRUE,laby=TRUE,lty=TRUE,lwd=2,sub=TRUE,
   ndisp=TRUE,note=TRUE,cex=c(title=1.5,leg=1,note=.7),sud=TRUE,labels=TRUE,labels.filter='_|\\.',labels.trim=20,points=TRUE,
-  points.first=TRUE,byx=TRUE,drop=c(x=TRUE,by=TRUE,bet=TRUE),prat=NULL,model=FALSE,options=NULL,add=NULL){
+  points.first=TRUE,byx=TRUE,drop=c(x=TRUE,by=TRUE,bet=TRUE),prat=c(1,1),model=FALSE,options=NULL,add=NULL){
   #parsing input and preparing data
   if(!missing(options)){
     a=as.list(match.call())[-1]
@@ -349,7 +349,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
     if(l==0 || any(txt[[n]]=='NULL')) next
     if(l==1) dat[,n]=tdc(txt[[n]]) else for(sn in txt[[n]]) dat[,paste0(n,'.',sn)]=tdc(sn)
   }
-  if(ck$su) dat=if(ck$d) dat[eval(substitute(su),data),] else dat[su,]
+  if(ck$su) dat=if(ck$d) dat[eval(substitute(su),data),,drop=FALSE] else dat[su,,drop=FALSE]
   if(NCOL(dat$x)>1){
     ck$c=TRUE
     txt$cov=c(txt$x,txt$cov)
@@ -656,12 +656,10 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
     if(ck$lp) lpos=if(ck$legcol) 'right' else 'center'
   }
   seg[c('dmat','lc')]=lapply(seg[c('dmat','lc')],t)
-  seg$prat=if(missing(prat)){
-    if(ck$legcol){
-      lw=max(.4,strwidth(ptxt$l.by,'i'))+if(all(seg$dim==1)) .5 else .2
-      fw=(dev.size(units='in')[1]-lw)/seg$dim[2]
-      c(fw,max(fw/10,lw))
-    }else 1
+  seg$prat=if(missing(prat) && ck$legcol){
+    lw=max(.4,strwidth(ptxt$l.by,'i'))+if(all(seg$dim==1)) .5 else .2
+    fw=(dev.size(units='in')[1]-lw)/seg$dim[2]
+    c(fw,max(fw/10,lw))
   }else prat
   op=list(
     oma=c(sum(note!='',ck$lx),ck$ly,sum((main!='')*2+if(sum(seg$dim)>2) .5 else 0,ck$sud),0),
