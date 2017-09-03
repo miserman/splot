@@ -6,18 +6,18 @@
 \usage{
 splot(y, x = NULL, by = NULL, between = NULL, cov = NULL, type = "",
   split = "median", data = NULL, su = NULL, levels = list(),
-  levels.sort = TRUE, error = "standard", error.color = "#585858",
-  error.lwd = 2, lim = 9, lines = TRUE, ..., line.type = "l",
-  mv.scale = "none", mv.as.x = FALSE, save = FALSE, format = cairo_pdf,
-  dims = dev.size(), file.name = "splot", colors = NULL, myl = NULL,
-  mxl = NULL, autori = TRUE, xlas = 0, ylas = 1, bw = "nrd0",
-  adj = 2, leg = "outside", lpos = "auto", lvn = TRUE, title = TRUE,
+  error = "standard", error.color = "#585858", error.lwd = 2, lim = 9,
+  lines = TRUE, ..., line.type = "l", mv.scale = "none",
+  mv.as.x = FALSE, save = FALSE, format = cairo_pdf, dims = dev.size(),
+  file.name = "splot", colors = NULL, myl = NULL, mxl = NULL,
+  autori = TRUE, xlas = 0, ylas = 1, bw = "nrd0", adj = 2,
+  leg = "outside", lpos = "auto", lvn = TRUE, title = TRUE,
   labx = TRUE, laby = TRUE, lty = TRUE, lwd = 2, sub = TRUE,
-  ndisp = TRUE, note = TRUE, cex = c(title = 1.5, leg = 1, note = 0.7),
-  sud = TRUE, labels = TRUE, labels.filter = "_|\\\\.",
-  labels.trim = 20, points = TRUE, points.first = TRUE, byx = TRUE,
-  drop = c(x = TRUE, by = TRUE, bet = TRUE), prat = NULL, model = FALSE,
-  options = NULL, add = NULL)
+  ndisp = TRUE, note = TRUE, font = c(title = 2, leg = 1, note = 3),
+  cex = c(title = 1.5, leg = 1, note = 0.7), sud = TRUE, labels = TRUE,
+  labels.filter = "_|\\\\.", labels.trim = 20, points = TRUE,
+  points.first = TRUE, byx = TRUE, drop = c(x = TRUE, by = TRUE, bet =
+  TRUE), prat = c(1, 1), model = FALSE, options = NULL, add = NULL)
 }
 \arguments{
 \item{y}{required. Primary variable, to be shown on the y axis unless \code{x} is not specified. Can be an object,
@@ -58,9 +58,6 @@ of levels. To rename and reorder, enter a list, with names as the first entry, a
 \code{levels=list(var=list(c('a','b','c'),c(3,2,1)))}). This happens after variables are split, so names and orders
 should correspond to the new split levels of split variables. For example, if a continuous variable is median split,
 it now has two levels ('Under Median' and 'Over Median'), which are the levels reordering or renaming would apply to.}
-
-\item{levels.sort}{logical: if \code{FALSE}, the levels of x, by, and between are no longer sorted; levels will be
-presented in the order in which they appear within each variable.}
 
 \item{error}{string: sets the type of error bars to show in bar or line plots, or turns them off. If \code{FALSE}, no error
 bars will be shown. Otherwise, the default is \code{"standard error"} (\code{'^s'}), with \code{"confidence intervals"}
@@ -168,6 +165,11 @@ value. Otherwise loops through available line types, see \code{\link[graphics]{p
 
 \item{note}{logical: if \code{FALSE}, the note at the bottom about splits and/or lines or error bars is turned off.}
 
+\item{font}{named numeric vector: \code{c(title,leg,note)}. Sets the font of the title, legend, and note. In addition,
+\code{font.lab} sets the x and y label font, \code{font.sub} sets the subset/covariate subheading font, \code{font.axis}
+sets the axis label font, and \code{font.main} sets the between level/n heading font; these are passed to
+\code{\link[graphics]{par}}. See the input section.}
+
 \item{cex}{named numeric vector: \code{c(title,leg,note)}. Sets the font size of the title, legend, and note. In addition,
 \code{cex.lab} sets the x and y label size, \code{cex.sub} sets the subset/covariate subheading size, \code{cex.axis}
 sets the axis label size, and \code{cex.main} sets the between level/n heading size; these are passed to
@@ -263,8 +265,8 @@ as levels), so anything entered as \code{by} is treated as \code{between[1]}, \c
 
 \strong{named vectors}
 
-Named vector arguments like \code{cex} and \code{drop} can be set with a single value, positionally, or with names.
-If a single value is entered (e.g., \code{drop=FALSE}), this will be applied to each level (i.e.,
+Named vector arguments like \code{font}, \code{cex}, and \code{drop} can be set with a single value, positionally, or
+with names. If a single value is entered (e.g., \code{drop=FALSE}), this will be applied to each level (i.e.,
 \code{c(x=FALSE,by=FALSE,bet=FALSE)}). If more than one value is entered, these will be treated positionally (e.g.,
 \code{cex=c(2,1.2)} would be read as \code{c(title=2,leg=1.2,note=.7)}). If values are named, only named values will be set,
 with other defaults retained (e.g., \code{cex=c(note=1.2)} would be read as \code{c(title=1.5,leg=1,note=1.2)}).

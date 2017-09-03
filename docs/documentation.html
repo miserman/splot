@@ -18,18 +18,18 @@
 <pre>
 splot(y, x = NULL, by = NULL, between = NULL, cov = NULL, type = "",
   split = "median", data = NULL, su = NULL, levels = list(),
-  levels.sort = TRUE, error = "standard", error.color = "#585858",
-  error.lwd = 2, lim = 9, lines = TRUE, ..., line.type = "l",
-  mv.scale = "none", mv.as.x = FALSE, save = FALSE, format = cairo_pdf,
-  dims = dev.size(), file.name = "splot", colors = NULL, myl = NULL,
-  mxl = NULL, autori = TRUE, xlas = 0, ylas = 1, bw = "nrd0",
-  adj = 2, leg = "outside", lpos = "auto", lvn = TRUE, title = TRUE,
+  error = "standard", error.color = "#585858", error.lwd = 2, lim = 9,
+  lines = TRUE, ..., line.type = "l", mv.scale = "none",
+  mv.as.x = FALSE, save = FALSE, format = cairo_pdf, dims = dev.size(),
+  file.name = "splot", colors = NULL, myl = NULL, mxl = NULL,
+  autori = TRUE, xlas = 0, ylas = 1, bw = "nrd0", adj = 2,
+  leg = "outside", lpos = "auto", lvn = TRUE, title = TRUE,
   labx = TRUE, laby = TRUE, lty = TRUE, lwd = 2, sub = TRUE,
-  ndisp = TRUE, note = TRUE, cex = c(title = 1.5, leg = 1, note = 0.7),
-  sud = TRUE, labels = TRUE, labels.filter = "_|\\.",
-  labels.trim = 20, points = TRUE, points.first = TRUE, byx = TRUE,
-  drop = c(x = TRUE, by = TRUE, bet = TRUE), prat = NULL, model = FALSE,
-  options = NULL, add = NULL)
+  ndisp = TRUE, note = TRUE, font = c(title = 2, leg = 1, note = 3),
+  cex = c(title = 1.5, leg = 1, note = 0.7), sud = TRUE, labels = TRUE,
+  labels.filter = "_|\\.", labels.trim = 20, points = TRUE,
+  points.first = TRUE, byx = TRUE, drop = c(x = TRUE, by = TRUE, bet =
+  TRUE), prat = c(1, 1), model = FALSE, options = NULL, add = NULL)
 </pre>
 
 
@@ -94,11 +94,6 @@ of levels. To rename and reorder, enter a list, with names as the first entry, a
 <code>levels=list(var=list(c('a','b','c'),c(3,2,1)))</code>). This happens after variables are split, so names and orders
 should correspond to the new split levels of split variables. For example, if a continuous variable is median split,
 it now has two levels ('Under Median' and 'Over Median'), which are the levels reordering or renaming would apply to.</p>
-</td></tr>
-<tr valign="top"><td><code>levels.sort</code></td>
-<td>
-<p>logical: if <code>FALSE</code>, the levels of x, by, and between are no longer sorted; levels will be
-presented in the order in which they appear within each variable.</p>
 </td></tr>
 <tr valign="top"><td><code>error</code></td>
 <td>
@@ -268,6 +263,13 @@ value. Otherwise loops through available line types, see <code>par</code>.</p>
 <td>
 <p>logical: if <code>FALSE</code>, the note at the bottom about splits and/or lines or error bars is turned off.</p>
 </td></tr>
+<tr valign="top"><td><code>font</code></td>
+<td>
+<p>named numeric vector: <code>c(title,leg,note)</code>. Sets the font of the title, legend, and note. In addition,
+<code>font.lab</code> sets the x and y label font, <code>font.sub</code> sets the subset/covariate subheading font, <code>font.axis</code>
+sets the axis label font, and <code>font.main</code> sets the between level/n heading font; these are passed to
+<code>par</code>. See the input section.</p>
+</td></tr>
 <tr valign="top"><td><code>cex</code></td>
 <td>
 <p>named numeric vector: <code>c(title,leg,note)</code>. Sets the font size of the title, legend, and note. In addition,
@@ -360,8 +362,8 @@ as levels), so anything entered as <code>by</code> is treated as <code>between[1
 </p>
 <p><strong>named vectors</strong>
 </p>
-<p>Named vector arguments like <code>cex</code> and <code>drop</code> can be set with a single value, positionally, or with names.
-If a single value is entered (e.g., <code>drop=FALSE</code>), this will be applied to each level (i.e.,
+<p>Named vector arguments like <code>font</code>, <code>cex</code>, and <code>drop</code> can be set with a single value, positionally, or
+with names. If a single value is entered (e.g., <code>drop=FALSE</code>), this will be applied to each level (i.e.,
 <code>c(x=FALSE,by=FALSE,bet=FALSE)</code>). If more than one value is entered, these will be treated positionally (e.g.,
 <code>cex=c(2,1.2)</code> would be read as <code>c(title=2,leg=1.2,note=.7)</code>). If values are named, only named values will be set,
 with other defaults retained (e.g., <code>cex=c(note=1.2)</code> would be read as <code>c(title=1.5,leg=1,note=1.2)</code>).
@@ -447,7 +449,7 @@ splot(cbind(
   Sine=y+sin(x),
   Cosine=y+cos(x),
   Tangent=y+tan(x)
-)~x, data=dat, myl=c(-10,15), lines='loess', leg='topright', laby='y + versions of x')
+)~x, data=dat, myl=c(-10,15), lines='loess', laby='y + versions of x')
 
 </pre>
 
