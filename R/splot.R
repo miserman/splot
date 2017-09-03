@@ -822,7 +822,10 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
       }
       axis(1,apply(p,2,mean),colnames(m),FALSE,las=xlas,cex=par('cex.axis'),fg=par('col.axis'))
       a2a=list(2,las=ylas,cex=par('cex.axis'),fg=par('col.axis'))
-      if(ck$b && autori && lb<0) a2a$at=ayl
+      if(ck$b && autori && lb<0){
+        a2a$at=ayl
+        a2a$labels=round(oyl,2)
+      }
       do.call(axis,a2a)
       if(ck$el && !identical(ne,pe)){
         te=round(Reduce('-',list(ne,pe)),8)
