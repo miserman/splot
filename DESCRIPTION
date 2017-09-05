@@ -4,7 +4,7 @@ Title: Split Plot
 Version: 0.3.0
 Author: Micah Iserman
 Maintainer: Micah Iserman <micah.iserman@ttu.edu>
-Description: Automates common plotting tasks, with a focus on interactions.
+Description: Automates common plotting tasks to ease data exploration.
 URL: https://miserman.github.io/splot
 BugReports: https://github.com/miserman/splot/issues
 Depends: R (>= 3.1), graphics, stats, grDevices
