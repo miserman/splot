@@ -133,13 +133,13 @@
 #'   will be minimized. \code{x} only applies to bar or line plots. \code{by} relates to levels presented in the legend.
 #'   If \code{bet} is \code{FALSE}, the layout of \code{between} variables will be strict, with levels of \code{between[1]}
 #'   as rows, and levels of \code{between[2]} as columns -- if there are no data at an intersection of levels, the corresponding
-#'   pannel will be blank. See the input section.
+#'   panel will be blank. See the input section.
 #' @param prat panel ratio, referring to the ratio between plot frames and the legend frame when the legend is out. A single
-#'   number will make all panels of equal width. A vector of two numbers will adjust the ratio between plot pannels and the
-#'   legend pannel (e.g., \code{prat=c(3,1)} makes all plot pannels a relative width of 3, and the legend frame a relative
+#'   number will make all panels of equal width. A vector of two numbers will adjust the ratio between plot panels and the
+#'   legend panel (e.g., \code{prat=c(3,1)} makes all plot panels a relative width of 3, and the legend frame a relative
 #'   width of 1).
 #' @param model logical: if \code{TRUE}, the summary of an interaction model will be printed.
-#' @param options a list with named arguments, usefull for setting temporary defaults if you plan on using some of the same
+#' @param options a list with named arguments, useful for setting temporary defaults if you plan on using some of the same
 #'   options for multiple plots (e.g., \code{opt=list(type='bar', colors='grey', bg='#999999'); splot(x~y, options=opt)}).
 #'   use \code{\link[base]{quote}} to include options that are to be evaluated within the function (e.g.,
 #'   \code{opt=list(su=quote(y>0))}).
@@ -250,11 +250,14 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
   error='standard',error.color='#585858',error.lwd=2,lim=9,lines=TRUE,...,line.type='l',mv.scale='none',mv.as.x=FALSE,
   save=FALSE,format=cairo_pdf,dims=dev.size(),file.name='splot',colors=NULL,myl=NULL,mxl=NULL,autori=TRUE,xlas=0,ylas=1,
   bw='nrd0',adj=2,leg='outside',lpos='auto',lvn=TRUE,title=TRUE,labx=TRUE,laby=TRUE,lty=TRUE,lwd=2,sub=TRUE,ndisp=TRUE,
-  note=TRUE,font=c(title=2,leg=1,note=3),cex=c(title=1.5,leg=1,note=.7),sud=TRUE,labels=TRUE,labels.filter='_|\\.',labels.trim=20,points=TRUE,
-  points.first=TRUE,byx=TRUE,drop=c(x=TRUE,by=TRUE,bet=TRUE),prat=c(1,1),model=FALSE,options=NULL,add=NULL){
+  note=TRUE,font=c(title=2,leg=1,note=3),cex=c(title=1.5,leg=1,note=.7),sud=TRUE,labels=TRUE,labels.filter='_|\\.',
+  labels.trim=20,points=TRUE,points.first=TRUE,byx=TRUE,drop=c(x=TRUE,by=TRUE,bet=TRUE),prat=c(1,1),model=FALSE,
+  options=NULL,add=NULL){
   #parsing input and preparing data
   if(!missing(options)){
     a=as.list(match.call())[-1]
+    options=tryCatch(options,error=function(e)NULL)
+    if(is.null(options)) stop('could not find options')
     return(do.call(splot,c(a[names(a)!='options'],options[!names(options)%in%names(a)])))
   }
   if(!labels) title=sud=sub=labx=laby=note=FALSE
@@ -471,7 +474,6 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
       }
     }
   }
-
   if(seg$by$l[1]=='') seg$by$l='NA'
   fmod=NULL
   vs=c(y=txt$y,x=txt$x,by=txt$by,bet=txt$bet,cov=txt$cov)
@@ -594,7 +596,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
   ck$sud=sud && (ck$su || ck$c)
   ck$sub=sub && (seg$ll>1 || ndisp)
   pdo=list(...)
-  l2m=function(l){tl=round(l/2); c(tl,tl-all(l<=c(tl^2,tl*(tl-1))))}
+  l2m=function(l){tl=round(l^.5); c(tl+all(l>c(tl^2,tl*(tl-1))),tl)}
   seg$dim=if(any(ckl<-c('mfrow','mfcol')%in%names(pdo))) pdo[[if(ckl[1]) 'mfrow' else 'mfcol']] else
     if(!seg$f1$e) c(1,1) else if(!seg$f2$e){
       if(seg$f1$ll>2) l2m(seg$f1$ll) else c(2,1)
@@ -614,7 +616,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
   if(ck$leg==1 && ck$legm && (dev.size(units='in')[1]<2 || (all(seg$dim==1) && (ck$t!=1 || seg$by$ll<9)))) ck$leg=2
   if(ck$leg==1) if(is.logical(leg) || is.character(leg)) leg=nc+1
   dop=par(no.readonly=TRUE)
-  if(drop['bet'] && !ckl && any(nc-seg$ll>=seg$dim)){
+  if(drop['bet'] && !any(ckl) && any(nc-seg$ll>=seg$dim)){
     seg$dim=l2m(seg$ll)
     nc=Reduce('*',seg$dim)
   }
@@ -924,7 +926,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
   mtext(if(ck$t==2) ylab else xlab,1,0,TRUE,cex=par('cex.lab'),font=par('font.lab'))
   if(is.character(note)) mtext(note,1,ck$lx,TRUE,adj=if(ck$ly) 0 else .01,font=font['note'],cex=cex['note'])
   par(dop)
-  if(save || (missing(save) && any(!missing(format),!missing(dims)))) tryCatch({
+  if(save || (missing(save) && any(!missing(format),!missing(file.name),!missing(dims)))) tryCatch({
     t=substitute(format)
     tt=if(any(grepl('cairo',t))){paste0('.',strsplit(deparse(t),'_')[[1]][2])
     }else if(t=='postscript') '.ps' else paste0('.',t)

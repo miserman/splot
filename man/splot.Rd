@@ -202,16 +202,16 @@ within a level of \code{x}.}
 will be minimized. \code{x} only applies to bar or line plots. \code{by} relates to levels presented in the legend.
 If \code{bet} is \code{FALSE}, the layout of \code{between} variables will be strict, with levels of \code{between[1]}
 as rows, and levels of \code{between[2]} as columns -- if there are no data at an intersection of levels, the corresponding
-pannel will be blank. See the input section.}
+panel will be blank. See the input section.}
 
 \item{prat}{panel ratio, referring to the ratio between plot frames and the legend frame when the legend is out. A single
-number will make all panels of equal width. A vector of two numbers will adjust the ratio between plot pannels and the
-legend pannel (e.g., \code{prat=c(3,1)} makes all plot pannels a relative width of 3, and the legend frame a relative
+number will make all panels of equal width. A vector of two numbers will adjust the ratio between plot panels and the
+legend panel (e.g., \code{prat=c(3,1)} makes all plot panels a relative width of 3, and the legend frame a relative
 width of 1).}
 
 \item{model}{logical: if \code{TRUE}, the summary of an interaction model will be printed.}
 
-\item{options}{a list with named arguments, usefull for setting temporary defaults if you plan on using some of the same
+\item{options}{a list with named arguments, useful for setting temporary defaults if you plan on using some of the same
 options for multiple plots (e.g., \code{opt=list(type='bar', colors='grey', bg='#999999'); splot(x~y, options=opt)}).
 use \code{\link[base]{quote}} to include options that are to be evaluated within the function (e.g.,
 \code{opt=list(su=quote(y>0))}).}
