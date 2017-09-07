@@ -111,7 +111,7 @@ splot(cbind(i, we, you, shehe, they, ipron)~name, type='bar', su=grepl('Hit|Rod'
 
 To better compare each variable between texts, we can put the variables on the x axis with `mv.as.x=TRUE`, and z-score with `mv.scale=TRUE` to standardize ranges.
 
-While we're at it, we'll also pretty things up with better axis titles, and by removing the subset message (which can be done with `sud=FALSE` or just by subsetting the data), and changing colors and legend position:
+While we're at it, we'll also pretty things up with better axis titles, and by removing the subset message (which can be done with `sub=FALSE` or just by subsetting the data), and changing colors and legend position:
 ```{r, fig.height=5, fig.width=10, dev='CairoSVG'}
 splot(cbind(i, we, you, shehe, they, ipron)~name, type='bar', mv.as.x=TRUE, mv.scale=TRUE,
   data=data[grep('Hit|Rod', data$name),], title='Pronoun Usage between Texts', laby='Pronouns (z-scored)',
