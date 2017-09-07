@@ -704,6 +704,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
   }
   par(op)
   layout(seg$dmat,c(rep(seg$prat[1],seg$dim[2]),if(ck$legcol) seg$prat[if(length(seg$prat)>1) 2 else 1]))
+  success=FALSE
   for(i in names(cdat)){tryCatch({
     #plotting
     cl=(if(class(cdat[[i]])=='list') vapply(cdat[[i]],NROW,0) else nrow(cdat[[i]]))>1
@@ -893,11 +894,15 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
           lines=if(is.logical(lines) || ck$c || grepl('^li|^lm|^st',lines,TRUE)) 'li' else
             if(grepl('^lo|^p|^cu',lines,TRUE)) 'lo' else if(grepl('^sm|^sp|^in',lines,TRUE)) 'sm' else
               if(grepl('^e|^co|^d',lines,TRUE)) 'e' else 'li'
-          fit=if(ck$c) lm(y~x+as.matrix(td[,cvar,drop=FALSE]))$fitted else
+          fit=tryCatch({
+            if(ck$c) lm(y~x+as.matrix(td[,cvar,drop=FALSE]))$fitted else
             if(lines=='e') y else predict(switch(lines,li=lm,lo=loess,sm=smooth.spline)(y~x))
-          if(lines=='sm') {xo=fit$x; fit=fit$y} else {or=order(x); xo=x[or]; fit=fit[or]}
-          lines(xo,fit,col=colors[rn[l]],lty=if(ck$lty && lty) l else if(!missing(lty) && !ck$lty)
-            ifelse(length(lty)>1,lty[l],l) else 1,lwd=lwd)
+          },error=function(e){warning('error estimating line: ',e$message,call.=FALSE);NULL})
+          if(!is.null(fit)){
+            if(lines=='sm') {xo=fit$x; fit=fit$y} else {or=order(x); xo=x[or]; fit=fit[or]}
+            lines(xo,fit,col=colors[rn[l]],lty=if(ck$lty && lty) l else if(!missing(lty) && !ck$lty)
+              ifelse(length(lty)>1,lty[l],l) else 1,lwd=lwd)
+          }
         }
         if(points && !points.first) points(x,y,col=col)
       }
