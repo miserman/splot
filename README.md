@@ -4,7 +4,7 @@ An R package aimed at automating a few common visualization tasks in order to ea
 ## features
 You can make any of these with standard R packages, but they can sometimes be a hassle to set up:
 
-* Density distributions (overlayed on histograms when there is no `by` variable)
+* Density distributions (overlaid on histograms when there is no `by` variable)
 * Scatter plots with prediction lines
 * Bar or line graphs with error bars
 
