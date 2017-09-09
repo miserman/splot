@@ -551,6 +551,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
     ptxt=lapply(vs,function(n){
       n=as.character(ptxt[[n]])
       if(length(n)!=0 && n!='NULL' && n!=''){
+        if(length(n)>1) n=sort(n)
         if(is.character(labels.filter)) n=gsub(labels.filter,' ',n,perl=TRUE)
         if(is.numeric(labels.trim)) if(any(ln<-nchar(n)>labels.trim)) n[ln]=sub('$','...',strtrim(n[ln],labels.trim))
       }
