@@ -276,6 +276,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
     ly=!(is.logical(laby) && !laby) || is.character(laby),
     lx=!(is.logical(labx) && !labx) || is.character(labx),
     lty=is.logical(lty),
+    ltm=missing(line.type),
     leg=if(is.logical(leg) && !leg) 0 else if(!is.character(leg) || grepl('^o',leg,TRUE)) 1 else 2,
     legm=missing(leg),
     lp=is.character(lpos) && grepl('^a',lpos,TRUE),
@@ -410,7 +411,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
     if(ck$legm) ck$leg=0
     if(missing(error)) ck$el=FALSE
   }
-  if(missing(line.type) && !ck$el) line.type='b'
+  if(ck$ltm && !ck$el) line.type='b'
   odat=dat
   #splitting and parsing variables
   splt=function(x,s){
@@ -738,29 +739,35 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
       cn=if(seg$by$e && flipped) seg$by$l else colnames(m)
       for(l in seq_len(dl)){
         td=if(cl) cdat[[i]][[l]] else cdat[[i]]
-        if(nrow(td)<2 || length(unique(td$x))<2) next
         ri=rn[l]
-        mo=lm(mot,data=td)
-        su=which(cn%in%sub('x','',names(mo$coef)))
-        sus=seq_along(su)
-        m[ri,su]=mo$coef[sus]
-        if(nrow(td)>2){
-          if(ck$e){
-            e=suppressWarnings(summary(update(mo,~.-0))$coef[sus,2])
-            e=e[c(2,seq_along(e)[-1])]
-            pe[ri,su]=m[l,su]+e
-            ne[ri,su]=m[l,su]-e
-          }else{
-            e=confint(mo)[sus,]
-            pe[ri,su]=e[,2]
-            ne[ri,su]=e[,1]
+        if(nrow(td)>1 && length(unique(td$x))>1){
+          mo=lm(mot,data=td)
+          su=which(cn%in%sub('x','',names(mo$coef)))
+          sus=seq_along(su)
+          m[ri,su]=mo$coef[sus]
+          if(nrow(td)>2){
+            if(ck$e){
+              e=suppressWarnings(summary(update(mo,~.-0))$coef[sus,2])
+              e=e[c(2,seq_along(e)[-1])]
+              pe[ri,su]=m[l,su]+e
+              ne[ri,su]=m[l,su]-e
+            }else{
+              e=confint(mo)[sus,]
+              pe[ri,su]=e[,2]
+              ne[ri,su]=e[,1]
+            }
           }
+        }else{
+          if(nrow(td)==0) next
+          mo=lapply(split(td,td['x']),function(s)if(nrow(s)==0) NA else mean(s[!is.na(s[,'y']),'y']))
+          m[ri,]=unlist(mo[colnames(m)])
         }
       }
       re=if(flipped) list(m=t(m),ne=t(ne),pe=t(pe)) else list(m=m,ne=ne,pe=pe)
+      if(ck$ltm && all(apply(is.na(re$m),2,any))) line.type='b'
       if(drop['x']){
-        dx=apply(re$m,2,function(c)!all(is.na(c)))
-        re=lapply(re,function(s)s[,dx,drop=FALSE])
+        dx=apply(is.na(re$m),2,all)
+        re=lapply(re,function(s)s[,!dx,drop=FALSE])
       }
       m=re$m
       ne=re$ne
