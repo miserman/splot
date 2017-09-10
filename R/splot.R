@@ -442,7 +442,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
   )
   if(!missing(x) && ck$t!=2) if((ck$t==1 || is.character(dat$x) || is.factor(dat$x)
     || (missing(type) && nlevels(factor(dat$x))<lim))){
-    dat$x=if(!is.character(dat$x) && !is.factor(dat$x) && nlevels(as.factor(dat$x))>lim){
+    dat$x=if(!is.character(dat$x) && !is.factor(dat$x) && nlevels(factor(dat$x))>lim){
       seg$x$s=TRUE
       if(missing(type)) ck$t=1
       splt(dat$x,ck$sp)
@@ -450,10 +450,10 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
       as.numeric(dat$x)
     }else{
       if(missing(type)) ck$t=1
-      as.factor(dat$x)
+      factor(dat$x)
     }
   }
-  if(ck$t==1){
+  if(ck$t==1 || (is.character(dat$x) || is.factor(dat$x))){
     seg$x$l=unique(dat$x)
     if(length(seg$x$l)==1) stop('x has only 1 level within the complete cases of this set')
   }
@@ -764,7 +764,10 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
         }
       }
       re=if(flipped) list(m=t(m),ne=t(ne),pe=t(pe)) else list(m=m,ne=ne,pe=pe)
-      if(ck$ltm && all(apply(is.na(re$m),2,any))) line.type='b'
+      if(ck$ltm && all(apply(is.na(re$m),2,any))){
+        drop['x']=FALSE
+        line.type='b'
+      }
       if(drop['x']){
         dx=apply(is.na(re$m),2,all)
         re=lapply(re,function(s)s[,!dx,drop=FALSE])
@@ -879,12 +882,19 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
       td=if(cl) do.call(rbind,cdat[[i]]) else cdat[[i]]
       cx=td[,'x']
       cy=td[,'y']
-      xch=if(is.numeric(cx)) cx else as.numeric(as.factor(cx))
+      xch=if(is.numeric(cx)) cx else as.numeric(factor(cx))
+      a2a=list(cex=par('cex.axis'),fg=par('col.axis'))
+      if((missing(xlas) || xlas>1) && length(ptxt$l.x)!=0){
+        xlas=3
+        a2a$at=seq_along(ptxt$l.x)
+        a2a$labels=ptxt$l.x
+        par(mai=c(min(c(par('fin')[2]/2,max(strwidth(ptxt$l.x,'i'))))+.1,par('mai')[-1]))
+      }
       plot(NA,xlim=if(missing(mxl)) range(xch,na.rm=TRUE) else mxl,ylim=if(missing(myl))
         c(min(cy),max(cy)+max(cy)*ifelse(ck$leg==1 && seg$by$ll<lim,seg$by$ll/20,0)) else myl,
         main=if(sub) ptxt$sub else NA,ylab=NA,xlab=NA,axes=FALSE)
-      axis(1,las=xlas,cex=par('cex.axis'),fg=par('col.axis'))
-      axis(2,las=ylas,cex=par('cex.axis'),fg=par('col.axis'))
+      do.call(axis,c(list(2,las=ylas),a2a[c('cex','fg')]))
+      do.call(axis,c(list(1,las=xlas),a2a))
       if(ck$leg>1){
         up=xch[cy>=quantile(cy)[4]]
         mr=quantile(xch)
