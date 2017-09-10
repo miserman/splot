@@ -768,10 +768,8 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
         drop['x']=FALSE
         line.type='b'
       }
-      if(drop['x']){
-        dx=apply(is.na(re$m),2,all)
-        re=lapply(re,function(s)s[,!dx,drop=FALSE])
-      }
+      dx=apply(is.na(re$m),2,all)
+      if(drop['x']) re=lapply(re,function(s)s[,!dx,drop=FALSE])
       m=re$m
       ne=re$ne
       pe=re$pe
@@ -790,7 +788,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
       if(any(is.na(ylim))) next
       oyl=axTicks(2,axp=c(ylim[1],ylim[2],par('yaxp')[3]))
       rn=rownames(m)
-      colnames(m)=if(drop['x']) ptxt$l.x[dx] else ptxt$l.x
+      colnames(m)=if(drop['x'] && sum(dx)==ncol(m)) ptxt$l.x[dx] else ptxt$l.x
       stw=strwidth(colnames(m),'i')
       if((missing(xlas) || xlas>1) && sum(stw)>
         par('fin')[1]-sum(par('omi')[c(2,4)])-dm[2]*.1 && par('fin')[1]>2.5){
