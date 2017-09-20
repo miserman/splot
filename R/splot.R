@@ -339,7 +339,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
     paste(if(!ck$ff[[l]] && length(txt[[l]])>1) txt[[l]][-1] else txt[[l]])
   })
   if(length(txt$bet)>2) txt$bet=txt$bet[1:2]
-  tdc=function(x){
+  tdc=function(x,l=NULL){
     if(is.character(x)) x=parse(text=x)
     tx=tryCatch(eval(x,data,globalenv()),error=function(e)NULL)
     if(is.character(tx) && length(tx)<2){
@@ -347,14 +347,16 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
       tx=tryCatch(eval(x,data,globalenv()),error=function(e)NULL)
     }
     if(is.null(tx)) stop('could not find ',x,call.=FALSE)
+    if(!is.null(l)) if(length(tx)!=l) warning(x,' is not the same length as y',call.=FALSE)
     tx
   }
   dat=data.frame(y=tdc(txt$y))
   if(ncol(dat)==1) names(dat)='y'
+  rn=nrow(dat)
   for(n in names(txt)[-c(1,2,7)]){
     l=length(txt[[n]])
     if(l==0 || any(txt[[n]]=='NULL')) next
-    if(l==1) dat[,n]=tdc(txt[[n]]) else for(sn in txt[[n]]) dat[,paste0(n,'.',sn)]=tdc(sn)
+    if(l==1) dat[,n]=tdc(txt[[n]],rn) else for(sn in txt[[n]]) dat[,paste0(n,'.',sn)]=tdc(sn,rn)
   }
   if(ck$su) dat=if(ck$d) dat[eval(substitute(su),data),,drop=FALSE] else dat[su,,drop=FALSE]
   if(NCOL(dat$x)>1){
@@ -535,6 +537,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
   }else vapply(cdat,nrow,0)
   if(seg$by$e && drop['by']){
     seg$by$l=apply(seg$n,1,function(c)any(c>1))
+    if(!any(seg$by$l)) stop('no level of by has more than 1 observation')
     seg$by$l=names(seg$by$l[seg$by$l])
     seg$by$ll=length(seg$by$l)
   }
@@ -571,7 +574,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
       }else if(cs && grepl('^dark',colors,TRUE)){
         c('#1b8621','#681686','#2a2a2a','#7c0d0d','#b5bc00','#241c80','#1a7e8b','#666666','#b06622')
       }else c('#82c473','#a378c0','#616161','#9f5c61','#d3d280','#6970b2','#78c4c2','#454744','#d98c82')
-    }else grey(.2:seg$by$ll/(seg$by$ll+seg$by$ll*ifelse(seg$by$ll<10,.1,.3)))
+    }else if(seg$by$ll>1) grey(.2:seg$by$ll/(seg$by$ll+seg$by$ll*ifelse(seg$by$ll<10,.1,.3))) else '#999999'
   }
   cs=colors
   colors=colors[seq_len(seg$by$ll)]
