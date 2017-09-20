@@ -320,13 +320,13 @@ within a level of <code>x</code>.</p>
 will be minimized. <code>x</code> only applies to bar or line plots. <code>by</code> relates to levels presented in the legend.
 If <code>bet</code> is <code>FALSE</code>, the layout of <code>between</code> variables will be strict, with levels of <code>between[1]</code>
 as rows, and levels of <code>between[2]</code> as columns &ndash; if there are no data at an intersection of levels, the corresponding
-pannel will be blank. See the input section.</p>
+panel will be blank. See the input section.</p>
 </td></tr>
 <tr valign="top"><td><code>prat</code></td>
 <td>
 <p>panel ratio, referring to the ratio between plot frames and the legend frame when the legend is out. A single
-number will make all panels of equal width. A vector of two numbers will adjust the ratio between plot pannels and the
-legend pannel (e.g., <code>prat=c(3,1)</code> makes all plot pannels a relative width of 3, and the legend frame a relative
+number will make all panels of equal width. A vector of two numbers will adjust the ratio between plot panels and the
+legend panel (e.g., <code>prat=c(3,1)</code> makes all plot panels a relative width of 3, and the legend frame a relative
 width of 1).</p>
 </td></tr>
 <tr valign="top"><td><code>model</code></td>
@@ -335,7 +335,7 @@ width of 1).</p>
 </td></tr>
 <tr valign="top"><td><code>options</code></td>
 <td>
-<p>a list with named arguments, usefull for setting temporary defaults if you plan on using some of the same
+<p>a list with named arguments, useful for setting temporary defaults if you plan on using some of the same
 options for multiple plots (e.g., <code>opt=list(type='bar', colors='grey', bg='#999999'); splot(x~y, options=opt)</code>).
 use <code>quote</code> to include options that are to be evaluated within the function (e.g.,
 <code>opt=list(su=quote(y&gt;0))</code>).</p>
@@ -346,6 +346,50 @@ use <code>quote</code> to include options that are to be evaluated within the fu
 those set by the function (e.g., <code>add=abline(v=mean(x),xpd=FALSE)</code> for a vertical line at the mean of x).</p>
 </td></tr>
 </table>
+
+
+<h3>Value</h3>
+
+<p>A list containing data and settings is invisibly returned, which might be useful to check for errors.
+Each of these objects can also be pulled from within <code>add</code>:
+</p>
+
+<table summary="Rd table">
+<tr>
+ <td style="text-align: left;">
+  <code>data</code> </td><td style="text-align: left;"> a <code>data.frame</code> of processed, unsegmented data.</td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+  <code>cdat</code> </td><td style="text-align: left;"> a <code>list</code> of <code>list</code>s of <code>data.frame</code>s of processed, segmented data.</td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+  <code>txt</code> </td><td style="text-align: left;"> a <code>list</code> of variable names. used mostly to pull variables from data or the environment.</td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+  <code>ptxt</code> </td><td style="text-align: left;"> a <code>list</code> of processed variable and level names. Used mostly for labeling.</td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+  <code>seg</code> </td><td style="text-align: left;"> a <code>list</code> containing segmentation information (such as levels) for each variable.</td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+  <code>ck</code> </td><td style="text-align: left;"> a <code>list</code> of settings.</td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+  <code>model</code> </td><td style="text-align: left;"> an <code>lm</code> object if <code>model</code> is <code>TRUE</code>, and the model succeeded.</td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+</td>
+</tr>
+
+</table>
+
 
 
 <h3>Input</h3>

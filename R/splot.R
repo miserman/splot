@@ -146,6 +146,18 @@
 #' @param add evaluated within the function. Useful for adding things like lines to a plot while the parameters are still
 #'   those set by the function (e.g., \code{add=abline(v=mean(x),xpd=FALSE)} for a vertical line at the mean of x).
 #'
+#' @return A list containing data and settings is invisibly returned, which might be useful to check for errors.
+#' Each of these objects can also be pulled from within \code{add}:
+#' \tabular{ll}{
+#'   \code{data} \tab a \code{data.frame} of processed, unsegmented data.\cr
+#'   \code{cdat} \tab a \code{list} of \code{list}s of \code{data.frame}s of processed, segmented data.\cr
+#'   \code{txt} \tab a \code{list} of variable names. used mostly to pull variables from \code{data} or the environment.\cr
+#'   \code{ptxt} \tab a \code{list} of processed variable and level names. Used mostly for labeling.\cr
+#'   \code{seg} \tab a \code{list} containing segmentation information (such as levels) for each variable.\cr
+#'   \code{ck} \tab a \code{list} of settings.\cr
+#'   \code{model} \tab an \code{lm} object if \code{model} is \code{TRUE}, and the model succeeded.
+#' }
+#'
 #' @section Input:
 #' \strong{formulas}
 #'
