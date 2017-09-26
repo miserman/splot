@@ -547,7 +547,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
     })
     if(all((seg$n<-vapply(cdat,length,0))==seg$by$ll)){
       seg$n=vapply(cdat,function(s)vapply(s,NROW,0),numeric(seg$by$ll))
-    }
+    }else drop['by']=FALSE
   }else seg$n=vapply(cdat,nrow,0)
   if(seg$by$e && drop['by']){
     seg$by$l=apply(seg$n,1,function(c)any(c>1))
