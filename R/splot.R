@@ -541,12 +541,14 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
   if(seg$f2$e) dsf$c2=dat[,seg$f2$i]
   dsf=do.call(paste0,dsf)
   cdat=split(dat,dsf)
-  seg$n=if(seg$by$e){
+  if(seg$by$e){
     cdat=lapply(cdat,function(s)if(length(unique(s$by))>1) split(s,s$by) else{
       s=list(s)[seg$by$l];names(s)=seg$by$l;s[vapply(s,is.null,TRUE)]=0;s
     })
-    vapply(cdat,function(s)vapply(s,NROW,0),numeric(if(is.factor(seg$by$l)) nlevels(seg$by$l) else seg$by$ll))
-  }else vapply(cdat,nrow,0)
+    if(all((seg$n<-vapply(cdat,length,0))==seg$by$ll)){
+      seg$n=vapply(cdat,function(s)vapply(s,NROW,0),numeric(seg$by$ll))
+    }
+  }else seg$n=vapply(cdat,nrow,0)
   if(seg$by$e && drop['by']){
     seg$by$l=apply(seg$n,1,function(c)any(c>1))
     if(!any(seg$by$l)) stop('no level of by has more than 1 observation')
