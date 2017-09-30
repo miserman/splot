@@ -9,7 +9,7 @@ splot(y, x = NULL, by = NULL, between = NULL, cov = NULL, type = "",
   error = "standard", error.color = "#585858", error.lwd = 2, lim = 9,
   lines = TRUE, ..., line.type = "l", mv.scale = "none",
   mv.as.x = FALSE, save = FALSE, format = cairo_pdf, dims = dev.size(),
-  file.name = "splot", colors = NULL, myl = NULL, mxl = NULL,
+  file.name = "splot", colors = "pastel", myl = NULL, mxl = NULL,
   autori = TRUE, xlas = 0, ylas = 1, bw = "nrd0", adj = 2,
   leg = "outside", lpos = "auto", lvn = TRUE, title = TRUE,
   labx = TRUE, laby = TRUE, lty = TRUE, lwd = 2, sub = TRUE,
@@ -20,12 +20,12 @@ splot(y, x = NULL, by = NULL, between = NULL, cov = NULL, type = "",
   TRUE), prat = c(1, 1), model = FALSE, options = NULL, add = NULL)
 }
 \arguments{
-\item{y}{required. Primary variable, to be shown on the y axis unless \code{x} is not specified. Can be an object,
-name of a column in data, or a formula (see note). Multiple variables can also be included in a matrix-like object.}
+\item{y}{A formula (see note), or the primary variable(s) to be shown on the y axis unless (\code{x} is not specified).
+When not a formula, this can be one or more variables as objects or names in \code{data}.}
 
 \item{x}{secondary variable, to be shown in on the x axis. If not specified, \code{type} will be set to \code{'density'}.
 If \code{x} is a factor or vector of characters, or has fewer than \code{lim} levels when treated as a factor,
-\code{type} will be set to \code{"line"} unless specified.}
+\code{type} will be set to \code{'line'} unless specified.}
 
 \item{by}{the 'splitting' variable within each plot, by which the plotted values of \code{x} and \code{y} will be
 grouped.}
@@ -53,11 +53,12 @@ in the environment.}
 
 \item{levels}{a list with entries corresponding to variable names, used to rename and/or reorder factor levels. To
 reorder a factor, enter a vector of either numbers or existing level names in the new order (e.g.,
-\code{levels=list(var=c(3,2,1))}). To rename levels of a factor, enter a character vector the same length as the number
-of levels. To rename and reorder, enter a list, with names as the first entry, and order as the second entry (e.g.,
-\code{levels=list(var=list(c('a','b','c'),c(3,2,1)))}). This happens after variables are split, so names and orders
-should correspond to the new split levels of split variables. For example, if a continuous variable is median split,
-it now has two levels ('Under Median' and 'Over Median'), which are the levels reordering or renaming would apply to.}
+\code{levels =}\code{list(var =} \code{c(3,2,1))}). To rename levels of a factor, enter a character vector the same
+length as the number of levels. To rename and reorder, enter a list, with names as the first entry, and order as the
+second entry (e.g., \code{levels =} \code{list(var =} \code{list(c('a','b','c'),} \code{c(3,2,1)))}). This happens after
+variables are split, so names and orders should correspond to the new split levels of split variables. For example, if
+a continuous variable is median split, it now has two levels ('Under Median' and 'Over Median'), which are the levels
+reordering or renaming would apply to.}
 
 \item{error}{string: sets the type of error bars to show in bar or line plots, or turns them off. If \code{FALSE}, no error
 bars will be shown. Otherwise, the default is \code{"standard error"} (\code{'^s'}), with \code{"confidence intervals"}
@@ -78,12 +79,13 @@ is treated as infinite (set to \code{Inf}).}
 lines connecting all points, and \code{FALSE} will not draw any lines.}
 
 \item{...}{passes additional arguments to \code{\link[graphics]{par}} or \code{\link[graphics]{legend}}. The
-\code{\link[graphics]{par}} options \code{col, mfrow, oma, mar, mgp, font.main, cex.main, font.lab, tcl, pch, lwd,} and
-\code{xpd} are all set within the function, but will be overwritten if they are included in the call. For example,
-\code{col} sets font colors in this case (as opposed to \code{colors} which sets line and point colors). The default is
-\code{'#303030'} for a nice dark grey, but maybe you want to lighten that up: \code{col='#606060'}. After arguments have
-been applied to \code{\link[graphics]{par}}, if any have not been used and match a \code{\link[graphics]{legend}} argument,
-these will be applied to \code{\link[graphics]{legend}}.}
+\code{\link[graphics]{par}} options \code{col}, \code{mfrow}, \code{oma}, \code{mar}, \code{mgp}, \code{font.main},
+\code{cex.main}, \code{font.lab}, \code{tcl}, \code{pch}, \code{lwd}, and \code{xpd} are all set within the function,
+but will be overwritten if they are included in the call. For example, \code{col} sets font colors in this case
+(as opposed to \code{colors} which sets line and point colors). The default is \code{'#303030'} for a nice dark grey,
+but maybe you want to lighten that up: \code{col='#606060'}. After arguments have been applied to
+\code{\link[graphics]{par}}, if any have not been used and match a \code{\link[graphics]{legend}} argument, these will
+be applied to \code{\link[graphics]{legend}}.}
 
 \item{line.type}{a character setting the style of line (e.g., with points at joints) to be drawn in line plots. Default
 is \code{'b'} if \code{error} is \code{FALSE}, and \code{'l'} otherwise. See the \code{line} argument of
@@ -108,9 +110,9 @@ pixels depending on \code{format}. Defaults to the dimensions of the plot window
 \code{format}).}
 
 \item{colors}{sets a color theme or manually specifies colors. Default theme is \code{"pastel"}, with \code{"dark"} and
-\code{"bright"} as options. If set to \code{"grey"}, or if \code{by} has more than 9 levels, a grey scale is calculated
-using \code{\link[grDevices]{grey}}. See the \code{col} parameter in \code{\link[graphics]{par}} for acceptable manual
-inputs.}
+\code{"bright"} as options; these are passed to \code{\link{splot.color}}. If set to \code{"grey"}, or if \code{by} has
+more than 9 levels, a grey scale is calculated using \code{\link[grDevices]{grey}}. See the \code{col} parameter in
+\code{\link[graphics]{par}} for acceptable manual inputs.}
 
 \item{myl}{sets the range of the y axis (\code{ylim} of \code{\link[graphics]{plot}} or \code{\link[graphics]{barplot}}).
 If not specified, this will be calculated from the data.}
@@ -128,17 +130,17 @@ that they extend to the bottom of the y axis.}
 
 \item{adj}{adjusts the smoothing of densities (\code{adj * bw}). See \code{\link[stats]{density}}.}
 
-\item{leg}{sets the legend inside or outside the plot frames (when a character matching \code{'^i'}, or a character matching
-\code{'^o'} or a number respectively), or turns it off (when \code{FALSE}). When inside, a legend is drawn in each plot
-frame. When outside, a single legend is drawn either to the right of all plot frames, or within an empty plot frame. By
-default, this will be determined automatically, tending to set legends outside when there are multiple levels of
-\code{between}. A number will try and set the legend in an empty frame within the grid of plot frames. If there are no empty
-frames, the legend will just go to the side as if \code{leg='outside'}.}
+\item{leg}{sets the legend inside or outside the plot frames (when a character matching \code{'^i'}, or a character
+matching \code{'^o'} or a number respectively), or turns it off (when \code{FALSE}). When inside, a legend is drawn in
+each plot frame. When outside, a single legend is drawn either to the right of all plot frames, or within an empty plot
+frame. By default, this will be determined automatically, tending to set legends outside when there are multiple levels
+of \code{between}. A number will try and set the legend in an empty frame within the grid of plot frames. If there are
+no empty frames, the legend will just go to the side as if \code{leg='outside'}.}
 
-\item{lpos}{sets the position of the legend within its frame (whether inside or outside of the plot frames) based on keywords
-(see \code{\link[graphics]{legend}}. By default, when the legend is outside, \code{lpos} is either \code{'right'} when the
-legend is in a right-hand column, or \code{'center'} when in an empty plot frame. When the legend is inside and \code{lpos}
-is not specified, the legend will be placed automatically based on the data.}
+\item{lpos}{sets the position of the legend within its frame (whether inside or outside of the plot frames) based on
+keywords (see \code{\link[graphics]{legend}}. By default, when the legend is outside, \code{lpos} is either
+\code{'right'} when the legend is in a right-hand column, or \code{'center'} when in an empty plot frame. When the
+legend is inside and \code{lpos} is not specified, the legend will be placed automatically based on the data.}
 
 \item{lvn}{legend variable name. Logical: if \code{FALSE}, the names of by and between variables will not be shown before
 their level (e.g., for a sex variable with a "female" level, "sex: female" would become "female" in the legend or above
@@ -201,8 +203,8 @@ within a level of \code{x}.}
 \code{TRUE} by default, meaning only levels with data will be presented, and the layout of \code{between} levels
 will be minimized. \code{x} only applies to bar or line plots. \code{by} relates to levels presented in the legend.
 If \code{bet} is \code{FALSE}, the layout of \code{between} variables will be strict, with levels of \code{between[1]}
-as rows, and levels of \code{between[2]} as columns -- if there are no data at an intersection of levels, the corresponding
-panel will be blank. See the input section.}
+as rows, and levels of \code{between[2]} as columns -- if there are no data at an intersection of levels, the
+corresponding panel will be blank. See the input section.}
 
 \item{prat}{panel ratio, referring to the ratio between plot frames and the legend frame when the legend is out. A single
 number will make all panels of equal width. A vector of two numbers will adjust the ratio between plot panels and the
@@ -212,12 +214,14 @@ width of 1).}
 \item{model}{logical: if \code{TRUE}, the summary of an interaction model will be printed.}
 
 \item{options}{a list with named arguments, useful for setting temporary defaults if you plan on using some of the same
-options for multiple plots (e.g., \code{opt=list(type='bar', colors='grey', bg='#999999'); splot(x~y, options=opt)}).
+options for multiple plots (e.g., \code{opt =} \code{list(type = 'bar',} \code{colors = 'grey',} \code{bg = '#999999');}
+\code{splot(x~y,} \code{options = opt)}).
 use \code{\link[base]{quote}} to include options that are to be evaluated within the function (e.g.,
-\code{opt=list(su=quote(y>0))}).}
+\code{opt =} \code{list(su =} \code{quote(y>0))}).}
 
 \item{add}{evaluated within the function. Useful for adding things like lines to a plot while the parameters are still
-those set by the function (e.g., \code{add=abline(v=mean(x),xpd=FALSE)} for a vertical line at the mean of x).}
+those set by the function (e.g., \code{add =} \code{abline(v =} \code{mean(x),} \code{xpd = FALSE)} for a vertical line
+at the mean of x).}
 }
 \value{
 A list containing data and settings is invisibly returned, which might be useful to check for errors.
@@ -225,11 +229,11 @@ Each of these objects can also be pulled from within \code{add}:
 \tabular{ll}{
   \code{data} \tab a \code{data.frame} of processed, unsegmented data.\cr
   \code{cdat} \tab a \code{list} of \code{list}s of \code{data.frame}s of processed, segmented data.\cr
-  \code{txt} \tab a \code{list} of variable names. used mostly to pull variables from data or the environment.\cr
+  \code{txt} \tab a \code{list} of variable names. used mostly to pull variables from \code{data} or the environment.\cr
   \code{ptxt} \tab a \code{list} of processed variable and level names. Used mostly for labeling.\cr
   \code{seg} \tab a \code{list} containing segmentation information (such as levels) for each variable.\cr
   \code{ck} \tab a \code{list} of settings.\cr
-  \code{model} \tab an \code{lm} object if \code{model} is \code{TRUE}, and the model succeeded.\cr
+  \code{model} \tab an \code{lm} object if \code{model} is \code{TRUE}, and the model succeeded.
 }
 }
 \description{
@@ -281,8 +285,8 @@ as levels), so anything entered as \code{by} is treated as \code{between[1]}, \c
 Named vector arguments like \code{font}, \code{cex}, and \code{drop} can be set with a single value, positionally, or
 with names. If a single value is entered (e.g., \code{drop=FALSE}), this will be applied to each level (i.e.,
 \code{c(x=FALSE,by=FALSE,bet=FALSE)}). If more than one value is entered, these will be treated positionally (e.g.,
-\code{cex=c(2,1.2)} would be read as \code{c(title=2,leg=1.2,note=.7)}). If values are named, only named values will be set,
-with other defaults retained (e.g., \code{cex=c(note=1.2)} would be read as \code{c(title=1.5,leg=1,note=1.2)}).
+\code{cex=c(2,1.2)} would be read as \code{c(title=2,leg=1.2,note=.7)}). If values are named, only named values will be
+set, with other defaults retained (e.g., \code{cex=c(note=1.2)} would be read as \code{c(title=1.5,leg=1,note=1.2)}).
 }
 
 \examples{
@@ -317,7 +321,7 @@ splot(y, x, by, c(bet1, bet2), data=dat)
 #zooming in on one of the windows
 splot(y~x*by, data=dat, su=bet1==1&bet2==0)
 
-#compairing an adjusted lm prediction line with a loess line
+#comparing an adjusted lm prediction line with a loess line
 #this could also be entered as y ~ poly(x,3)
 splot(y~x+x^2+x^3, data=dat, su=bet1==1&bet2==0&by==1, add={
   lines(x[order(x)], loess(y~x)$fitted[order(x)], lty=2)
