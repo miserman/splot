@@ -1,0 +1,86 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: splot colors</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for splot.color"><tr><td>splot.color</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>splot colors</h2>
+
+<h3>Description</h3>
+
+<p>Get a prespecified set of 9 colors, a greyscale, or a set of random, grouped colors.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+splot.color(set = "pastel", by = NULL, ns = 1, maxiter = 1000,
+  flat = TRUE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>set</code></td>
+<td>
+<p>the name of a set (matching <code>'bright'</code>, <code>'dark'</code>, <code>'pastel'</code>, or
+<code>'gray'</code> or <code>'grey'</code>), or a vector of color names or hex codes. See the details section.</p>
+</td></tr>
+<tr valign="top"><td><code>by</code></td>
+<td>
+<p>a factor-like variable; this will be used to set <code>ns</code> via <code>table</code>.</p>
+</td></tr>
+<tr valign="top"><td><code>ns</code></td>
+<td>
+<p>a single value, or vector of values specifying the number of colors to generate.</p>
+</td></tr>
+<tr valign="top"><td><code>maxiter</code></td>
+<td>
+<p>the maximum number of iterations allowed when colors are being randomly sampled.</p>
+</td></tr>
+<tr valign="top"><td><code>flat</code></td>
+<td>
+<p>logical; if <code>FALSE</code>, if <code>by</code> is specified, a matrix is returned with two columns
+(group and color), and if <code>by</code> is missing, a list is returned with seed colors as names. Otherwise,
+a vector with all generated colors is returned, either in order of generation (if <code>by</code> is missing),
+or in the same order as <code>by</code>.</p>
+</td></tr>
+</table>
+
+
+<h3>Details</h3>
+
+<p>If only <code>set</code> is specified, either a prespecified vector of color codes is returned (if
+<code>set</code> is a single string, and matches one of <code>'bright'</code>, <code>'dark'</code>, or <code>'pastel'</code>),
+or a version of the entered vector, with color names converted to hex codes (e.g.,
+<code>splot.color(c('red','green','blue'))</code> would return <code>c('#ff0000','#00ff00','#0000ff')</code>).
+</p>
+<p>If <code>set</code> matches <code>'gray'</code> or <code>'grey'</code>, a single vector of colors codes is returned,
+corresponding to either the length of <code>by</code> (if not missing) or the sum of <code>ns</code>.
+</p>
+<p>Otherwise, if <code>by</code> or <code>ns</code> is not missing, a set of colors is sampled for each value of
+<code>ns</code> (where <code>ns=table(by)</code> if <code>by</code> is not missing). In this case, <code>set</code> determines the
+seed color for each sample (e.g., if <code>set[1]='red'</code>, <code>ns[1]</code> colors similar to <code>'red'</code>
+would be sampled).
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+x=rnorm(1000)
+y=rnorm(1000)
+
+# get a quick feel for the range of colors
+plot(y~x,pch=20,cex=10,col=splot.color(ns=c(20,20)))
+
+# with more extreme seed colors, differences are subtler
+plot(y~x,pch=20,cex=10,col=splot.color(c('red','blue'),ns=c(20,20)))
+
+</pre>
+
+
+</body></html>

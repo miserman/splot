@@ -21,7 +21,7 @@ splot(y, x = NULL, by = NULL, between = NULL, cov = NULL, type = "",
   error = "standard", error.color = "#585858", error.lwd = 2, lim = 9,
   lines = TRUE, ..., line.type = "l", mv.scale = "none",
   mv.as.x = FALSE, save = FALSE, format = cairo_pdf, dims = dev.size(),
-  file.name = "splot", colors = NULL, myl = NULL, mxl = NULL,
+  file.name = "splot", colors = "pastel", myl = NULL, mxl = NULL,
   autori = TRUE, xlas = 0, ylas = 1, bw = "nrd0", adj = 2,
   leg = "outside", lpos = "auto", lvn = TRUE, title = TRUE,
   labx = TRUE, laby = TRUE, lty = TRUE, lwd = 2, sub = TRUE,
@@ -38,14 +38,14 @@ splot(y, x = NULL, by = NULL, between = NULL, cov = NULL, type = "",
 <table summary="R argblock">
 <tr valign="top"><td><code>y</code></td>
 <td>
-<p>required. Primary variable, to be shown on the y axis unless <code>x</code> is not specified. Can be an object,
-name of a column in data, or a formula (see note). Multiple variables can also be included in a matrix-like object.</p>
+<p>A formula (see note), or the primary variable(s) to be shown on the y axis unless (<code>x</code> is not specified).
+When not a formula, this can be one or more variables as objects or names in <code>data</code>.</p>
 </td></tr>
 <tr valign="top"><td><code>x</code></td>
 <td>
 <p>secondary variable, to be shown in on the x axis. If not specified, <code>type</code> will be set to <code>'density'</code>.
 If <code>x</code> is a factor or vector of characters, or has fewer than <code>lim</code> levels when treated as a factor,
-<code>type</code> will be set to <code>"line"</code> unless specified.</p>
+<code>type</code> will be set to <code>'line'</code> unless specified.</p>
 </td></tr>
 <tr valign="top"><td><code>by</code></td>
 <td>
@@ -89,11 +89,12 @@ in the environment.</p>
 <td>
 <p>a list with entries corresponding to variable names, used to rename and/or reorder factor levels. To
 reorder a factor, enter a vector of either numbers or existing level names in the new order (e.g.,
-<code>levels=list(var=c(3,2,1))</code>). To rename levels of a factor, enter a character vector the same length as the number
-of levels. To rename and reorder, enter a list, with names as the first entry, and order as the second entry (e.g.,
-<code>levels=list(var=list(c('a','b','c'),c(3,2,1)))</code>). This happens after variables are split, so names and orders
-should correspond to the new split levels of split variables. For example, if a continuous variable is median split,
-it now has two levels ('Under Median' and 'Over Median'), which are the levels reordering or renaming would apply to.</p>
+<code>levels =</code><code>list(var =</code> <code>c(3,2,1))</code>). To rename levels of a factor, enter a character vector the same
+length as the number of levels. To rename and reorder, enter a list, with names as the first entry, and order as the
+second entry (e.g., <code>levels =</code> <code>list(var =</code> <code>list(c('a','b','c'),</code> <code>c(3,2,1)))</code>). This happens after
+variables are split, so names and orders should correspond to the new split levels of split variables. For example, if
+a continuous variable is median split, it now has two levels ('Under Median' and 'Over Median'), which are the levels
+reordering or renaming would apply to.</p>
 </td></tr>
 <tr valign="top"><td><code>error</code></td>
 <td>
@@ -126,12 +127,13 @@ lines connecting all points, and <code>FALSE</code> will not draw any lines.</p>
 <tr valign="top"><td><code>...</code></td>
 <td>
 <p>passes additional arguments to <code>par</code> or <code>legend</code>. The
-<code>par</code> options <code>col, mfrow, oma, mar, mgp, font.main, cex.main, font.lab, tcl, pch, lwd,</code> and
-<code>xpd</code> are all set within the function, but will be overwritten if they are included in the call. For example,
-<code>col</code> sets font colors in this case (as opposed to <code>colors</code> which sets line and point colors). The default is
-<code>'#303030'</code> for a nice dark grey, but maybe you want to lighten that up: <code>col='#606060'</code>. After arguments have
-been applied to <code>par</code>, if any have not been used and match a <code>legend</code> argument,
-these will be applied to <code>legend</code>.</p>
+<code>par</code> options <code>col</code>, <code>mfrow</code>, <code>oma</code>, <code>mar</code>, <code>mgp</code>, <code>font.main</code>,
+<code>cex.main</code>, <code>font.lab</code>, <code>tcl</code>, <code>pch</code>, <code>lwd</code>, and <code>xpd</code> are all set within the function,
+but will be overwritten if they are included in the call. For example, <code>col</code> sets font colors in this case
+(as opposed to <code>colors</code> which sets line and point colors). The default is <code>'#303030'</code> for a nice dark grey,
+but maybe you want to lighten that up: <code>col='#606060'</code>. After arguments have been applied to
+<code>par</code>, if any have not been used and match a <code>legend</code> argument, these will
+be applied to <code>legend</code>.</p>
 </td></tr>
 <tr valign="top"><td><code>line.type</code></td>
 <td>
@@ -172,9 +174,9 @@ pixels depending on <code>format</code>. Defaults to the dimensions of the plot 
 <tr valign="top"><td><code>colors</code></td>
 <td>
 <p>sets a color theme or manually specifies colors. Default theme is <code>"pastel"</code>, with <code>"dark"</code> and
-<code>"bright"</code> as options. If set to <code>"grey"</code>, or if <code>by</code> has more than 9 levels, a grey scale is calculated
-using <code>grey</code>. See the <code>col</code> parameter in <code>par</code> for acceptable manual
-inputs.</p>
+<code>"bright"</code> as options; these are passed to <code>splot.color</code>. If set to <code>"grey"</code>, or if <code>by</code> has
+more than 9 levels, a grey scale is calculated using <code>grey</code>. See the <code>col</code> parameter in
+<code>par</code> for acceptable manual inputs.</p>
 </td></tr>
 <tr valign="top"><td><code>myl</code></td>
 <td>
@@ -206,19 +208,19 @@ that they extend to the bottom of the y axis.</p>
 </td></tr>
 <tr valign="top"><td><code>leg</code></td>
 <td>
-<p>sets the legend inside or outside the plot frames (when a character matching <code>'^i'</code>, or a character matching
-<code>'^o'</code> or a number respectively), or turns it off (when <code>FALSE</code>). When inside, a legend is drawn in each plot
-frame. When outside, a single legend is drawn either to the right of all plot frames, or within an empty plot frame. By
-default, this will be determined automatically, tending to set legends outside when there are multiple levels of
-<code>between</code>. A number will try and set the legend in an empty frame within the grid of plot frames. If there are no empty
-frames, the legend will just go to the side as if <code>leg='outside'</code>.</p>
+<p>sets the legend inside or outside the plot frames (when a character matching <code>'^i'</code>, or a character
+matching <code>'^o'</code> or a number respectively), or turns it off (when <code>FALSE</code>). When inside, a legend is drawn in
+each plot frame. When outside, a single legend is drawn either to the right of all plot frames, or within an empty plot
+frame. By default, this will be determined automatically, tending to set legends outside when there are multiple levels
+of <code>between</code>. A number will try and set the legend in an empty frame within the grid of plot frames. If there are
+no empty frames, the legend will just go to the side as if <code>leg='outside'</code>.</p>
 </td></tr>
 <tr valign="top"><td><code>lpos</code></td>
 <td>
-<p>sets the position of the legend within its frame (whether inside or outside of the plot frames) based on keywords
-(see <code>legend</code>. By default, when the legend is outside, <code>lpos</code> is either <code>'right'</code> when the
-legend is in a right-hand column, or <code>'center'</code> when in an empty plot frame. When the legend is inside and <code>lpos</code>
-is not specified, the legend will be placed automatically based on the data.</p>
+<p>sets the position of the legend within its frame (whether inside or outside of the plot frames) based on
+keywords (see <code>legend</code>. By default, when the legend is outside, <code>lpos</code> is either
+<code>'right'</code> when the legend is in a right-hand column, or <code>'center'</code> when in an empty plot frame. When the
+legend is inside and <code>lpos</code> is not specified, the legend will be placed automatically based on the data.</p>
 </td></tr>
 <tr valign="top"><td><code>lvn</code></td>
 <td>
@@ -319,8 +321,8 @@ within a level of <code>x</code>.</p>
 <code>TRUE</code> by default, meaning only levels with data will be presented, and the layout of <code>between</code> levels
 will be minimized. <code>x</code> only applies to bar or line plots. <code>by</code> relates to levels presented in the legend.
 If <code>bet</code> is <code>FALSE</code>, the layout of <code>between</code> variables will be strict, with levels of <code>between[1]</code>
-as rows, and levels of <code>between[2]</code> as columns &ndash; if there are no data at an intersection of levels, the corresponding
-panel will be blank. See the input section.</p>
+as rows, and levels of <code>between[2]</code> as columns &ndash; if there are no data at an intersection of levels, the
+corresponding panel will be blank. See the input section.</p>
 </td></tr>
 <tr valign="top"><td><code>prat</code></td>
 <td>
@@ -336,14 +338,16 @@ width of 1).</p>
 <tr valign="top"><td><code>options</code></td>
 <td>
 <p>a list with named arguments, useful for setting temporary defaults if you plan on using some of the same
-options for multiple plots (e.g., <code>opt=list(type='bar', colors='grey', bg='#999999'); splot(x~y, options=opt)</code>).
+options for multiple plots (e.g., <code>opt =</code> <code>list(type = 'bar',</code> <code>colors = 'grey',</code> <code>bg = '#999999');</code>
+<code>splot(x~y,</code> <code>options = opt)</code>).
 use <code>quote</code> to include options that are to be evaluated within the function (e.g.,
-<code>opt=list(su=quote(y&gt;0))</code>).</p>
+<code>opt =</code> <code>list(su =</code> <code>quote(y&gt;0))</code>).</p>
 </td></tr>
 <tr valign="top"><td><code>add</code></td>
 <td>
 <p>evaluated within the function. Useful for adding things like lines to a plot while the parameters are still
-those set by the function (e.g., <code>add=abline(v=mean(x),xpd=FALSE)</code> for a vertical line at the mean of x).</p>
+those set by the function (e.g., <code>add =</code> <code>abline(v =</code> <code>mean(x),</code> <code>xpd = FALSE)</code> for a vertical line
+at the mean of x).</p>
 </td></tr>
 </table>
 
@@ -365,7 +369,7 @@ Each of these objects can also be pulled from within <code>add</code>:
 </tr>
 <tr>
  <td style="text-align: left;">
-  <code>txt</code> </td><td style="text-align: left;"> a <code>list</code> of variable names. used mostly to pull variables from data or the environment.</td>
+  <code>txt</code> </td><td style="text-align: left;"> a <code>list</code> of variable names. used mostly to pull variables from <code>data</code> or the environment.</td>
 </tr>
 <tr>
  <td style="text-align: left;">
@@ -381,10 +385,7 @@ Each of these objects can also be pulled from within <code>add</code>:
 </tr>
 <tr>
  <td style="text-align: left;">
-  <code>model</code> </td><td style="text-align: left;"> an <code>lm</code> object if <code>model</code> is <code>TRUE</code>, and the model succeeded.</td>
-</tr>
-<tr>
- <td style="text-align: left;">
+  <code>model</code> </td><td style="text-align: left;"> an <code>lm</code> object if <code>model</code> is <code>TRUE</code>, and the model succeeded.
 </td>
 </tr>
 
@@ -409,8 +410,8 @@ as levels), so anything entered as <code>by</code> is treated as <code>between[1
 <p>Named vector arguments like <code>font</code>, <code>cex</code>, and <code>drop</code> can be set with a single value, positionally, or
 with names. If a single value is entered (e.g., <code>drop=FALSE</code>), this will be applied to each level (i.e.,
 <code>c(x=FALSE,by=FALSE,bet=FALSE)</code>). If more than one value is entered, these will be treated positionally (e.g.,
-<code>cex=c(2,1.2)</code> would be read as <code>c(title=2,leg=1.2,note=.7)</code>). If values are named, only named values will be set,
-with other defaults retained (e.g., <code>cex=c(note=1.2)</code> would be read as <code>c(title=1.5,leg=1,note=1.2)</code>).
+<code>cex=c(2,1.2)</code> would be read as <code>c(title=2,leg=1.2,note=.7)</code>). If values are named, only named values will be
+set, with other defaults retained (e.g., <code>cex=c(note=1.2)</code> would be read as <code>c(title=1.5,leg=1,note=1.2)</code>).
 </p>
 
 
@@ -480,7 +481,7 @@ splot(y, x, by, c(bet1, bet2), data=dat)
 #zooming in on one of the windows
 splot(y~x*by, data=dat, su=bet1==1&amp;bet2==0)
 
-#compairing an adjusted lm prediction line with a loess line
+#comparing an adjusted lm prediction line with a loess line
 #this could also be entered as y ~ poly(x,3)
 splot(y~x+x^2+x^3, data=dat, su=bet1==1&amp;bet2==0&amp;by==1, add={
   lines(x[order(x)], loess(y~x)$fitted[order(x)], lty=2)
