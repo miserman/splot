@@ -14,7 +14,8 @@ a:link,a:visited{text-decoration:none}
 #wrap{position:fixed;top:0;bottom:0;right:0;left:0;margin:0 0 0 141px;overflow:auto;-webkit-overflow-scrolling:touch}
 #menu a.sel{background:#505050}
 .foot{left:0;bottom:0;width:140px;position:fixed;text-align:center}
-@media only screen and (max-height: 350px){h1,h2{display:none}}
+@media only screen and (max-height: 30em){h1,h2{display:none}}
+@media only screen and (max-height: 22em){#menu a{padding:5px 10px}}
 </style>
 </head>
 <body>
@@ -42,13 +43,14 @@ function setup(r){
 	if("object"===typeof(r)){
 		r.className="sel"
 		windowFrame.src=r.href
-		window.location.replace ? window.location.replace("#"+r.innerHTML.toLowerCase()) : window.history.replaceState(void 0,void 0,"#"+r.innerHTML.toLowerCase())
+		window.location.replace
+		  ? window.location.replace("#"+r.innerHTML.toLowerCase().replace(/ /g,'_'))
+		  : window.history.replaceState(void 0,void 0,"#"+r.innerHTML.toLowerCase().replace(/ /g,'_'))
 		return
 	}
 	var tag=window.location.hash
 	if(tag==="") menuItems[0].className="sel"
-	else for(i=menuLength;i--;) if(tag.match(menuItems[i].innerHTML.toLowerCase())){
-	  console.log(menuItems[i])
+	else for(i=menuLength;i--;) if(tag.match(menuItems[i].innerHTML.toLowerCase().replace(/ /g,'_'))){
 	  menuItems[i].className="sel"
 	  windowFrame.src=menuItems[i].href
 	  return
