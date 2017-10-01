@@ -476,7 +476,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
     }
   }
   if(ck$t==1 || (is.character(dat$x) || is.factor(dat$x))){
-    seg$x$l=unique(dat$x)
+    seg$x$l=(if(is.factor(dat$x)) base::levels else unique)(dat$x)
     if(length(seg$x$l)==1) stop('x has only 1 level within the complete cases of this set')
   }
   svar=NULL
@@ -487,12 +487,12 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
       e=if(grepl('bet',dn[i])) if(!seg$f1$e) 'f1' else 'f2' else 'by'
       seg[[e]]$e=TRUE
       seg[[e]]$i=i
-      seg[[e]]$l=unique(dat[,i])
+      seg[[e]]$l=(if(is.factor(dat[,i])) base::levels else unique)(dat[,i])
       seg[[e]]$ll=length(seg[[e]]$l)
       if(seg[[e]]$ll>lim && !(is.character(dat[,i]) || is.factor(dat[,i]))){
         dat[,i]=splt(dat[,i],ck$sp)
         seg[[e]]$s=TRUE
-        seg[[e]]$l=unique(dat[,i])
+        seg[[e]]$l=levels(dat[,i])
         seg[[e]]$ll=length(seg[[e]]$l)
       }
     }
@@ -520,8 +520,8 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
     ns=c(txt$x,txt$by,txt$bet)
     for(n in names(levels)){
       if(any(cns<-ns%in%n)){
-        sl=seg[[lc[which(cns)]]]
-        vfac=unique(dat[,sl$i])
+        sl=seg[[lc[cns<-which(cns)]]]
+        vfac=unique(as.character(dat[,sl$i]))
         vl=length(vfac)
         ln=levels[[n]]
         lo=NULL
@@ -539,7 +539,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
             }else vl$labels=ln
           }
           dat[,sl$i]=do.call(factor,vl)
-          if('l'%in%names(sl)) seg[[lc[which(ns%in%n)]]]$l=levels(dat[,sl$i])
+          if('l'%in%names(sl)) seg[[lc[cns]]]$l=levels(dat[,sl$i])
         }else warning(n,' has ',vl,' levels and you only provided ',length(ln),call.=FALSE)
       }
     }
@@ -578,7 +578,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
       n=as.character(ptxt[[n]])
       if(length(n)!=0 && n!='NULL' && n!=''){
         if(is.character(labels.filter)) n=gsub(labels.filter,' ',n,perl=TRUE)
-        if(is.numeric(labels.trim)) if(any(ln<-nchar(n)>labels.trim)) n[ln]=sub('$','...',strtrim(n[ln],labels.trim))
+        if(is.numeric(labels.trim)) if(any(ln<-nchar(n)>(labels.trim+3))) n[ln]=sub('$','...',strtrim(n[ln],labels.trim))
       }
       n
     })
@@ -587,10 +587,10 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
   if(is.character(labx)) ptxt$x=labx
   if(is.character(laby)) ptxt$y=laby
   #figuring out parts of the plot
-  if(!missing(colors)){
-    colors=eval(substitute(colors),data)
-    if(length(colors)==1 && grepl('^bri|^dar|^pas|^gra|^grey',colors,TRUE)) colors=splot.color(colors)
-  }else colors=if(seg$by$ll>1 && seg$by$ll<9) splot.color(colors) else splot.color('grey',ns=seg$by$ll)
+  if(!missing(colors)) colors=eval(substitute(colors),data)
+  if(length(colors)==1 && grepl('^bri|^dar|^pas|^gra|^grey',colors,TRUE))
+    colors=if(seg$by$ll>1 && seg$by$ll<9 && !grepl('^gra|^grey',colors,TRUE)) splot.color(colors) else
+      splot.color('grey',ns=seg$by$ll)
   cs=colors
   colors=rep_len(colors,seg$by$ll)
   if(lvn) ptxt$l.by=paste0(paste0(ptxt$by,': '),ptxt$l.by)
@@ -756,8 +756,9 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
       rn=if(nrow(m)==1) 1 else rownames(m)
       cn=if(seg$by$e && flipped) seg$by$l else colnames(m)
       for(l in seq_len(dl)){
-        td=if(cl) cdat[[i]][[l]] else cdat[[i]]
         ri=rn[l]
+        td=if(cl) cdat[[i]][[ri]] else cdat[[i]]
+        if(is.null(td)) next
         if(nrow(td)>1 && length(unique(td$x))>1){
           mo=lm(mot,data=td)
           su=which(cn%in%sub('x','',names(mo$coef)))
@@ -918,7 +919,8 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
           ,legend=ptxt$l.by[rn]),lega))
       }
       for(l in seq_len(dl)){
-        td=if(cl) cdat[[i]][[l]] else cdat[[i]]
+        td=if(cl) cdat[[i]][[rn[l]]] else cdat[[i]]
+        if(is.null(td)) next
         x=td[,'x']
         y=td[,'y']
         col=if(seg$by$ll==1 && length(colors)>1) colors[2] else colors[rn[l]]

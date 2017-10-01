@@ -45,9 +45,9 @@ splot.color=function(set='pastel',by=NULL,ns=1,maxiter=1000,flat=TRUE){
   )
   set=tolower(set)
   cm=TRUE
-  if(length(set==1) && grepl('^#|^bri|^dar|^pas|^grey|^gra',set,TRUE)){
+  if(length(set)==1 && grepl('^#|^bri|^dar|^pas|^grey|^gra',set,TRUE)){
     set=match.arg(set,names(sets))
-    if(set=='grey') return(sets$grey(min(255,if(!missing(by)) length(by) else sum(ns)))) else set=sets[[set]]
+    if(set=='grey') return(sets$grey(if(!missing(by)) length(by) else sum(ns))) else set=sets[[set]]
     cm=FALSE
   }
   if(cm) if(any(ck<-!grepl('^#',set)) && (ck<-set[ck]%in%colors())){
