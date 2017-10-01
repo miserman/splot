@@ -577,7 +577,6 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
     ptxt=lapply(vs,function(n){
       n=as.character(ptxt[[n]])
       if(length(n)!=0 && n!='NULL' && n!=''){
-        if(length(n)>1) n=sort(n)
         if(is.character(labels.filter)) n=gsub(labels.filter,' ',n,perl=TRUE)
         if(is.numeric(labels.trim)) if(any(ln<-nchar(n)>labels.trim)) n[ln]=sub('$','...',strtrim(n[ln],labels.trim))
       }
@@ -632,14 +631,14 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
       nl
     })
   }
-  nc=Reduce('*',seg$dim)
+  nc=seg$dim[1]*seg$dim[2]
   if(seg$by$l[1]=='NA') ck$leg=0
   if(ck$leg==1 && ck$legm && (dev.size(units='in')[1]<2 || (all(seg$dim==1) && (ck$t!=1 || seg$by$ll<9)))) ck$leg=2
   if(ck$leg==1) if(is.logical(leg) || is.character(leg)) leg=nc+1
   dop=par(no.readonly=TRUE)
   if(drop['bet'] && !any(ckl) && any(nc-seg$ll>=seg$dim)){
     seg$dim=l2m(seg$ll)
-    nc=Reduce('*',seg$dim)
+    nc=seg$dim[1]*seg$dim[2]
   }
   seg$dmat=matrix(seq_len(nc),seg$dim[2],seg$dim[1])
   if(!drop['bet'] && seg$f2$e){

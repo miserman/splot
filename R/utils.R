@@ -80,7 +80,6 @@ splot.color=function(set='pastel',by=NULL,ns=1,maxiter=1000,flat=TRUE){
       code=ccord(code)
       if(any(ck<-code>14)) code[ck]=code[ck]-(code[ck]-14)
       if(any(ck<-code<2)) code[ck]=code[ck]+(2-code[ck])
-      tar=min(20,n)
       i=1
       while(length(ocs)<=n && i<maxiter){
         s=sample(1:6,3)
