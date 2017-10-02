@@ -9,9 +9,9 @@ splot(y, x = NULL, by = NULL, between = NULL, cov = NULL, type = "",
   error = "standard", error.color = "#585858", error.lwd = 2, lim = 9,
   lines = TRUE, ..., line.type = "l", mv.scale = "none",
   mv.as.x = FALSE, save = FALSE, format = cairo_pdf, dims = dev.size(),
-  file.name = "splot", colors = "pastel", myl = NULL, mxl = NULL,
-  autori = TRUE, xlas = 0, ylas = 1, bw = "nrd0", adj = 2,
-  leg = "outside", lpos = "auto", lvn = TRUE, title = TRUE,
+  file.name = "splot", colors = "pastel", colorby = NULL, myl = NULL,
+  mxl = NULL, autori = TRUE, xlas = 0, ylas = 1, bw = "nrd0",
+  adj = 2, leg = "outside", lpos = "auto", lvn = TRUE, title = TRUE,
   labx = TRUE, laby = TRUE, lty = TRUE, lwd = 2, sub = TRUE,
   ndisp = TRUE, note = TRUE, font = c(title = 2, leg = 1, note = 3),
   cex = c(title = 1.5, leg = 1, note = 0.7), sud = TRUE, labels = TRUE,
@@ -113,6 +113,14 @@ pixels depending on \code{format}. Defaults to the dimensions of the plot window
 \code{"bright"} as options; these are passed to \code{\link{splot.color}}. If set to \code{"grey"}, or if \code{by} has
 more than 9 levels, a grey scale is calculated using \code{\link[grDevices]{grey}}. See the \code{col} parameter in
 \code{\link[graphics]{par}} for acceptable manual inputs.}
+
+\item{colorby}{a variable used to set colors and the legend, alternatively to \code{by}. If \code{by} is not missing,
+\code{colorby} will be reduced to only the unique combinations of \code{by} and \code{colorby}. For example, if \code{by}
+is a participant ID with multiple observations per participant, and \code{by} is a condition ID which is the same for all
+observations from a given participant, \code{colorby} would assign a single color to each participant based on their
+condition. If \code{by} is missing, \code{colorby} will only be applied if its levels are unique, in which case a color
+will be assigned to each level. The variable entered here is passed to \code{\link{splot.color}}, with \code{colors} as
+its \code{set} argument, and \code{by} as its \code{by} argument.}
 
 \item{myl}{sets the range of the y axis (\code{ylim} of \code{\link[graphics]{plot}} or \code{\link[graphics]{barplot}}).
 If not specified, this will be calculated from the data.}

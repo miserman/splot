@@ -41,7 +41,7 @@ splot.color=function(set='pastel',by=NULL,ns=1,maxiter=1000,flat=TRUE){
     bright=c('#45ff00','#ba00ff','#000000','#ff0000','#fffd00','#003dff','#00f2f8','#999999','#ff891b'),
     dark=c('#1b8621','#681686','#2a2a2a','#7c0d0d','#b5bc00','#241c80','#1a7e8b','#666666','#b06622'),
     pastel=c('#82c473','#a378c0','#616161','#9f5c61','#d3d280','#6970b2','#78c4c2','#454744','#d98c82'),
-    grey=function(n) if(n<2) '#999999' else grey(.2:n/(n+n*if(n<10) .1 else .3))
+    grey=function(n) if(n<2) '#666666' else grey(.2:n/(n+n*if(n<10) .1 else .3))
   )
   set=tolower(set)
   cm=TRUE
@@ -84,7 +84,7 @@ splot.color=function(set='pastel',by=NULL,ns=1,maxiter=1000,flat=TRUE){
       while(length(ocs)<=n && i<maxiter){
         s=sample(1:6,3)
         nc=code
-        nc[s]=nc[s]+sample(1:2,3,TRUE)
+        nc[s]=nc[s]+sample(-2:2,3,TRUE)
         nc=ccode(nc)
         if(!nc%in%ocs) ocs=c(ocs,nc)
         i=i+1
@@ -144,7 +144,7 @@ splot.bench=function(...,runs=20,runsize=200,cleanup=FALSE,print.names=FALSE,opt
     error=function(e)stop('one of your expressions breaks:\n',e,call.=FALSE))
   ost=proc.time()[3]
   cat('benchmarking',es,'expression(s) in chunks of',runsize,'per run... ')
-  if(p) cat('\n')
+  if(p) cat('\nrun 0 of',runs)
   for(r in seq_len(runs)){
     col=sample(ne)
     seconds[r,col]=vapply(col,function(t){

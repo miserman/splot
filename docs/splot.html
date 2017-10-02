@@ -21,9 +21,9 @@ splot(y, x = NULL, by = NULL, between = NULL, cov = NULL, type = "",
   error = "standard", error.color = "#585858", error.lwd = 2, lim = 9,
   lines = TRUE, ..., line.type = "l", mv.scale = "none",
   mv.as.x = FALSE, save = FALSE, format = cairo_pdf, dims = dev.size(),
-  file.name = "splot", colors = "pastel", myl = NULL, mxl = NULL,
-  autori = TRUE, xlas = 0, ylas = 1, bw = "nrd0", adj = 2,
-  leg = "outside", lpos = "auto", lvn = TRUE, title = TRUE,
+  file.name = "splot", colors = "pastel", colorby = NULL, myl = NULL,
+  mxl = NULL, autori = TRUE, xlas = 0, ylas = 1, bw = "nrd0",
+  adj = 2, leg = "outside", lpos = "auto", lvn = TRUE, title = TRUE,
   labx = TRUE, laby = TRUE, lty = TRUE, lwd = 2, sub = TRUE,
   ndisp = TRUE, note = TRUE, font = c(title = 2, leg = 1, note = 3),
   cex = c(title = 1.5, leg = 1, note = 0.7), sud = TRUE, labels = TRUE,
@@ -177,6 +177,16 @@ pixels depending on <code>format</code>. Defaults to the dimensions of the plot 
 <code>"bright"</code> as options; these are passed to <code>splot.color</code>. If set to <code>"grey"</code>, or if <code>by</code> has
 more than 9 levels, a grey scale is calculated using <code>grey</code>. See the <code>col</code> parameter in
 <code>par</code> for acceptable manual inputs.</p>
+</td></tr>
+<tr valign="top"><td><code>colorby</code></td>
+<td>
+<p>a variable used to set colors and the legend, alternatively to <code>by</code>. If <code>by</code> is not missing,
+<code>colorby</code> will be reduced to only the unique combinations of <code>by</code> and <code>colorby</code>. For example, if <code>by</code>
+is a participant ID with multiple observations per participant, and <code>by</code> is a condition ID which is the same for all
+observations from a given participant, <code>colorby</code> would assign a single color to each participant based on their
+condition. If <code>by</code> is missing, <code>colorby</code> will only be applied if its levels are unique, in which case a color
+will be assigned to each level. The variable entered here is passed to <code>splot.color</code>, with <code>colors</code> as
+its <code>set</code> argument, and <code>by</code> as its <code>by</code> argument.</p>
 </td></tr>
 <tr valign="top"><td><code>myl</code></td>
 <td>
