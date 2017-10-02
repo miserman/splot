@@ -124,6 +124,7 @@ splot.color=function(set='pastel',by=NULL,ns=1,maxiter=1000,flat=TRUE){
 #' # compare a few equivalent ways of looping through a vector
 #' # though you'd probably need to increase the number of runs
 #' # for a consistent determination
+#'
 #' splot.bench(
 #'   sapply(1:100,'*',10),
 #'   mapply('*',1:100,10),
@@ -164,7 +165,7 @@ splot.bench=function(...,runs=20,runsize=200,cleanup=FALSE,print.names=FALSE,opt
   cat('\n')
   print(round(matrix(c(colSums(seconds),colMeans(seconds)),2,byrow=TRUE,
     dimnames=list(c('total time (seconds)','mean time per run'),icn)),4))
-  if(print.names || es>5 || any(nchar(names(e))>50)) colnames(seconds)=icn
+  if(!print.names) if(es>5 || any(nchar(names(e))>50)) colnames(seconds)=icn
   title=paste('timing of',runs,'runs of',runsize,'calls each')
   splot(seconds,title=title,labels.filter=FALSE,labels.trim=FALSE,options=options)
 }

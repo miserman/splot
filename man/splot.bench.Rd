@@ -32,6 +32,7 @@ Time one or more expressions over several iteration, then plot the distributions
 # compare a few equivalent ways of looping through a vector
 # though you'd probably need to increase the number of runs
 # for a consistent determination
+
 splot.bench(
   sapply(1:100,'*',10),
   mapply('*',1:100,10),
