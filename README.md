@@ -20,11 +20,11 @@ Settings guide: [miserman.github.io/splot](https://miserman.github.io/splot/)
 Examples: [Exploring Data](https://miserman.github.io/splot/#explore) | [Refining a Result](https://miserman.github.io/splot/#refine)
 
 ## installation
-Release (version 0.3.0)
+Release (version 0.3.1)
 ```R
 install.packages('splot')
 ```
-Development (version 0.3.1)
+Development (version 0.3.2)
 ```R
 install.packages('devtools')
 devtools::install_github('miserman/splot')
