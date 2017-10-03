@@ -2,7 +2,7 @@
 
 ## Additions
 * added colorby argument, offering a different way to assign colors.
-* added utility function: splot.color to assign colors by group,
+* added utility functions: splot.color to assign colors by group,
   and splot.bench to plot the run-time of expressions.
 * allows for text as x-axis labels in scatter plots.
 
