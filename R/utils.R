@@ -157,7 +157,7 @@ splot.bench=function(...,runs=20,runsize=200,cleanup=FALSE,print.names=FALSE,opt
     if(p) cat('\rrun',r,'of',runs)
   }
   if(p) cat('\r')
-  cat('finished in',round(proc.time()[3]-ost,2),'seconds                    \n\n')
+  cat('finished',runs,'runs in',round(proc.time()[3]-ost,2),'seconds       \n\n')
   cat('expressions:\n\n')
   icn=seq_len(es)
   ne=gsub('\n','\n   ',ne,fixed=TRUE)
@@ -165,7 +165,8 @@ splot.bench=function(...,runs=20,runsize=200,cleanup=FALSE,print.names=FALSE,opt
   cat('\n')
   print(round(matrix(c(colSums(seconds),colMeans(seconds)),2,byrow=TRUE,
     dimnames=list(c('total time (seconds)','mean time per run'),icn)),4))
-  if(!print.names) if(es>5 || any(nchar(names(e))>50)) colnames(seconds)=icn
+  if(!print.names) if(!missing(print.names) || es>5 || any(nchar(names(e))>50))
+    colnames(seconds)=icn
   title=paste('timing of',runs,'runs of',runsize,'calls each')
   splot(seconds,title=title,labels.filter=FALSE,labels.trim=FALSE,options=options)
 }
