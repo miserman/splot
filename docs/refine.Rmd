@@ -59,7 +59,7 @@ To do this, we'll first have to set up line types and colors outside of splot:
 ```{r}
 ns=levels(factor(data$name))
 nl=length(ns)
-disp=data.frame(name=ns, lty=rep(1:9, nl)[1:nl])
+disp=data.frame(name=ns, lty=rep_len(1:9,nl))
 disp$col=ifelse(grepl('Hit|Rod', disp$name), '#880101', '#aaaaaa')
 disp$lty[grepl('Hit|Rod', disp$name)]=1:2
 
@@ -77,6 +77,9 @@ splot(anger~index*name, leg=FALSE, points=FALSE, lines='loess', myl=c(0,2.2), co
     legend('topleft', sort(mnc), lty=disp[disp$name%in%mnc, 2], col=disp[disp$name%in%mnc, 3], lwd=2, bty='n')
     legend('topright', c('Adolf Hitler', 'Elliot Rodger'), lty=1:2, col=disp$col[1], lwd=2, bty='n')
 })
+
+splot(anger~index*name, leg=FALSE, points=FALSE, lines='loess', myl=c(0,2.2), lty=disp$lty,colorby=name)
+
 ```
 
 If we were planning on applying these settings to several graphs (if, say, we wanted to look at several different `y` variables individually), we could add the consistent stuff to an options list:

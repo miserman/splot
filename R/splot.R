@@ -422,6 +422,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
     dn=grep('^y\\.',dn)
     ck$mvn=colnames(dat)[dn]
     td=dat
+    if(any(ckn<-duplicated(ck$mvn))) ck$mvn[ckn]=paste0(ck$mvn[ckn],'_',seq_len(sum(ckn)))
     by=rep(sub('^y\\.','',ck$mvn),each=nrow(dat))
     dat=data.frame(y=unlist(dat[,dn],use.names=FALSE))
     if(ncol(td)>length(dn)) dat=cbind(dat,apply(td[,-dn,drop=FALSE],2,function(c)rep.int(c,length(dn))))
