@@ -471,8 +471,10 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
       v=quantile(x)
       factor(ifelse(x<=v[2],0,ifelse(x>=v[4],2,1)),labels=c('2nd Quantile','Median','4th Quantile'))
     }else if(s==4 && is.numeric(split) && split>1){
+      n=length(x)
+      split=min(n,split)
       txt$split<<-paste0('segments (',split,')')
-      factor(paste('seg',rep(seq_len(split),each=round(length(x)/split+.5))[order(order(x))]))
+      factor(paste('seg',rep(seq_len(split),each=round(n/split+.5))[order(order(x))]))
     }else{
       txt$split<<-'median'
       factor(ifelse(x<=median(x),0,1),labels=c('Under Median','Over Median'))
