@@ -44,7 +44,8 @@ with lines include all \code{cov} variables in the regression model to adjust th
 (e.g., \code{type='l'}).}
 
 \item{split}{how to split any continuous variables (those with more than \code{lim} levels as factors). Default is
-\code{"median"}, with \code{"mean"}, \code{"standard deviation"}, and \code{"quantile"} as options.}
+\code{"median"}, with \code{"mean"}, \code{"standard deviation"}, \code{"quantile"}, or a number as options. If a number,
+the variable is broken into roughly equal chunks.}
 
 \item{data}{a \code{data.frame} to pull variables from. If variables aren't found in \code{data}, they will be looked for
 in the environment.}

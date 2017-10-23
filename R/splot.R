@@ -19,7 +19,8 @@
 #'   \code{"scatter"}. If \code{"density"}, \code{x} is ignored. Anything including the first letter of each is accepted
 #'   (e.g., \code{type='l'}).
 #' @param split how to split any continuous variables (those with more than \code{lim} levels as factors). Default is
-#'   \code{"median"}, with \code{"mean"}, \code{"standard deviation"}, and \code{"quantile"} as options.
+#'   \code{"median"}, with \code{"mean"}, \code{"standard deviation"}, \code{"quantile"}, or a number as options. If a number,
+#'   the variable is broken into roughly equal chunks.
 #' @param data a \code{data.frame} to pull variables from. If variables aren't found in \code{data}, they will be looked for
 #'   in the environment.
 #' @param su a subset to all variables, applied after they are all retrieved from \code{data} or the environment.
@@ -296,7 +297,8 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
     cb=!missing(colorby),
     e=grepl('^s',error,TRUE),
     el=!(is.logical(error) && !error),
-    sp=if(grepl('^mea|^av',split,TRUE)) 1 else if(grepl('^q',split,TRUE)) 2 else ifelse(grepl('^s',split,TRUE),3,4),
+    sp=if(!is.character(split)) 4 else if(grepl('^mea|^av',split,TRUE)) 1 else if(grepl('^q',split,TRUE)) 2 else
+      ifelse(grepl('^s',split,TRUE),3,4),
     ly=!(is.logical(laby) && !laby) || is.character(laby),
     lx=!(is.logical(labx) && !labx) || is.character(labx),
     lty=is.logical(lty),
@@ -455,7 +457,6 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
   odat=dat
   #splitting and parsing variables
   splt=function(x,s){
-    d=numeric(length(x))
     if(s==1){
       txt$split<<-'mean'
       factor(ifelse(x<=mean(x),0,1),labels=c('Below Average','Above Average'))
@@ -469,6 +470,9 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
       txt$split<<-'quantile'
       v=quantile(x)
       factor(ifelse(x<=v[2],0,ifelse(x>=v[4],2,1)),labels=c('2nd Quantile','Median','4th Quantile'))
+    }else if(s==4 && is.numeric(split) && split>1){
+      txt$split<<-paste0('segments (',split,')')
+      factor(paste('seg',rep(seq_len(split),each=round(length(x)/split+.5))[order(order(x))]))
     }else{
       txt$split<<-'median'
       factor(ifelse(x<=median(x),0,1),labels=c('Under Median','Over Median'))

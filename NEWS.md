@@ -1,3 +1,11 @@
+# splot 0.3.2
+
+## Additions
+* split by a specified number of segments.
+
+## Bug fixes
+* multiple y variables with the same name are now treated as different.
+
 # splot 0.3.1
 
 ## Additions
