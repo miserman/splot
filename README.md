@@ -17,9 +17,11 @@ and data at levels of one or two `between` variable are shown in separate plot f
 ## resources
 Settings guide: [miserman.github.io/splot](https://miserman.github.io/splot/)
 
-Examples: [Exploring Data](https://miserman.github.io/splot/#explore) | [Refining a Result](https://miserman.github.io/splot/#refine)
+Vignettes: [Exploring Data](https://miserman.github.io/splot/#explore) | [Refining a Result](https://miserman.github.io/splot/#refine)
 
 ## installation
+Download R from [r-project.org](https://www.r-project.org/).
+
 Release (version 0.3.1)
 ```R
 install.packages('splot')
