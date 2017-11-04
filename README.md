@@ -33,3 +33,35 @@ Then load the package:
 ```R
 library(splot)
 ```
+## examples
+Make some data: random group and x variables, and a y variable related to x:
+```R
+group = rep(c('group 1','group 2'), 50)
+x = rnorm(100)
+y = x * .5 + rnorm(100)
+```
+The distribution of y:
+```R
+splot(y)
+```
+A scatter plot between y and x:
+```R
+splot(y ~ x)
+```
+Same data with a quadratic model:
+```R
+splot(y ~ x + x^2 + x^3)
+```
+Same data separated by group:
+```R
+splot(y ~ x * group)
+```
+Could also separate by median or standard deviations of x:
+```R
+splot(y ~ x * x)
+splot(y ~ x * x, split='sd')
+```
+Summarize with a bar plot:
+```R
+splot(y ~ x * group, type='bar')
+```
