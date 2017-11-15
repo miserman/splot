@@ -365,6 +365,8 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
     paste(if(!ck$ff[[l]] && length(txt[[l]])>1) txt[[l]][-1] else txt[[l]])
   })
   if(length(txt$bet)>2) txt$bet=txt$bet[1:2]
+  for(i in seq_along(txt)) if(length(txt[[i]])>1 && any(grepl('(',txt[[i]],fixed=TRUE) & !grepl(')',txt[[i]],fixed=TRUE)))
+    txt[[i]]=paste(txt[[i]],collapse='')
   tdc=function(x,l=NULL){
     if(is.character(x)) x=parse(text=x)
     tx=tryCatch(eval(x,data,parent.frame(2)),error=function(e)NULL)
