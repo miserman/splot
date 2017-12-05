@@ -456,6 +456,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
     if(missing(error)) ck$el=FALSE
   }
   if(ck$ltm && !ck$el) line.type='b'
+  if(missing(lty) && is.logical(lines) && !lines){ck$lty=FALSE; lty=1}
   odat=dat
   #splitting and parsing variables
   splt=function(x,s){
