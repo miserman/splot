@@ -946,6 +946,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
         dy[1:512+512*(l-1)]=m[[l]]$y
       },error=function(e)NULL)
       if(seg$by$ll>1){
+        if(is.numeric(lty)) lty=rep(lty,length(m))
         plot(NA,xlim=if(missing(mxl)) c(min(dx),max(dx)) else mxl,ylim=if(missing(myl)) c(0,max(c(dy))*1.2) else myl,
           main=if(sub) ptxt$sub else NA,ylab=NA,xlab=NA,axes=FALSE,xpd=if('xpd'%in%names(pdo)) pdo$xpd else FALSE)
         for(l in seq_along(m)) lines(m[[l]],col=colors[rn[l]],lwd=lwd,lty=if(missing(lty)) l else lty[l])
