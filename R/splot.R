@@ -956,7 +956,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
         hist((if(cl) cdat[[i]][[1]] else cdat[[i]])[,'y'],border=if('border'%in%names(pdo)) pdo$border else par('bg'),
           freq=FALSE,main=if(sub) ptxt$sub else NA,ylab=NA,xlab=NA,axes=FALSE,
           col=if(length(colors)>1) colors[2] else colors)
-        lines(m[[1]],col=colors[1],lwd=lwd,xpd=if('xpd'%in%names(pdo)) pdo$xpd else FALSE)
+        if(!is.logical(lines) || lines) lines(m[[1]],col=colors[1],lwd=lwd,xpd=if('xpd'%in%names(pdo)) pdo$xpd else FALSE)
       }
       axis(1,las=xlas,cex=par('cex.axis'),fg=par('col.axis'))
       axis(2,las=ylas,cex=par('cex.axis'),fg=par('col.axis'))
