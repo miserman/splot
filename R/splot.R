@@ -789,6 +789,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
       paste(names(pdo)[!cpdo],collapse=','),call.=FALSE)
   }
   par(op)
+  on.exit(par(dop))
   layout(seg$dmat,c(rep(seg$prat[1],seg$dim[2]),if(ck$legcol) seg$prat[if(length(seg$prat)>1) 2 else 1]))
   success=FALSE
   for(i in names(cdat)){tryCatch({
@@ -1016,11 +1017,10 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
       }
       success=TRUE
     }
-    if(!missing(add)) tryCatch({
-      eval(substitute(add),envir=cbind(dat,odat))
-    },error=function(e)warning('error from add: ',e$message,call.=FALSE))
-  },error=function(e){par(dop);dev.off();stop(e)})}
-  if(!success){par(dop);dev.off();stop("failed to make any plots with the current input",call.=FALSE)}
+    if(!missing(add)) tryCatch(eval(substitute(add),envir=cbind(dat,odat))
+      ,error=function(e)warning('error from add: ',e$message,call.=FALSE))
+  },error=function(e){dev.off();stop(e)})}
+  if(!success) stop("failed to make any plots with the current input",call.=FALSE)
   if(ck$t==3 && is.character(lines) && (!is.logical(note) || note)) note=paste0(if(is.logical(note)) '' else note,
     paste0('Line type: ',switch(lines,li='lm',lo='loess',sm='spline',e='connected'),'.'))
   if(ck$leg==1){
