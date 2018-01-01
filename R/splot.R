@@ -916,8 +916,9 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
         p=matrix(rep(seq_len(dm[2]),dm[1]),nrow=dm[1],byrow=TRUE)
         plot(NA,ylim=ylim,xlim=if(missing(mxl)) c(1-stw[1]/3,dm[2]+stw[length(stw)]/3) else mxl,ylab=NA,xlab=NA,
           main=if(sub) ptxt$sub else NA,axes=FALSE)
-        for(a in seq_len(dm[1])) lines(m[a,],col=if(rck) colors[rn[a]] else colors,lty=if(ck$lty && lty)a else
-          if(!missing(lty) && !ck$lty) lty else 1,lwd=lwd,type=line.type)
+        if(is.numeric(lty)) lty=rep(lty,dm[1]) else if(is.logical(lty) && lty) lty=seq_len(dm[1])
+        for(a in seq_len(dm[1])) lines(m[a,],col=if(rck) colors[rn[a]] else colors,
+          lty=if(is.numeric(lty)) lty[a] else 1,lwd=lwd,type=line.type)
         if(ck$leg==2) do.call(legend,c(list(lpos,legend=if(ck$cb) ptxt$cb else ptxt$l.by[rn]),lega))
       }
       axis(1,apply(p,2,mean),colnames(m),FALSE,las=xlas,cex=par('cex.axis'),fg=par('col.axis'))
@@ -947,10 +948,10 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
         dy[1:512+512*(l-1)]=m[[l]]$y
       },error=function(e)NULL)
       if(seg$by$ll>1){
-        if(is.numeric(lty)) lty=rep(lty,length(m))
+        lty=if(is.numeric(lty)) rep(lty,length(m)) else if(is.logical(lty) && lty) seq_along(m) else rep(1,length(m))
         plot(NA,xlim=if(missing(mxl)) c(min(dx),max(dx)) else mxl,ylim=if(missing(myl)) c(0,max(c(dy))*1.2) else myl,
           main=if(sub) ptxt$sub else NA,ylab=NA,xlab=NA,axes=FALSE,xpd=if('xpd'%in%names(pdo)) pdo$xpd else FALSE)
-        for(l in seq_along(m)) lines(m[[l]],col=colors[rn[l]],lwd=lwd,lty=if(missing(lty)) l else lty[l])
+        for(l in seq_along(m)) lines(m[[l]],col=colors[rn[l]],lwd=lwd,lty=lty[l])
         if(ck$leg==2) do.call(legend,c(list(if(ck$lp) ifelse(median(dx)<mean(range(dx)),'topleft','topright') else lpos,
           legend=ptxt$l.by[rn]),lega))
       }else{

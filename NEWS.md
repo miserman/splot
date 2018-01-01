@@ -4,6 +4,7 @@
 * split by a specified number of segments.
 
 ## Bug fixes
+* standardized lty behavior across types, and prevented it from causing errors.
 * fixed an issue with longer vectors entered directly as arguments.
 * multiple y variables with the same name are now treated as different.
 
