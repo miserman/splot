@@ -4,6 +4,7 @@
 * split by a specified number of segments.
 
 ## Bug fixes
+* specified x levels are now appropriately applied when mv.as.x is true
 * standardized lty behavior across types, and prevented it from causing errors.
 * fixed an issue with longer vectors entered directly as arguments.
 * multiple y variables with the same name are now treated as different.

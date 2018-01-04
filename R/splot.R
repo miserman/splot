@@ -432,7 +432,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
     if(ncol(td)>length(dn)) dat=cbind(dat,apply(td[,-dn,drop=FALSE],2,function(c)rep.int(c,length(dn))))
     if(mv.as.x){
       txt$by=txt$x
-      if(missing(labx)) txt$x='variable'
+      txt$x=if(missing(labx)) 'variable' else if(labx==txt$by) paste0(labx,'.1') else labx
       dat$by=dat$x
       dat$x=by
     }else{
