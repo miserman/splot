@@ -761,7 +761,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
     c(fw,max(fw/10,lw))
   }else prat
   op=list(
-    oma=c(sum(note!='',ck$lx),ck$ly,sum((main!='')*2+if(sum(seg$dim)>2) .5 else 0,ck$sud),0),
+    oma=c(sum(note!='',ck$lx)+.1,ck$ly,max(sum((main!='')*2+if(sum(seg$dim)>2) .5 else 0,ck$sud),1),0),
     mar=c(if(ck$lx) 2.5 else 1.5,if(ck$ly) 3 else 2,(ck$sud && (ck$su || ck$c))*ifelse(seg$ll>1,2,.5)+
         (ck$sub && sum(seg$dim)>2)+.5,!ck$legcol),
     mgp=c(3,.3,0),
