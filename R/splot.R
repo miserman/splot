@@ -669,7 +669,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
   main=if(is.logical(title) && title) paste0(if(ck$t==2)paste('Density of',ptxt$y) else paste(ptxt$y,
     'by',ptxt$x),if(seg$by$e && !ck$mv) paste(' at levels of',ptxt$by), if(length(ptxt$bet)!=0) paste(' between',
       paste(ptxt$bet,collapse=' & '))) else if (is.character(title)) title else ''
-  if(!is.logical(note) || note){
+  if(!is.character(note)) if(!is.logical(note) || note){
     if(txt$split!='none' || (ck$t==1 && ck$el)){
       tv=c(if(seg$x$s) ptxt$x else '',if(seg$by$s) ptxt$by else '',if(seg$f1$s) ptxt$bet[1] else '',
         if(seg$f2$s) ptxt$bet[2] else '')
@@ -1037,8 +1037,9 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
       ,error=function(e)warning('error from add: ',e$message,call.=FALSE))
   },error=function(e){dev.off();stop(e)})}
   if(!success) stop("failed to make any plots with the current input",call.=FALSE)
-  if(ck$t==3 && is.character(lines) && (!is.logical(note) || note)) note=paste0(if(is.logical(note)) '' else note,
-    paste0('Line type: ',switch(lines,li='lm',lo='loess',sm='spline',e='connected'),'.'))
+  if(ck$t==3 && !is.character(note) && is.character(lines) && (!is.logical(note) || note))
+    note=paste0(if(is.logical(note)) '' else note, paste0('Line type: ',switch(lines,li='lm',
+      lo='loess',sm='spline',e='connected'),'.'))
   if(ck$leg==1){
     if(all(par('mfg')[1:2]!=0)){
       plot.new()

@@ -5,6 +5,7 @@
 * split by a specified number of segments.
 
 ## Bug fixes
+* custom notes now overwrite all other note elements
 * specified x levels are now appropriately applied when mv.as.x is true
 * standardized lty behavior across types, and prevented it from causing errors.
 * fixed an issue with longer vectors entered directly as arguments.
