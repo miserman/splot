@@ -1,6 +1,7 @@
 # splot 0.3.2
 
 ## Additions
+* sort text x variables by their y values.
 * split by a specified number of segments.
 
 ## Bug fixes

@@ -32,6 +32,9 @@
 #'   variables are split, so names and orders should correspond to the new split levels of split variables. For example, if
 #'   a continuous variable is median split, it now has two levels ('Under Median' and 'Over Median'), which are the levels
 #'   reordering or renaming would apply to.
+#' @param sort string: if \code{x} is a character or factor, specifies how it should be sorted in terms of the level's \code{y}
+#'   value. Unspecified or \code{NULL} won't do any additional sorting. Anything starting with 'd' or 't' will sort highest to
+#'   lowest.
 #' @param error string: sets the type of error bars to show in bar or line plots, or turns them off. If \code{FALSE}, no error
 #'   bars will be shown. Otherwise, the default is \code{"standard error"} (\code{'^s'}), with \code{"confidence intervals"}
 #'   (anything else) as an option.
@@ -213,10 +216,10 @@
 #' \strong{unexpected failures}
 #'
 #' splot tries to clean up after itself in the case of an error, but you may still run into errors that break things before
-#' this can happen. If after a failed plot you find that you're unable to make any new plots, you might try entering
-#' \code{dev.off()} into the console. If new plots look off (splot's \code{\link[graphics]{par}} settings didn't get reset),
-#' you may have to close the plot window to reset \code{\link[graphics]{par}} (if you're using RStudio, Plots >
-#' "Remove Plot..." or "Clear All..."), or restart R.
+#' this can happen. If after a failed plot you find that you're unable to make any new plots, or new plots are drawn over old
+#' ones, you might try entering \code{dev.off()} into the console. If new plots look off (splot's \code{\link[graphics]{par}}
+#' ettings didn't get reset), you may have to close the plot window to reset \code{\link[graphics]{par}} (if you're using
+#' RStudio, Plots > "Remove Plot..." or "Clear All..."), or restart R.
 #'
 #' @examples
 #' #simulating data
@@ -270,7 +273,7 @@
 #' @importFrom graphics axis axTicks hist legend lines mtext plot barplot par points arrows strwidth layout plot.new
 #' @importFrom stats density median quantile sd lm confint update loess smooth.spline na.omit formula as.formula predict
 
-splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',data=NULL,su=NULL,levels=list(),
+splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',data=NULL,su=NULL,levels=list(),sort=NULL,
   error='standard',error.color='#585858',error.lwd=2,lim=9,lines=TRUE,...,line.type='l',mv.scale='none',mv.as.x=FALSE,
   save=FALSE,format=cairo_pdf,dims=dev.size(),file.name='splot',colors='pastel',colorby=NULL,myl=NULL,mxl=NULL,autori=TRUE,
   xlas=0,ylas=1,bw='nrd0',adj=2,leg='outside',lpos='auto',lvn=TRUE,title=TRUE,labx=TRUE,laby=TRUE,lty=TRUE,lwd=2,sub=TRUE,
@@ -806,9 +809,21 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
         if(seg$f2$e) paste0(', ',if(lvn || (ck$mlvn && grepl('^[0-9]',cl[2]))) paste0(ptxt$bet[2],': '),cl[2])
       ),if((length(names(cdat))>1 || !missing(ndisp)) && ndisp) paste(', n =',seg$n[i])
     ) else if(is.character(sub)) sub else ''
+    if(!is.null(sort) && ck$t!=2 && class(cdat[[i]][[1]]$x)%in%c('factor','character')){
+      sdir=grepl('^d|^t',as.character(sort),TRUE)
+      td=do.call(rbind,cdat[[i]])
+      cdat[[i]]=do.call(rbind,lapply(names(sort(vapply(split(td$y,as.character(td$x)),mean,0,na.rm=TRUE),sdir)),
+        function(l) td[td$x==l,,drop=FALSE]
+      ))
+      seg$x$l=ptxt$l.x=unique(cdat[[i]]$x)
+      cdat[[i]]$x=factor(cdat[[i]]$x,seg$x$l)
+      cdat[[i]]=split(cdat[[i]],as.character(cdat[[i]]$by))
+    }
     if(ck$t==1){
       #bar and line
       flipped=FALSE
+      if(missing(byx) && ck$mv && any(vapply(cdat[[i]],function(d)any(vapply(split(d$y,as.character(d$x)),var,0)==0),TRUE)))
+        byx=FALSE
       if(byx && lim<Inf && seg$by$e && (is.list(cdat[[i]]) && length(cdat[[i]])>1)){
         flipped=TRUE
         cdat[[i]]=do.call(rbind,cdat[[i]])

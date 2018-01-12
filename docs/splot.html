@@ -18,18 +18,19 @@
 <pre>
 splot(y, x = NULL, by = NULL, between = NULL, cov = NULL, type = "",
   split = "median", data = NULL, su = NULL, levels = list(),
-  error = "standard", error.color = "#585858", error.lwd = 2, lim = 9,
-  lines = TRUE, ..., line.type = "l", mv.scale = "none",
-  mv.as.x = FALSE, save = FALSE, format = cairo_pdf, dims = dev.size(),
-  file.name = "splot", colors = "pastel", colorby = NULL, myl = NULL,
-  mxl = NULL, autori = TRUE, xlas = 0, ylas = 1, bw = "nrd0",
-  adj = 2, leg = "outside", lpos = "auto", lvn = TRUE, title = TRUE,
-  labx = TRUE, laby = TRUE, lty = TRUE, lwd = 2, sub = TRUE,
-  ndisp = TRUE, note = TRUE, font = c(title = 2, leg = 1, note = 3),
-  cex = c(title = 1.5, leg = 1, note = 0.7), sud = TRUE, labels = TRUE,
-  labels.filter = "_|\\.", labels.trim = 20, points = TRUE,
-  points.first = TRUE, byx = TRUE, drop = c(x = TRUE, by = TRUE, bet =
-  TRUE), prat = c(1, 1), model = FALSE, options = NULL, add = NULL)
+  sort = NULL, error = "standard", error.color = "#585858",
+  error.lwd = 2, lim = 9, lines = TRUE, ..., line.type = "l",
+  mv.scale = "none", mv.as.x = FALSE, save = FALSE, format = cairo_pdf,
+  dims = dev.size(), file.name = "splot", colors = "pastel",
+  colorby = NULL, myl = NULL, mxl = NULL, autori = TRUE, xlas = 0,
+  ylas = 1, bw = "nrd0", adj = 2, leg = "outside", lpos = "auto",
+  lvn = TRUE, title = TRUE, labx = TRUE, laby = TRUE, lty = TRUE,
+  lwd = 2, sub = TRUE, ndisp = TRUE, note = TRUE, font = c(title = 2,
+  leg = 1, note = 3), cex = c(title = 1.5, leg = 1, note = 0.7), sud = TRUE,
+  labels = TRUE, labels.filter = "_|\\.", labels.trim = 20,
+  points = TRUE, points.first = TRUE, byx = TRUE, drop = c(x = TRUE, by
+  = TRUE, bet = TRUE), prat = c(1, 1), model = FALSE, options = NULL,
+  add = NULL)
 </pre>
 
 
@@ -96,6 +97,12 @@ second entry (e.g., <code>levels =</code> <code>list(var =</code> <code>list(c('
 variables are split, so names and orders should correspond to the new split levels of split variables. For example, if
 a continuous variable is median split, it now has two levels ('Under Median' and 'Over Median'), which are the levels
 reordering or renaming would apply to.</p>
+</td></tr>
+<tr valign="top"><td><code>sort</code></td>
+<td>
+<p>string: if <code>x</code> is a character or factor, specifies how it should be sorted in terms of the level's <code>y</code>
+value. Unspecified or <code>NULL</code> won't do any additional sorting. Anything starting with 'd' or 't' will sort highest to
+lowest.</p>
 </td></tr>
 <tr valign="top"><td><code>error</code></td>
 <td>
@@ -451,10 +458,10 @@ will be drawn at such error-bar-less orphaned levels.
 <p><strong>unexpected failures</strong>
 </p>
 <p>splot tries to clean up after itself in the case of an error, but you may still run into errors that break things before
-this can happen. If after a failed plot you find that you're unable to make any new plots, you might try entering
-<code>dev.off()</code> into the console. If new plots look off (splot's <code>par</code> settings didn't get reset),
-you may have to close the plot window to reset <code>par</code> (if you're using RStudio, Plots &gt;
-&quot;Remove Plot...&quot; or &quot;Clear All...&quot;), or restart R.
+this can happen. If after a failed plot you find that you're unable to make any new plots, or new plots are drawn over old
+ones, you might try entering <code>dev.off()</code> into the console. If new plots look off (splot's <code>par</code>
+ettings didn't get reset), you may have to close the plot window to reset <code>par</code> (if you're using
+RStudio, Plots &gt; &quot;Remove Plot...&quot; or &quot;Clear All...&quot;), or restart R.
 </p>
 
 

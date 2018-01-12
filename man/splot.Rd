@@ -6,18 +6,19 @@
 \usage{
 splot(y, x = NULL, by = NULL, between = NULL, cov = NULL, type = "",
   split = "median", data = NULL, su = NULL, levels = list(),
-  error = "standard", error.color = "#585858", error.lwd = 2, lim = 9,
-  lines = TRUE, ..., line.type = "l", mv.scale = "none",
-  mv.as.x = FALSE, save = FALSE, format = cairo_pdf, dims = dev.size(),
-  file.name = "splot", colors = "pastel", colorby = NULL, myl = NULL,
-  mxl = NULL, autori = TRUE, xlas = 0, ylas = 1, bw = "nrd0",
-  adj = 2, leg = "outside", lpos = "auto", lvn = TRUE, title = TRUE,
-  labx = TRUE, laby = TRUE, lty = TRUE, lwd = 2, sub = TRUE,
-  ndisp = TRUE, note = TRUE, font = c(title = 2, leg = 1, note = 3),
-  cex = c(title = 1.5, leg = 1, note = 0.7), sud = TRUE, labels = TRUE,
-  labels.filter = "_|\\\\.", labels.trim = 20, points = TRUE,
-  points.first = TRUE, byx = TRUE, drop = c(x = TRUE, by = TRUE, bet =
-  TRUE), prat = c(1, 1), model = FALSE, options = NULL, add = NULL)
+  sort = NULL, error = "standard", error.color = "#585858",
+  error.lwd = 2, lim = 9, lines = TRUE, ..., line.type = "l",
+  mv.scale = "none", mv.as.x = FALSE, save = FALSE, format = cairo_pdf,
+  dims = dev.size(), file.name = "splot", colors = "pastel",
+  colorby = NULL, myl = NULL, mxl = NULL, autori = TRUE, xlas = 0,
+  ylas = 1, bw = "nrd0", adj = 2, leg = "outside", lpos = "auto",
+  lvn = TRUE, title = TRUE, labx = TRUE, laby = TRUE, lty = TRUE,
+  lwd = 2, sub = TRUE, ndisp = TRUE, note = TRUE, font = c(title = 2,
+  leg = 1, note = 3), cex = c(title = 1.5, leg = 1, note = 0.7), sud = TRUE,
+  labels = TRUE, labels.filter = "_|\\\\.", labels.trim = 20,
+  points = TRUE, points.first = TRUE, byx = TRUE, drop = c(x = TRUE, by
+  = TRUE, bet = TRUE), prat = c(1, 1), model = FALSE, options = NULL,
+  add = NULL)
 }
 \arguments{
 \item{y}{A formula (see note), or the primary variable(s) to be shown on the y axis unless (\code{x} is not specified).
@@ -60,6 +61,10 @@ second entry (e.g., \code{levels =} \code{list(var =} \code{list(c('a','b','c'),
 variables are split, so names and orders should correspond to the new split levels of split variables. For example, if
 a continuous variable is median split, it now has two levels ('Under Median' and 'Over Median'), which are the levels
 reordering or renaming would apply to.}
+
+\item{sort}{string: if \code{x} is a character or factor, specifies how it should be sorted in terms of the level's \code{y}
+value. Unspecified or \code{NULL} won't do any additional sorting. Anything starting with 'd' or 't' will sort highest to
+lowest.}
 
 \item{error}{string: sets the type of error bars to show in bar or line plots, or turns them off. If \code{FALSE}, no error
 bars will be shown. Otherwise, the default is \code{"standard error"} (\code{'^s'}), with \code{"confidence intervals"}
@@ -272,10 +277,10 @@ will be drawn at such error-bar-less orphaned levels.
 \strong{unexpected failures}
 
 splot tries to clean up after itself in the case of an error, but you may still run into errors that break things before
-this can happen. If after a failed plot you find that you're unable to make any new plots, you might try entering
-\code{dev.off()} into the console. If new plots look off (splot's \code{\link[graphics]{par}} settings didn't get reset),
-you may have to close the plot window to reset \code{\link[graphics]{par}} (if you're using RStudio, Plots >
-"Remove Plot..." or "Clear All..."), or restart R.
+this can happen. If after a failed plot you find that you're unable to make any new plots, or new plots are drawn over old
+ones, you might try entering \code{dev.off()} into the console. If new plots look off (splot's \code{\link[graphics]{par}}
+ettings didn't get reset), you may have to close the plot window to reset \code{\link[graphics]{par}} (if you're using
+RStudio, Plots > "Remove Plot..." or "Clear All..."), or restart R.
 }
 \section{Input}{
 
