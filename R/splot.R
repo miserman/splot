@@ -809,15 +809,15 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
         if(seg$f2$e) paste0(', ',if(lvn || (ck$mlvn && grepl('^[0-9]',cl[2]))) paste0(ptxt$bet[2],': '),cl[2])
       ),if((length(names(cdat))>1 || !missing(ndisp)) && ndisp) paste(', n =',seg$n[i])
     ) else if(is.character(sub)) sub else ''
-    if(!is.null(sort) && ck$t!=2 && class(cdat[[i]][[1]]$x)%in%c('factor','character')){
+    if(!is.null(sort) && ck$t!=2 && class(if(seg$by$e) cdat[[i]][[1]][,'x'] else cdat[[i]][,'x'])%in%c('factor','character')){
       sdir=grepl('^d|^t',as.character(sort),TRUE)
-      td=do.call(rbind,cdat[[i]])
-      cdat[[i]]=do.call(rbind,lapply(names(sort(vapply(split(td$y,as.character(td$x)),mean,0,na.rm=TRUE),sdir)),
-        function(l) td[td$x==l,,drop=FALSE]
+      td=if(seg$by$e) do.call(rbind,cdat[[i]]) else cdat[[i]]
+      cdat[[i]]=do.call(rbind,lapply(names(sort(vapply(split(td[,'y'],as.character(td[,'x'])),mean,0,na.rm=TRUE),sdir)),
+        function(l) td[td[,'x']==l,,drop=FALSE]
       ))
-      seg$x$l=ptxt$l.x=unique(cdat[[i]]$x)
-      cdat[[i]]$x=factor(cdat[[i]]$x,seg$x$l)
-      cdat[[i]]=split(cdat[[i]],as.character(cdat[[i]]$by))
+      seg$x$l=ptxt$l.x=unique(cdat[[i]][,'x'])
+      cdat[[i]][,'x']=factor(cdat[[i]][,'x'],seg$x$l)
+      if(seg$by$e) cdat[[i]]=split(cdat[[i]],as.character(cdat[[i]][,'by']))
     }
     if(ck$t==1){
       #bar and line
