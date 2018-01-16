@@ -31,7 +31,8 @@
 #'   second entry (e.g., \code{levels =} \code{list(var =} \code{list(c('a','b','c'),} \code{c(3,2,1)))}). This happens after
 #'   variables are split, so names and orders should correspond to the new split levels of split variables. For example, if
 #'   a continuous variable is median split, it now has two levels ('Under Median' and 'Over Median'), which are the levels
-#'   reordering or renaming would apply to.
+#'   reordering or renaming would apply to. Multiple varaibles entered as \code{y} can be renamed and sorted with an entry
+#'   titled 'mv'.
 #' @param sort string: if \code{x} is a character or factor, specifies how it should be sorted in terms of the level's \code{y}
 #'   value. Unspecified or \code{NULL} won't do any additional sorting. Anything starting with 'd' or 't' will sort highest to
 #'   lowest.
@@ -225,13 +226,13 @@
 #' #simulating data
 #' n=2000
 #' dat=data.frame(sapply(c('by','bet1','bet2'),function(c)sample(0:1,n,TRUE)))
-#' dat$x=eval(quote(
+#' dat$x=with(dat,
 #'   rnorm(n)+by*-.4+by*bet1*-.3+by*bet2*.3+bet1*bet2*.9-.8+rnorm(n,0,by)
-#' ),envir=dat)
-#' dat$y=eval(quote(
+#' )
+#' dat$y=with(dat,
 #'   x*.2+by*.3+bet2*-.6+bet1*bet2*.8+x*by*bet1*-.5+x*by*bet1*bet2*-.5
 #'   +rnorm(n,5)+rnorm(n,-1,.1*x^2)
-#' ),envir=dat)
+#' )
 #'
 #' #looking at the distribution of y between bets split by by
 #' splot(y, by=by, between=c(bet1, bet2), data=dat)
@@ -442,6 +443,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
       txt$by='variable'
       dat$by=by
     }
+    if(!missing(levels) && 'mv'%in%names(levels)) names(levels)[names(levels)=='mv']=txt[[if(mv.as.x)'x'else'by']]
     dn=colnames(dat)
     if(!missing(mv.scale) && mv.scale!='none'){
       tv=if(mv.as.x) dat$x else dat$by
@@ -547,10 +549,11 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
   },error=function(e)warning(paste('summary model failed:',e$message),call.=FALSE))
   if(!missing(levels)) tryCatch({
     lc=c('x','by','f1','f2')
-    ns=c(txt$x,txt$by,txt$bet)
+    ns=c(txt$x,txt$by,txt$bet,lc)
+    lc=c(lc[seq_len(length(ns)-length(lc))],lc)
     for(n in names(levels)){
       if(any(cns<-ns%in%n)){
-        sl=seg[[lc[cns<-which(cns)]]]
+        sl=seg[[lc[cns<-which(cns)[1]]]]
         vfac=(if(is.factor(dat[,sl$i])) base::levels else unique)(dat[,sl$i])
         vl=length(vfac)
         ln=levels[[n]]

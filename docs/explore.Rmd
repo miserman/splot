@@ -46,11 +46,11 @@ prompts = read.csv('https://osf.io/xm6ew/?action=download')
 
 Each of the strings in prompts' `Type` variable corresponds to the topic, style, and study of each participant's reply. We want to compare the language style of each prompt to its replies, so we'll make a Type variable to match in data:
 ```{r}
-data$Type = paste0(
-  ifelse(data$Topic=='Relational', 'R', 'LC'),
-  ifelse(data$Style=='Feminine', 'F', 'M'),
-  data$Study
-)
+data$Type = with(data, paste0(
+  ifelse(Topic=='Relational', 'R', 'LC'),
+  ifelse(Style=='Feminine', 'F', 'M'),
+  Study
+))
 ```
 
 Now we can actually calculate LSM. A Standard LSM calculation (from <a href='http://sml.comm.cornell.edu/wordpress/wp-content/uploads/2013/12/Gonzales-Hancock-Pennebaker-2010-Language-style-matching-as-a-predictor-of-social-dynamics-in-small-groups.pdf' target='_blank'>Gonzales, Hancock, & Pennebaker, 2009</a>) uses 9 LIWC function word categories. We'll save these names to easily identify them in each dataset:

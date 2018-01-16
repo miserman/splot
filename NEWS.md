@@ -4,6 +4,10 @@
 * sort text x variables by their y values.
 * split by a specified number of segments.
 
+## Improvements
+* multiple variables entered as y can now be renamed/ordered with an mv entry
+  in levels.
+
 ## Bug fixes
 * custom notes now overwrite all other note elements
 * specified x levels are now appropriately applied when mv.as.x is true
