@@ -825,7 +825,8 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
     if(ck$t==1){
       #bar and line
       flipped=FALSE
-      if(missing(byx) && ck$mv && any(vapply(cdat[[i]],function(d)any(vapply(split(d$y,as.character(d$x)),var,0)==0),TRUE)))
+      if(missing(byx) && ck$mv && any(vapply(cdat[[i]],function(d)any(vapply(split(d$y,as.character(d$x)),
+        function(dl) if(length(dl)==1) 0 else var(dl),0)==0),TRUE)))
         byx=FALSE
       if(byx && lim<Inf && seg$by$e && (is.list(cdat[[i]]) && length(cdat[[i]])>1)){
         flipped=TRUE
