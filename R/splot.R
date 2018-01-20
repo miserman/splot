@@ -1,29 +1,18 @@
+
 #' Split Plot
 #'
 #' A plotting function aimed at automating some common visualization tasks in order to ease data exploration.
 #' @param y A formula (see note), or the primary variable(s) to be shown on the y axis unless (\code{x} is not specified).
 #'   When not a formula, this can be one or more variables as objects or names in \code{data}.
-#' @param x secondary variable, to be shown in on the x axis. If not specified, \code{type} will be set to \code{'density'}.
-#'   If \code{x} is a factor or vector of characters, or has fewer than \code{lim} levels when treated as a factor,
-#'   \code{type} will be set to \code{'line'} unless specified.
-#' @param by the 'splitting' variable within each plot, by which the plotted values of \code{x} and \code{y} will be
-#'   grouped.
-#' @param between a single object or name, or two in a vector (e.g., \code{c(b1, b2)}), the levels of which will determine
-#'   the number of plot windows to be shown at once (the cells in a matrix of plots; levels of the first variable as rows,
-#'   and levels of the second as columns).
-#' @param cov additional variables used for adjustment. Bar and line plots include all \code{cov} variables in their
-#'   regression models (via \code{\link[stats]{lm}}, e.g., \code{lm(y ~ 0 + x + cov1 + cov2)}) as covariates. Scatter plots
-#'   with lines include all \code{cov} variables in the regression model to adjust the prediction line (e.g.,
-#'   \code{lm(y ~ x + x^2)}).
+#' @param data a \code{data.frame} to pull variables from. If variables aren't found in \code{data}, they will be looked for
+#'   in the environment.
+#' @param su a subset to all variables, applied after they are all retrieved from \code{data} or the environment.
 #' @param type determines the type of plot to make, between \code{"bar"}, \code{"line"}, \code{"density"}, or
 #'   \code{"scatter"}. If \code{"density"}, \code{x} is ignored. Anything including the first letter of each is accepted
 #'   (e.g., \code{type='l'}).
 #' @param split how to split any continuous variables (those with more than \code{lim} levels as factors). Default is
 #'   \code{"median"}, with \code{"mean"}, \code{"standard deviation"}, \code{"quantile"}, or a number as options. If a number,
 #'   the variable is broken into roughly equal chunks.
-#' @param data a \code{data.frame} to pull variables from. If variables aren't found in \code{data}, they will be looked for
-#'   in the environment.
-#' @param su a subset to all variables, applied after they are all retrieved from \code{data} or the environment.
 #' @param levels a list with entries corresponding to variable names, used to rename and/or reorder factor levels. To
 #'   reorder a factor, enter a vector of either numbers or existing level names in the new order (e.g.,
 #'   \code{levels =}\code{list(var =} \code{c(3,2,1))}). To rename levels of a factor, enter a character vector the same
@@ -50,6 +39,18 @@
 #'   (\code{'^sm|^sp|^in'}) will use \code{\link[stats]{smooth.spline}}. \code{'connected'} (\code{'^e|^co|^d'}) will draw
 #'   lines connecting all points, and \code{FALSE} will not draw any lines.
 #' @param ... passes additional arguments to \code{\link[graphics]{par}} or \code{\link[graphics]{legend}}. The
+#' @param x secondary variable, to be shown in on the x axis. If not specified, \code{type} will be set to \code{'density'}.
+#'   If \code{x} is a factor or vector of characters, or has fewer than \code{lim} levels when treated as a factor,
+#'   \code{type} will be set to \code{'line'} unless specified.
+#' @param by the 'splitting' variable within each plot, by which the plotted values of \code{x} and \code{y} will be
+#'   grouped.
+#' @param between a single object or name, or two in a vector (e.g., \code{c(b1, b2)}), the levels of which will determine
+#'   the number of plot windows to be shown at once (the cells in a matrix of plots; levels of the first variable as rows,
+#'   and levels of the second as columns).
+#' @param cov additional variables used for adjustment. Bar and line plots include all \code{cov} variables in their
+#'   regression models (via \code{\link[stats]{lm}}, e.g., \code{lm(y ~ 0 + x + cov1 + cov2)}) as covariates. Scatter plots
+#'   with lines include all \code{cov} variables in the regression model to adjust the prediction line (e.g.,
+#'   \code{lm(y ~ x + x^2)}).
 #'   \code{\link[graphics]{par}} options \code{col}, \code{mfrow}, \code{oma}, \code{mar}, \code{mgp}, \code{font.main},
 #'   \code{cex.main}, \code{font.lab}, \code{tcl}, \code{pch}, \code{lwd}, and \code{xpd} are all set within the function,
 #'   but will be overwritten if they are included in the call. For example, \code{col} sets font colors in this case
@@ -238,25 +239,25 @@
 #' splot(y, by=by, between=c(bet1, bet2), data=dat)
 #'
 #' #looking at quantile splits of y in y by x
-#' splot(y~x*y, split='quantile', data=dat)
+#' splot(y~x*y, dat, split='quantile')
 #'
 #' #looking at y by x between bets
-#' splot(y~x, between=c(bet1, bet2), data=dat)
+#' splot(y~x, dat, between=c(bet1, bet2))
 #'
 #' #sequentially adding levels of split
-#' splot(y~x*by, data=dat)
-#' splot(y~x*by*bet1, data=dat)
-#' splot(y~x*by*bet1*bet2, data=dat)
+#' splot(y~x*by, dat)
+#' splot(y~x*by*bet1, dat)
+#' splot(y~x*by*bet1*bet2, dat)
 #'
-#' #same as the last but entered differently
-#' splot(y, x, by, c(bet1, bet2), data=dat)
+#' #same as the last but entered by name
+#' splot(y, x=x, by=by, between=c(bet1, bet2), data=dat)
 #'
 #' #zooming in on one of the windows
-#' splot(y~x*by, data=dat, su=bet1==1&bet2==0)
+#' splot(y~x*by, dat, bet1==1&bet2==0)
 #'
 #' #comparing an adjusted lm prediction line with a loess line
 #' #this could also be entered as y ~ poly(x,3)
-#' splot(y~x+x^2+x^3, data=dat, su=bet1==1&bet2==0&by==1, add={
+#' splot(y~x+x^2+x^3, dat, bet1==1&bet2==0&by==1, add={
 #'   lines(x[order(x)], loess(y~x)$fitted[order(x)], lty=2)
 #'   legend('topright', c('lm', 'loess'), lty=c(1, 2), lwd=c(2, 1), bty='n')
 #' })
@@ -267,15 +268,15 @@
 #'   Sine=y+sin(x),
 #'   Cosine=y+cos(x),
 #'   Tangent=y+tan(x)
-#' )~x, data=dat, myl=c(-10,15), lines='loess', laby='y + versions of x')
+#' )~x, dat, myl=c(-10,15), lines='loess', laby='y + versions of x')
 #'
 #' @export
 #' @importFrom grDevices grey dev.copy dev.size dev.off cairo_pdf
 #' @importFrom graphics axis axTicks hist legend lines mtext plot barplot par points arrows strwidth layout plot.new
-#' @importFrom stats density median quantile sd lm confint update loess smooth.spline na.omit formula as.formula predict
+#' @importFrom stats density median quantile sd lm confint update loess smooth.spline na.omit formula as.formula predict var
 
-splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',data=NULL,su=NULL,levels=list(),sort=NULL,
-  error='standard',error.color='#585858',error.lwd=2,lim=9,lines=TRUE,...,line.type='l',mv.scale='none',mv.as.x=FALSE,
+splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NULL,error='standard',error.color='#585858',
+  error.lwd=2,lim=9,lines=TRUE,...,x=NULL,by=NULL,between=NULL,cov=NULL,line.type='l',mv.scale='none',mv.as.x=FALSE,
   save=FALSE,format=cairo_pdf,dims=dev.size(),file.name='splot',colors='pastel',colorby=NULL,myl=NULL,mxl=NULL,autori=TRUE,
   xlas=0,ylas=1,bw='nrd0',adj=2,leg='outside',lpos='auto',lvn=TRUE,title=TRUE,labx=TRUE,laby=TRUE,lty=TRUE,lwd=2,sub=TRUE,
   ndisp=TRUE,note=TRUE,font=c(title=2,leg=1,note=3),cex=c(title=1.5,leg=1,note=.7),sud=TRUE,labels=TRUE,
@@ -336,9 +337,25 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
   if(any(grepl('~',substitute(y),fixed=TRUE))){
     f=as.character(as.formula(y))[-1]
     y=f[1]
-    f=strsplit(f[-1],' + ',fixed=TRUE)[[1]]
-    if(any(grepl('*',f,fixed=TRUE))){
-      r=strsplit(f[1],' * ',fixed=TRUE)[[1]]
+    bl=function(x){
+      cs=strsplit(x,'')[[1]]
+      rs=lapply(c('(',')','[',']'),grep,cs,fixed=TRUE)
+      l=vapply(rs,length,0)
+      cr=TRUE
+      if(any(l!=0)){
+        if(l[1]!=l[2] || l[3]!=l[4]) stop('invalid parentheses or brackets in ',x)
+        rs[c(2,4)]=lapply(rs[c(2,4)],rev)
+        cr=!seq_along(cs)%in%c(
+          unlist(lapply(seq_len(l[1]),function(r)do.call(seq,lapply(rs[1:2],'[[',r)))),
+          unlist(lapply(seq_len(l[3]),function(r)do.call(seq,lapply(rs[3:4],'[[',r))))
+        )
+      }
+      cs[cr]=sub('*','_VAR_',sub('+','_COV_',cs[cr],fixed=TRUE),fixed=TRUE)
+      paste(cs,collapse='')
+    }
+    f=strsplit(bl(f[-1]),' _COV_ ',fixed=TRUE)[[1]]
+    if(any(grepl(' _VAR_ ',f,fixed=TRUE))){
+      r=strsplit(f[1],' _VAR_ ',fixed=TRUE)[[1]]
       if(length(r)>0) x=r[1]
       if(length(r)>1) by=r[2]
       if(length(r)>2){
@@ -346,7 +363,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
         between=r[3]
       }
       if(length(r)>3) between=c(r[3],r[4])
-      f=f[!grepl('*',f,fixed=TRUE)]
+      f=f[!grepl(' _VAR_ ',f,fixed=TRUE)]
     }else{
       x=f[1]
       f=f[-1]
@@ -358,9 +375,9 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
   }
   txt=list(
     split='none',
-    y=gsub('^\\\\*"|\\\\*"$','',deparse(substitute(y))),
-    x=gsub('^\\\\*"|\\\\*"$','',deparse(substitute(x))),
-    by=gsub('^\\\\*"|\\\\*"$','',deparse(substitute(by))),
+    y=substitute(y),
+    x=substitute(x),
+    by=substitute(by),
     bet=as.list(substitute(between)),
     cov=as.list(substitute(cov)),
     su=deparse(substitute(su))
@@ -368,28 +385,34 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
   txt[c('bet','cov')]=lapply(c('bet','cov'),function(l){
     paste(if(!ck$ff[[l]] && length(txt[[l]])>1) txt[[l]][-1] else txt[[l]])
   })
+  txt=lapply(txt,function(e)if(is.call(e)) deparse(e) else e)
   if(length(txt$bet)>2) txt$bet=txt$bet[1:2]
-  for(i in seq_along(txt)) if(length(txt[[i]])>1 && any(grepl('(',txt[[i]],fixed=TRUE) & !grepl(')',txt[[i]],fixed=TRUE)))
-    txt[[i]]=paste(txt[[i]],collapse='')
   tdc=function(x,l=NULL){
+    if(!is.null(l) && length(x)==l) return(x)
     if(is.character(x)) x=parse(text=x)
     tx=tryCatch(eval(x,data,parent.frame(2)),error=function(e)NULL)
     if(is.character(tx) && length(tx)<2){
       x=parse(text=tx)
       tx=tryCatch(eval(x,data,parent.frame(2)),error=function(e)NULL)
     }else if(is.null(tx)) tx=tryCatch(eval(x,data,parent.frame(3)),error=function(e)NULL)
-    if(is.null(tx)) stop('could not find ',x,call.=FALSE)
+    if(is.null(tx) || class(tx)%in%c('name','call','expression','function')) stop('could not find ',x,call.=FALSE)
     if(!is.null(l) && is.null(ncol(tx))) if(length(tx)!=l)
       warning(x,' is not the same length as y',call.=FALSE)
     tx
   }
+  if(!missing(data) && !class(data)%in%c('matrix','data.frame'))
+    data=if(is.character(data)) eval(parse(text=data)) else eval(data,globalenv())
   dat=data.frame(y=tdc(txt$y))
   if(ncol(dat)==1) names(dat)='y'
   rn=nrow(dat)
+  if(length(txt$y)==rn) txt$y='y'
   for(n in names(txt)[-c(1,2,7)]){
     l=length(txt[[n]])
-    if(l==0 || any(txt[[n]]=='NULL')) next
-    if(l==1) dat[,n]=tdc(txt[[n]],rn) else for(sn in txt[[n]]) dat[,paste0(n,'.',sn)]=tdc(sn,rn)
+    if(l==0) next
+    if(l==rn){
+      dat[,n]=txt[[n]]
+      txt[[n]]=n
+    }else if(l==1) dat[,n]=tdc(txt[[n]],rn) else for(i in seq_along(txt[[n]])) dat[,paste0(n,'.',i)]=tdc(txt[[n]][[i]],rn)
   }
   if(NCOL(dat$x)>1){
     ck$c=TRUE
@@ -398,7 +421,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
     dat$x=dat$x[,1]
   }
   if(!missing(colorby)){
-    colorby=gsub('^\\\\*"|\\\\*"$','',deparse(substitute(colorby)))
+    colorby=substitute(colorby)
     dat$cb=tdc(colorby,rn)
     if(ck$su) dat=if(ck$d) dat[eval(substitute(su),data),,drop=FALSE] else dat[su,,drop=FALSE]
     dat=na.omit(dat)
@@ -532,7 +555,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
   if(seg$by$l[1]=='') seg$by$l='NA'
   fmod=NULL
   vs=c(y=txt$y,x=txt$x,by=txt$by,bet=txt$bet,cov=txt$cov)
-  colnames(odat)=vs[vs!='NULL']
+  colnames(odat)=vs
   if(ck$t!=2 && model) tryCatch({
     mod=formula(paste(vs['y'],'~',vs['x'],
       if(seg$by$e) paste0('*',vs['by']),
@@ -580,7 +603,6 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
   dsf=list(c1='',sep=rep('^^',nrow(dat)),c2='')
   if(seg$f1$e) dsf$c1=dat[,seg$f1$i]
   if(seg$f2$e) dsf$c2=dat[,seg$f2$i]
-  dsf=do.call(paste0,dsf)
   cdat=split(dat,dsf)
   if(seg$by$e){
     cdat=lapply(cdat,function(s)if(length(unique(s$by))>1) split(s,s$by) else{
@@ -664,7 +686,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
     cs=colors
     colors=rep_len(colors,seg$by$ll)
   }
-  if(lvn && ptxt$by!='NULL') ptxt$l.by=paste0(paste0(ptxt$by,': '),ptxt$l.by)
+  if(lvn && length(ptxt$by)!=0) ptxt$l.by=paste0(paste0(ptxt$by,': '),ptxt$l.by)
   if(length(colors)==length(ptxt$l.by)) names(colors)=names(ptxt$l.by)=if(seg$by$l[1]=='NA') ptxt$l.by else seg$by$l
   if(ck$t==3 && length(colors)==1) colors[2]=if(!ck$co && length(cs)>1) cs[2] else if(ck$t==3) '#999999' else '#adadad'
   ylab=if(ck$ly) ptxt$y else ''
@@ -692,7 +714,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
     if(!seg$f1$e) c(1,1) else if(!seg$f2$e){
       if(seg$f1$ll>2) l2m(seg$f1$ll) else c(2,1)
     }else c(seg$f1$ll,seg$f2$ll)
-  seg$l=t(data.frame(strsplit(names(cdat),'^^',fixed=TRUE)))
+  seg$l=t(data.frame(strsplit(names(cdat),'.^^.',fixed=TRUE)))
   if(seg$f1$e){
     rownames(seg$l)=match(seg$l[,1],seg$f1$l)
     seg[c('f1','f2')]=lapply(c('f1','f2'),function(n){
@@ -778,7 +800,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
     cex.sub=.9,
     cex.axis=1,
     tcl=-.2,
-    pch=20,
+    pch=19,
     col='#303030',
     xpd=NA
   )
@@ -805,7 +827,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
       cdat[[i]]=cdat[[i]][cl]
       if(length(cdat[[i]])==0) next
     }
-    cl=strsplit(i,'^^',fixed=TRUE)[[1]]
+    cl=strsplit(i,'.^^.',fixed=TRUE)[[1]]
     ptxt$sub=if(sub) if(seg$ll>1 || (!missing(ndisp) && ndisp)) paste0(
       if(seg$f1$e) paste0(
         if(lvn || (ck$mlvn && grepl('^[0-9]',cl[1]))) paste0(ptxt$bet[1],': '),cl[1],
@@ -942,7 +964,7 @@ splot=function(y,x=NULL,by=NULL,between=NULL,cov=NULL,type='',split='median',dat
       }
       axis(1,apply(p,2,mean),colnames(m),FALSE,las=xlas,cex=par('cex.axis'),fg=par('col.axis'))
       a2a=list(2,las=ylas,cex=par('cex.axis'),fg=par('col.axis'))
-      if(ck$b && autori && lb<0){
+      if(ck$b && autori){
         a2a$at=ayl
         a2a$labels=round(oyl,2)
       }

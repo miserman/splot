@@ -16,10 +16,10 @@
 <h3>Usage</h3>
 
 <pre>
-splot(y, x = NULL, by = NULL, between = NULL, cov = NULL, type = "",
-  split = "median", data = NULL, su = NULL, levels = list(),
-  sort = NULL, error = "standard", error.color = "#585858",
-  error.lwd = 2, lim = 9, lines = TRUE, ..., line.type = "l",
+splot(y, data = NULL, su = NULL, type = "", split = "median",
+  levels = list(), sort = NULL, error = "standard",
+  error.color = "#585858", error.lwd = 2, lim = 9, lines = TRUE, ...,
+  x = NULL, by = NULL, between = NULL, cov = NULL, line.type = "l",
   mv.scale = "none", mv.as.x = FALSE, save = FALSE, format = cairo_pdf,
   dims = dev.size(), file.name = "splot", colors = "pastel",
   colorby = NULL, myl = NULL, mxl = NULL, autori = TRUE, xlas = 0,
@@ -42,29 +42,14 @@ splot(y, x = NULL, by = NULL, between = NULL, cov = NULL, type = "",
 <p>A formula (see note), or the primary variable(s) to be shown on the y axis unless (<code>x</code> is not specified).
 When not a formula, this can be one or more variables as objects or names in <code>data</code>.</p>
 </td></tr>
-<tr valign="top"><td><code>x</code></td>
+<tr valign="top"><td><code>data</code></td>
 <td>
-<p>secondary variable, to be shown in on the x axis. If not specified, <code>type</code> will be set to <code>'density'</code>.
-If <code>x</code> is a factor or vector of characters, or has fewer than <code>lim</code> levels when treated as a factor,
-<code>type</code> will be set to <code>'line'</code> unless specified.</p>
+<p>a <code>data.frame</code> to pull variables from. If variables aren't found in <code>data</code>, they will be looked for
+in the environment.</p>
 </td></tr>
-<tr valign="top"><td><code>by</code></td>
+<tr valign="top"><td><code>su</code></td>
 <td>
-<p>the 'splitting' variable within each plot, by which the plotted values of <code>x</code> and <code>y</code> will be
-grouped.</p>
-</td></tr>
-<tr valign="top"><td><code>between</code></td>
-<td>
-<p>a single object or name, or two in a vector (e.g., <code>c(b1, b2)</code>), the levels of which will determine
-the number of plot windows to be shown at once (the cells in a matrix of plots; levels of the first variable as rows,
-and levels of the second as columns).</p>
-</td></tr>
-<tr valign="top"><td><code>cov</code></td>
-<td>
-<p>additional variables used for adjustment. Bar and line plots include all <code>cov</code> variables in their
-regression models (via <code>lm</code>, e.g., <code>lm(y ~ 0 + x + cov1 + cov2)</code>) as covariates. Scatter plots
-with lines include all <code>cov</code> variables in the regression model to adjust the prediction line (e.g.,
-<code>lm(y ~ x + x^2)</code>).</p>
+<p>a subset to all variables, applied after they are all retrieved from <code>data</code> or the environment.</p>
 </td></tr>
 <tr valign="top"><td><code>type</code></td>
 <td>
@@ -77,15 +62,6 @@ with lines include all <code>cov</code> variables in the regression model to adj
 <p>how to split any continuous variables (those with more than <code>lim</code> levels as factors). Default is
 <code>"median"</code>, with <code>"mean"</code>, <code>"standard deviation"</code>, <code>"quantile"</code>, or a number as options. If a number,
 the variable is broken into roughly equal chunks.</p>
-</td></tr>
-<tr valign="top"><td><code>data</code></td>
-<td>
-<p>a <code>data.frame</code> to pull variables from. If variables aren't found in <code>data</code>, they will be looked for
-in the environment.</p>
-</td></tr>
-<tr valign="top"><td><code>su</code></td>
-<td>
-<p>a subset to all variables, applied after they are all retrieved from <code>data</code> or the environment.</p>
 </td></tr>
 <tr valign="top"><td><code>levels</code></td>
 <td>
@@ -135,7 +111,31 @@ lines connecting all points, and <code>FALSE</code> will not draw any lines.</p>
 </td></tr>
 <tr valign="top"><td><code>...</code></td>
 <td>
-<p>passes additional arguments to <code>par</code> or <code>legend</code>. The
+<p>passes additional arguments to <code>par</code> or <code>legend</code>. The</p>
+</td></tr>
+<tr valign="top"><td><code>x</code></td>
+<td>
+<p>secondary variable, to be shown in on the x axis. If not specified, <code>type</code> will be set to <code>'density'</code>.
+If <code>x</code> is a factor or vector of characters, or has fewer than <code>lim</code> levels when treated as a factor,
+<code>type</code> will be set to <code>'line'</code> unless specified.</p>
+</td></tr>
+<tr valign="top"><td><code>by</code></td>
+<td>
+<p>the 'splitting' variable within each plot, by which the plotted values of <code>x</code> and <code>y</code> will be
+grouped.</p>
+</td></tr>
+<tr valign="top"><td><code>between</code></td>
+<td>
+<p>a single object or name, or two in a vector (e.g., <code>c(b1, b2)</code>), the levels of which will determine
+the number of plot windows to be shown at once (the cells in a matrix of plots; levels of the first variable as rows,
+and levels of the second as columns).</p>
+</td></tr>
+<tr valign="top"><td><code>cov</code></td>
+<td>
+<p>additional variables used for adjustment. Bar and line plots include all <code>cov</code> variables in their
+regression models (via <code>lm</code>, e.g., <code>lm(y ~ 0 + x + cov1 + cov2)</code>) as covariates. Scatter plots
+with lines include all <code>cov</code> variables in the regression model to adjust the prediction line (e.g.,
+<code>lm(y ~ x + x^2)</code>).
 <code>par</code> options <code>col</code>, <code>mfrow</code>, <code>oma</code>, <code>mar</code>, <code>mgp</code>, <code>font.main</code>,
 <code>cex.main</code>, <code>font.lab</code>, <code>tcl</code>, <code>pch</code>, <code>lwd</code>, and <code>xpd</code> are all set within the function,
 but will be overwritten if they are included in the call. For example, <code>col</code> sets font colors in this case
@@ -484,25 +484,25 @@ dat$y=with(dat,
 splot(y, by=by, between=c(bet1, bet2), data=dat)
 
 #looking at quantile splits of y in y by x
-splot(y~x*y, split='quantile', data=dat)
+splot(y~x*y, dat, split='quantile')
 
 #looking at y by x between bets
-splot(y~x, between=c(bet1, bet2), data=dat)
+splot(y~x, dat, between=c(bet1, bet2))
 
 #sequentially adding levels of split
-splot(y~x*by, data=dat)
-splot(y~x*by*bet1, data=dat)
-splot(y~x*by*bet1*bet2, data=dat)
+splot(y~x*by, dat)
+splot(y~x*by*bet1, dat)
+splot(y~x*by*bet1*bet2, dat)
 
-#same as the last but entered differently
-splot(y, x, by, c(bet1, bet2), data=dat)
+#same as the last but entered by name
+splot(y, x=x, by=by, between=c(bet1, bet2), data=dat)
 
 #zooming in on one of the windows
-splot(y~x*by, data=dat, su=bet1==1&amp;bet2==0)
+splot(y~x*by, dat, bet1==1&amp;bet2==0)
 
 #comparing an adjusted lm prediction line with a loess line
 #this could also be entered as y ~ poly(x,3)
-splot(y~x+x^2+x^3, data=dat, su=bet1==1&amp;bet2==0&amp;by==1, add={
+splot(y~x+x^2+x^3, dat, bet1==1&amp;bet2==0&amp;by==1, add={
   lines(x[order(x)], loess(y~x)$fitted[order(x)], lty=2)
   legend('topright', c('lm', 'loess'), lty=c(1, 2), lwd=c(2, 1), bty='n')
 })
@@ -513,7 +513,7 @@ splot(cbind(
   Sine=y+sin(x),
   Cosine=y+cos(x),
   Tangent=y+tan(x)
-)~x, data=dat, myl=c(-10,15), lines='loess', laby='y + versions of x')
+)~x, dat, myl=c(-10,15), lines='loess', laby='y + versions of x')
 
 </pre>
 

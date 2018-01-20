@@ -4,10 +4,10 @@
 \alias{splot}
 \title{Split Plot}
 \usage{
-splot(y, x = NULL, by = NULL, between = NULL, cov = NULL, type = "",
-  split = "median", data = NULL, su = NULL, levels = list(),
-  sort = NULL, error = "standard", error.color = "#585858",
-  error.lwd = 2, lim = 9, lines = TRUE, ..., line.type = "l",
+splot(y, data = NULL, su = NULL, type = "", split = "median",
+  levels = list(), sort = NULL, error = "standard",
+  error.color = "#585858", error.lwd = 2, lim = 9, lines = TRUE, ...,
+  x = NULL, by = NULL, between = NULL, cov = NULL, line.type = "l",
   mv.scale = "none", mv.as.x = FALSE, save = FALSE, format = cairo_pdf,
   dims = dev.size(), file.name = "splot", colors = "pastel",
   colorby = NULL, myl = NULL, mxl = NULL, autori = TRUE, xlas = 0,
@@ -24,21 +24,10 @@ splot(y, x = NULL, by = NULL, between = NULL, cov = NULL, type = "",
 \item{y}{A formula (see note), or the primary variable(s) to be shown on the y axis unless (\code{x} is not specified).
 When not a formula, this can be one or more variables as objects or names in \code{data}.}
 
-\item{x}{secondary variable, to be shown in on the x axis. If not specified, \code{type} will be set to \code{'density'}.
-If \code{x} is a factor or vector of characters, or has fewer than \code{lim} levels when treated as a factor,
-\code{type} will be set to \code{'line'} unless specified.}
+\item{data}{a \code{data.frame} to pull variables from. If variables aren't found in \code{data}, they will be looked for
+in the environment.}
 
-\item{by}{the 'splitting' variable within each plot, by which the plotted values of \code{x} and \code{y} will be
-grouped.}
-
-\item{between}{a single object or name, or two in a vector (e.g., \code{c(b1, b2)}), the levels of which will determine
-the number of plot windows to be shown at once (the cells in a matrix of plots; levels of the first variable as rows,
-and levels of the second as columns).}
-
-\item{cov}{additional variables used for adjustment. Bar and line plots include all \code{cov} variables in their
-regression models (via \code{\link[stats]{lm}}, e.g., \code{lm(y ~ 0 + x + cov1 + cov2)}) as covariates. Scatter plots
-with lines include all \code{cov} variables in the regression model to adjust the prediction line (e.g.,
-\code{lm(y ~ x + x^2)}).}
+\item{su}{a subset to all variables, applied after they are all retrieved from \code{data} or the environment.}
 
 \item{type}{determines the type of plot to make, between \code{"bar"}, \code{"line"}, \code{"density"}, or
 \code{"scatter"}. If \code{"density"}, \code{x} is ignored. Anything including the first letter of each is accepted
@@ -47,11 +36,6 @@ with lines include all \code{cov} variables in the regression model to adjust th
 \item{split}{how to split any continuous variables (those with more than \code{lim} levels as factors). Default is
 \code{"median"}, with \code{"mean"}, \code{"standard deviation"}, \code{"quantile"}, or a number as options. If a number,
 the variable is broken into roughly equal chunks.}
-
-\item{data}{a \code{data.frame} to pull variables from. If variables aren't found in \code{data}, they will be looked for
-in the environment.}
-
-\item{su}{a subset to all variables, applied after they are all retrieved from \code{data} or the environment.}
 
 \item{levels}{a list with entries corresponding to variable names, used to rename and/or reorder factor levels. To
 reorder a factor, enter a vector of either numbers or existing level names in the new order (e.g.,
@@ -85,7 +69,23 @@ is treated as infinite (set to \code{Inf}).}
 (\code{'^sm|^sp|^in'}) will use \code{\link[stats]{smooth.spline}}. \code{'connected'} (\code{'^e|^co|^d'}) will draw
 lines connecting all points, and \code{FALSE} will not draw any lines.}
 
-\item{...}{passes additional arguments to \code{\link[graphics]{par}} or \code{\link[graphics]{legend}}. The
+\item{...}{passes additional arguments to \code{\link[graphics]{par}} or \code{\link[graphics]{legend}}. The}
+
+\item{x}{secondary variable, to be shown in on the x axis. If not specified, \code{type} will be set to \code{'density'}.
+If \code{x} is a factor or vector of characters, or has fewer than \code{lim} levels when treated as a factor,
+\code{type} will be set to \code{'line'} unless specified.}
+
+\item{by}{the 'splitting' variable within each plot, by which the plotted values of \code{x} and \code{y} will be
+grouped.}
+
+\item{between}{a single object or name, or two in a vector (e.g., \code{c(b1, b2)}), the levels of which will determine
+the number of plot windows to be shown at once (the cells in a matrix of plots; levels of the first variable as rows,
+and levels of the second as columns).}
+
+\item{cov}{additional variables used for adjustment. Bar and line plots include all \code{cov} variables in their
+regression models (via \code{\link[stats]{lm}}, e.g., \code{lm(y ~ 0 + x + cov1 + cov2)}) as covariates. Scatter plots
+with lines include all \code{cov} variables in the regression model to adjust the prediction line (e.g.,
+\code{lm(y ~ x + x^2)}).
 \code{\link[graphics]{par}} options \code{col}, \code{mfrow}, \code{oma}, \code{mar}, \code{mgp}, \code{font.main},
 \code{cex.main}, \code{font.lab}, \code{tcl}, \code{pch}, \code{lwd}, and \code{xpd} are all set within the function,
 but will be overwritten if they are included in the call. For example, \code{col} sets font colors in this case
@@ -320,25 +320,25 @@ dat$y=with(dat,
 splot(y, by=by, between=c(bet1, bet2), data=dat)
 
 #looking at quantile splits of y in y by x
-splot(y~x*y, split='quantile', data=dat)
+splot(y~x*y, dat, split='quantile')
 
 #looking at y by x between bets
-splot(y~x, between=c(bet1, bet2), data=dat)
+splot(y~x, dat, between=c(bet1, bet2))
 
 #sequentially adding levels of split
-splot(y~x*by, data=dat)
-splot(y~x*by*bet1, data=dat)
-splot(y~x*by*bet1*bet2, data=dat)
+splot(y~x*by, dat)
+splot(y~x*by*bet1, dat)
+splot(y~x*by*bet1*bet2, dat)
 
-#same as the last but entered differently
-splot(y, x, by, c(bet1, bet2), data=dat)
+#same as the last but entered by name
+splot(y, x=x, by=by, between=c(bet1, bet2), data=dat)
 
 #zooming in on one of the windows
-splot(y~x*by, data=dat, su=bet1==1&bet2==0)
+splot(y~x*by, dat, bet1==1&bet2==0)
 
 #comparing an adjusted lm prediction line with a loess line
 #this could also be entered as y ~ poly(x,3)
-splot(y~x+x^2+x^3, data=dat, su=bet1==1&bet2==0&by==1, add={
+splot(y~x+x^2+x^3, dat, bet1==1&bet2==0&by==1, add={
   lines(x[order(x)], loess(y~x)$fitted[order(x)], lty=2)
   legend('topright', c('lm', 'loess'), lty=c(1, 2), lwd=c(2, 1), bty='n')
 })
@@ -349,6 +349,6 @@ splot(cbind(
   Sine=y+sin(x),
   Cosine=y+cos(x),
   Tangent=y+tan(x)
-)~x, data=dat, myl=c(-10,15), lines='loess', laby='y + versions of x')
+)~x, dat, myl=c(-10,15), lines='loess', laby='y + versions of x')
 
 }

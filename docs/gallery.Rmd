@@ -1,0 +1,106 @@
+---
+title: "Gallery"
+output: rmarkdown::html_document
+vignette: >
+  %\VignetteIndexEntry{Exploring Data with splot}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+Examples of different types of plots and how to make them.
+
+*Built with R 
+`r getRversion()`
+on 
+`r format(Sys.time(),'%B %d %Y')`*
+
+***
+# Setting up
+```{r}
+# load splot
+library('splot')
+
+# simulate some data
+n=1000
+data=data.frame(sapply(c('by','bet1','bet2'),function(c)sample(0:1,n,TRUE)))
+data$x=with(data,
+  rnorm(n)+by*-.4+by*bet1*-.3+by*bet2*.3+bet1*bet2*.9-.8+rnorm(n,0,by)
+)
+data$y=with(data,
+  x*.2+by*.3+bet2*-.6+bet1*bet2*.8+x*by*bet1*-.5+x*by*bet1*bet2*-.5
+  +rnorm(n,5)+rnorm(n,-1,.1*x^2)
+)
+data$group=sample(c('a','b','c'),n,TRUE)
+
+attach(data)
+```
+
+***
+# Density plots
+
+```{r, fig.height=5, fig.width=10, dev='CairoSVG'}
+# when there is only one level of y, a histogram will also be drawn
+splot(y)
+
+# plot the y variable at levels of another variable
+splot(y, by=x)
+
+# enter a matrix-like object as y to plot multiple variables
+splot(cbind(x,y))
+
+# x is ignored if type is specified as density
+splot(cbind(x,y)~by*bet1, type='density')
+```
+
+***
+# Line and bar plots
+
+```{r, fig.height=5, fig.width=10, dev='CairoSVG'}
+# when x is non-numerical, or has fewer unique values than lim, it is treated as categorical
+splot(y~group)
+
+# lines are the default, but any line plot can also be represented with bars
+splot(y~group, type='bar')
+
+# for bar and line plots, levels of x can be renamed and sorted
+splot(y~group, type='bar', levels=list(group=list(c('d','e','f'),c(3,2,1))))
+
+# multiple variable can also be displayed with lines or bars
+# often you'll want to center and/or scale these for more direct comparison
+splot(cbind(x,y)~bet1, mv.scale=TRUE)
+
+# These can also be moved to the x axis, in which case x is moved to by
+splot(cbind(x,y)~bet1, mv.scale=TRUE, mv.as.x=TRUE)
+
+```
+
+***
+# Scatter plots
+
+```{r, fig.height=5, fig.width=10, dev='CairoSVG'}
+# any bar or line plot can also be represented as a scatter plot
+# this shows the actual data, rather than summaries
+# xlas sets the orientation of the x-axis labels; they default to vertical at the moment
+splot(cbind(x,y)~bet1, mv.scale=TRUE, mv.as.x=TRUE, xlas=1, type='scatter')
+
+# usually it's more interesting to look at two continuous variables
+splot(y~x)
+
+# for different lines, you can fit different types of models; either loess or spline
+splot(y~x, line=loess)
+
+# or adjust the linear model with transformations of x
+splot(y~x+x^2+x^3)
+
+# you can use other variables to break these up as well
+# the line adjusting terms can also just be added to the end of the formula,
+# but are added as cov here to make it easier to look at
+splot(y~x*by, cov=x^2+x^3)
+splot(y~x*by*bet1, cov=x^2+x^3)
+splot(y~x*by*bet1*bet2, cov=x^2+x^3, levels=list(bet1=c(2,1)))
+```
+
+***
+<div style='text-align:center'>
+![Brought to you by the <a href="https://www.depts.ttu.edu/psy/lusi/resources.php" target="_blank">Language Use and Social Interaction</a> lab at Texas Tech University](https://www.depts.ttu.edu/psy/lusi/files/lusi.jpg)
+</div>

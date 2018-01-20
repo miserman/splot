@@ -73,13 +73,10 @@ Here, the `mnc` part is calculating the mean of each text across segments, then 
 In the first `legend` call, the constants are position (set in the first argument), and line weight (`lwd`) and box type (`bty`; `'n'` for none). Dynamic arguments are pulled from the `disp` object we created before, based on the names in `mnc`.
 ```{r, fig.height=5, fig.width=10, dev='CairoSVG'}
 splot(anger~index*name, leg=FALSE, points=FALSE, lines='loess', myl=c(0,2.2), colors=disp$col, lty=disp$lty, add={
-    mnc=names(sort(colMeans(sapply(cdat$`^^`, '[[', 'y'))[-grep('Hit|Rod', names(cdat$`^^`))], TRUE)[1:2])
+    mnc=names(sort(colMeans(sapply(cdat$`.^^.`, '[[', 'y'))[-grep('Hit|Rod', names(cdat$`.^^.`))], TRUE)[1:2])
     legend('topleft', sort(mnc), lty=disp[disp$name%in%mnc, 2], col=disp[disp$name%in%mnc, 3], lwd=2, bty='n')
     legend('topright', c('Adolf Hitler', 'Elliot Rodger'), lty=1:2, col=disp$col[1], lwd=2, bty='n')
 })
-
-splot(anger~index*name, leg=FALSE, points=FALSE, lines='loess', myl=c(0,2.2), lty=disp$lty,colorby=name)
-
 ```
 
 If we were planning on applying these settings to several graphs (if, say, we wanted to look at several different `y` variables individually), we could add the consistent stuff to an options list:
@@ -92,7 +89,7 @@ opt = list(
   colors = disp$col,
   lty = disp$lty,
   add = quote({
-    mnc=names(sort(colMeans(sapply(cdat$`^^`, '[[', 'y'))[-grep('Hit|Rod', names(cdat$`^^`))], TRUE)[1:2])
+    mnc=names(sort(colMeans(sapply(cdat$`.^^.`, '[[', 'y'))[-grep('Hit|Rod', names(cdat$`.^^.`))], TRUE)[1:2])
     legend('topleft', sort(mnc), lty=disp[disp$name%in%mnc, 2], col=disp[disp$name%in%mnc, 3], lwd=2, bty='n')
     legend('topright', c('Adolf Hitler', 'Elliot Rodger'), lty=1:2, col=disp$col[1], lwd=2, bty='n')
   })
