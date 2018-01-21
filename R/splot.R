@@ -1,4 +1,3 @@
-
 #' Split Plot
 #'
 #' A plotting function aimed at automating some common visualization tasks in order to ease data exploration.
@@ -454,7 +453,8 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
     ck$mvn=colnames(dat)[dn]
     td=dat
     if(any(ckn<-duplicated(ck$mvn))) ck$mvn[ckn]=paste0(ck$mvn[ckn],'_',seq_len(sum(ckn)))
-    by=rep(sub('^y\\.','',ck$mvn),each=nrow(dat))
+    by=sub('^y\\.','',ck$mvn)
+    by=factor(rep(by,each=nrow(dat)),levels=by)
     dat=data.frame(y=unlist(dat[,dn],use.names=FALSE))
     if(ncol(td)>length(dn)) dat=cbind(dat,apply(td[,-dn,drop=FALSE],2,function(c)rep.int(c,length(dn))))
     if(mv.as.x){
