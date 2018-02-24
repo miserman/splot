@@ -44,7 +44,7 @@ length as the number of levels. To rename and reorder, enter a list, with names 
 second entry (e.g., \code{levels =} \code{list(var =} \code{list(c('a','b','c'),} \code{c(3,2,1)))}). This happens after
 variables are split, so names and orders should correspond to the new split levels of split variables. For example, if
 a continuous variable is median split, it now has two levels ('Under Median' and 'Over Median'), which are the levels
-reordering or renaming would apply to. Multiple varaibles entered as \code{y} can be renamed and sorted with an entry
+reordering or renaming would apply to. Multiple variables entered as \code{y} can be renamed and sorted with an entry
 titled 'mv'.}
 
 \item{sort}{string: if \code{x} is a character or factor, specifies how it should be sorted in terms of the level's \code{y}
@@ -189,7 +189,7 @@ In addition, \code{font.lab} sets the x and y label font, \code{font.sub} sets t
 \code{font.axis} sets the axis label font, and \code{font.main} sets the between level/n heading font; these are passed to
 \code{\link[graphics]{par}}. See the input section.}
 
-\item{cex}{named numeric vector: \code{c(title,sud,leg,note)}. Sets the font size of the title, su dispay, legend, and note.
+\item{cex}{named numeric vector: \code{c(title,sud,leg,note)}. Sets the font size of the title, su display, legend, and note.
 In addition, \code{cex.lab} sets the x and y label size, \code{cex.sub} sets the size of the little title in each panel,
 \code{cex.axis} sets the axis label size, and \code{cex.main} sets the between level/n heading size; these are passed to
 \code{\link[graphics]{par}}. See the input section.}
@@ -282,7 +282,7 @@ will be drawn at such error-bar-less orphaned levels.
 splot tries to clean up after itself in the case of an error, but you may still run into errors that break things before
 this can happen. If after a failed plot you find that you're unable to make any new plots, or new plots are drawn over old
 ones, you might try entering \code{dev.off()} into the console. If new plots look off (splot's \code{\link[graphics]{par}}
-ettings didn't get reset), you may have to close the plot window to reset \code{\link[graphics]{par}} (if you're using
+settings didn't get reset), you may have to close the plot window to reset \code{\link[graphics]{par}} (if you're using
 RStudio, Plots > "Remove Plot..." or "Clear All..."), or restart R.
 }
 \section{Input}{

@@ -72,7 +72,7 @@ length as the number of levels. To rename and reorder, enter a list, with names 
 second entry (e.g., <code>levels =</code> <code>list(var =</code> <code>list(c('a','b','c'),</code> <code>c(3,2,1)))</code>). This happens after
 variables are split, so names and orders should correspond to the new split levels of split variables. For example, if
 a continuous variable is median split, it now has two levels ('Under Median' and 'Over Median'), which are the levels
-reordering or renaming would apply to. Multiple varaibles entered as <code>y</code> can be renamed and sorted with an entry
+reordering or renaming would apply to. Multiple variables entered as <code>y</code> can be renamed and sorted with an entry
 titled 'mv'.</p>
 </td></tr>
 <tr valign="top"><td><code>sort</code></td>
@@ -295,7 +295,7 @@ In addition, <code>font.lab</code> sets the x and y label font, <code>font.sub</
 </td></tr>
 <tr valign="top"><td><code>cex</code></td>
 <td>
-<p>named numeric vector: <code>c(title,sud,leg,note)</code>. Sets the font size of the title, su dispay, legend, and note.
+<p>named numeric vector: <code>c(title,sud,leg,note)</code>. Sets the font size of the title, su display, legend, and note.
 In addition, <code>cex.lab</code> sets the x and y label size, <code>cex.sub</code> sets the size of the little title in each panel,
 <code>cex.axis</code> sets the axis label size, and <code>cex.main</code> sets the between level/n heading size; these are passed to
 <code>par</code>. See the input section.</p>
@@ -463,7 +463,7 @@ will be drawn at such error-bar-less orphaned levels.
 <p>splot tries to clean up after itself in the case of an error, but you may still run into errors that break things before
 this can happen. If after a failed plot you find that you're unable to make any new plots, or new plots are drawn over old
 ones, you might try entering <code>dev.off()</code> into the console. If new plots look off (splot's <code>par</code>
-ettings didn't get reset), you may have to close the plot window to reset <code>par</code> (if you're using
+settings didn't get reset), you may have to close the plot window to reset <code>par</code> (if you're using
 RStudio, Plots &gt; &quot;Remove Plot...&quot; or &quot;Clear All...&quot;), or restart R.
 </p>
 
