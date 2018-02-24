@@ -78,11 +78,11 @@ code{font-family:monospace}
 </div>
 
 <div style='display:none' id='sub_doc'>
-<h1>main subheading</h1>
+<h1>subset display</h1>
 <div class='idoc'><table>
-<tr><td>sub</td><td>Hide the main subheading with <code>FALSE</code>.</td></tr>
-<tr><td>font.sub</td><td>Change the font by a code. Generally, 1 = plain, 2 = bold, 3 = italic, 4 = bold italic.</td></tr>
-<tr><td>cex.sub</td><td>Change the font size by the set magnification factor.</td></tr>
+<tr><td>sud</td><td>Hide the main subheading with <code>FALSE</code>.</td></tr>
+<tr><td>font</td><td>Change the font by a code. Generally, 1 = plain, 2 = bold, 3 = italic, 4 = bold italic, e.g., <code>font=c(sud=3)</code>.</td></tr>
+<tr><td>cex</td><td>Change the font size by the set magnification factor, e.g., <code>cex=c(sud=3)</code>.</td></tr>
 </table></div>
 </div>
 
@@ -98,13 +98,13 @@ code{font-family:monospace}
 <div style='display:none' id='panels_doc'>
 <h1>plot panels</h1>
 <div class='idoc'><table>
-<tr><td>sud</td><td>Hide the label at the top of each panel with <code>FALSE</code>.</td></tr>
+<tr><td>sub</td><td>Hide the label at the top of each panel with <code>FALSE</code>.</td></tr>
 <tr><td>ndisp</td><td>Hide just the n display in the panel label with <code>FALSE</code>.</td></tr>
 <tr><td>myl, mxl</td><td>Adjust the range of the y- and x-axis, e.g., <code>myl=c(0,10)</code>.</td></tr>
 <tr><td>ylas, xlas</td><td>Change the orientation of the axis labels (the numbers or level names on each axis). 0 = parallel to axis, 1 = horizontal, 2 = perpendicular to axis, 3 = vertical.</td></tr>
 <tr><td>font.axis, font.sub</td><td>Change the font by a code. Generally, 1 = plain, 2 = bold, 3 = italic, 4 = bold italic.</td></tr>
-<tr><td>cex.axis, cex.main</td><td>Change the font size of axis labels by the set magnification factor.</td></tr>
-<tr><td>col.axis, col.main</td><td>Change label colors with a code or name (e.g., <code>col.axis='#303030'</code>). <code>col.axis</code> applies to axis labels and lines/tick marks. <code>col.main</code> applies to the panel labels.</td></tr>
+<tr><td>cex.axis, cex.sub</td><td>Change the font size of axis labels by the set magnification factor.</td></tr>
+<tr><td>col.axis, col.sub</td><td>Change label colors with a code or name (e.g., <code>col.axis='#303030'</code>). <code>col.axis</code> applies to axis labels and lines/tick marks. <code>col.main</code> applies to the panel labels.</td></tr>
 <tr><td>drop</td><td><code>drop['bet']</code> can affect the layout of panels; e.g., <code>drop=c(bet=FALSE)</code> will show empty panels if there are levels of <code>between</code> without data.</td></tr>
 <tr><td>mfrow</td><td>Specifies the number of rows and column. This is normally set based on the levels of <code>between</code>, but can be overwritten (e.g., <code>mfrow=c(2,3)</code> would make a layout of 2 rows and 3 columns).</td></tr>
 <tr><td>mar</td><td>Adjust the spacing between the labels and the plotting area: <code>c(bottom, left, top, right)</code>, e.g., <code>mar=c(1, 1, 3, 0).</code></td></tr>

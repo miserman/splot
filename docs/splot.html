@@ -26,11 +26,11 @@ splot(y, data = NULL, su = NULL, type = "", split = "median",
   ylas = 1, bw = "nrd0", adj = 2, leg = "outside", lpos = "auto",
   lvn = TRUE, title = TRUE, labx = TRUE, laby = TRUE, lty = TRUE,
   lwd = 2, sub = TRUE, ndisp = TRUE, note = TRUE, font = c(title = 2,
-  leg = 1, note = 3), cex = c(title = 1.5, leg = 1, note = 0.7), sud = TRUE,
-  labels = TRUE, labels.filter = "_|\\.", labels.trim = 20,
-  points = TRUE, points.first = TRUE, byx = TRUE, drop = c(x = TRUE, by
-  = TRUE, bet = TRUE), prat = c(1, 1), model = FALSE, options = NULL,
-  add = NULL)
+  sud = 1, leg = 1, note = 3), cex = c(title = 1.5, sud = 0.9, leg = 1, note =
+  0.7), sud = TRUE, labels = TRUE, labels.filter = "_|\\.",
+  labels.trim = 20, points = TRUE, points.first = TRUE, byx = TRUE,
+  drop = c(x = TRUE, by = TRUE, bet = TRUE), prat = c(1, 1),
+  model = FALSE, options = NULL, add = NULL)
 </pre>
 
 
@@ -185,7 +185,9 @@ pixels depending on <code>format</code>. Defaults to the dimensions of the plot 
 <p>sets a color theme or manually specifies colors. Default theme is <code>"pastel"</code>, with <code>"dark"</code> and
 <code>"bright"</code> as options; these are passed to <code>splot.color</code>. If set to <code>"grey"</code>, or if <code>by</code> has
 more than 9 levels, a grey scale is calculated using <code>grey</code>. See the <code>col</code> parameter in
-<code>par</code> for acceptable manual inputs.</p>
+<code>par</code> for acceptable manual inputs. To set text and axis colors, <code>col</code> sets outside texts
+(title, sud, labx, laby, and note), <code>col.sub</code> or <code>col.main</code> sets the frame titles, and <code>col.axis</code> sets
+the axis text and line colors.</p>
 </td></tr>
 <tr valign="top"><td><code>colorby</code></td>
 <td>
@@ -286,21 +288,21 @@ value. Otherwise loops through available line types, see <code>par</code>.</p>
 </td></tr>
 <tr valign="top"><td><code>font</code></td>
 <td>
-<p>named numeric vector: <code>c(title,leg,note)</code>. Sets the font of the title, legend, and note. In addition,
-<code>font.lab</code> sets the x and y label font, <code>font.sub</code> sets the subset/covariate subheading font, <code>font.axis</code>
-sets the axis label font, and <code>font.main</code> sets the between level/n heading font; these are passed to
+<p>named numeric vector: <code>c(title,sud,leg,note)</code>. Sets the font of the title, su display, legend, and note.
+In addition, <code>font.lab</code> sets the x and y label font, <code>font.sub</code> sets the font of the little title in each panel,
+<code>font.axis</code> sets the axis label font, and <code>font.main</code> sets the between level/n heading font; these are passed to
 <code>par</code>. See the input section.</p>
 </td></tr>
 <tr valign="top"><td><code>cex</code></td>
 <td>
-<p>named numeric vector: <code>c(title,leg,note)</code>. Sets the font size of the title, legend, and note. In addition,
-<code>cex.lab</code> sets the x and y label size, <code>cex.sub</code> sets the subset/covariate subheading size, <code>cex.axis</code>
-sets the axis label size, and <code>cex.main</code> sets the between level/n heading size; these are passed to
+<p>named numeric vector: <code>c(title,sud,leg,note)</code>. Sets the font size of the title, su dispay, legend, and note.
+In addition, <code>cex.lab</code> sets the x and y label size, <code>cex.sub</code> sets the size of the little title in each panel,
+<code>cex.axis</code> sets the axis label size, and <code>cex.main</code> sets the between level/n heading size; these are passed to
 <code>par</code>. See the input section.</p>
 </td></tr>
 <tr valign="top"><td><code>sud</code></td>
 <td>
-<p>logical: if <code>FALSE</code>, the heading for subset and covariates/line adjustments is turned off.</p>
+<p>logical: if <code>FALSE</code>, the heading for subset and covariates/line adjustments (su display) is turned off.</p>
 </td></tr>
 <tr valign="top"><td><code>labels</code></td>
 <td>

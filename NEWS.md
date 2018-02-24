@@ -5,6 +5,7 @@
 * split by a specified number of segments.
 
 ## Improvements
+* cleared up sub/sud related mixups.
 * level ordering now applies to between variables.
 * improved formula parsing; expressions should be better recognized
   as arguments.

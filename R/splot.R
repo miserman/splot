@@ -75,7 +75,9 @@
 #' @param colors sets a color theme or manually specifies colors. Default theme is \code{"pastel"}, with \code{"dark"} and
 #'   \code{"bright"} as options; these are passed to \code{\link{splot.color}}. If set to \code{"grey"}, or if \code{by} has
 #'   more than 9 levels, a grey scale is calculated using \code{\link[grDevices]{grey}}. See the \code{col} parameter in
-#'   \code{\link[graphics]{par}} for acceptable manual inputs.
+#'   \code{\link[graphics]{par}} for acceptable manual inputs. To set text and axis colors, \code{col} sets outside texts
+#'   (title, sud, labx, laby, and note), \code{col.sub} or \code{col.main} sets the frame titles, and \code{col.axis} sets
+#'   the axis text and line colors.
 #' @param colorby a variable used to set colors and the legend, alternatively to \code{by}. If \code{by} is not missing,
 #'   \code{colorby} will be reduced to only the unique combinations of \code{by} and \code{colorby}. For example, if \code{by}
 #'   is a participant ID with multiple observations per participant, and \code{by} is a condition ID which is the same for all
@@ -118,15 +120,15 @@
 #'   \code{\link[graphics]{par}}.
 #' @param sub logical: if \code{FALSE}, the small title above each plot showing \code{between} levels is turned off.
 #' @param note logical: if \code{FALSE}, the note at the bottom about splits and/or lines or error bars is turned off.
-#' @param font named numeric vector: \code{c(title,leg,note)}. Sets the font of the title, legend, and note. In addition,
-#'   \code{font.lab} sets the x and y label font, \code{font.sub} sets the subset/covariate subheading font, \code{font.axis}
-#'   sets the axis label font, and \code{font.main} sets the between level/n heading font; these are passed to
+#' @param font named numeric vector: \code{c(title,sud,leg,note)}. Sets the font of the title, su display, legend, and note.
+#'   In addition, \code{font.lab} sets the x and y label font, \code{font.sub} sets the font of the little title in each panel,
+#'   \code{font.axis} sets the axis label font, and \code{font.main} sets the between level/n heading font; these are passed to
 #'   \code{\link[graphics]{par}}. See the input section.
-#' @param cex named numeric vector: \code{c(title,leg,note)}. Sets the font size of the title, legend, and note. In addition,
-#'   \code{cex.lab} sets the x and y label size, \code{cex.sub} sets the subset/covariate subheading size, \code{cex.axis}
-#'   sets the axis label size, and \code{cex.main} sets the between level/n heading size; these are passed to
+#' @param cex named numeric vector: \code{c(title,sud,leg,note)}. Sets the font size of the title, su dispay, legend, and note.
+#'   In addition, \code{cex.lab} sets the x and y label size, \code{cex.sub} sets the size of the little title in each panel,
+#'   \code{cex.axis} sets the axis label size, and \code{cex.main} sets the between level/n heading size; these are passed to
 #'   \code{\link[graphics]{par}}. See the input section.
-#' @param sud logical: if \code{FALSE}, the heading for subset and covariates/line adjustments is turned off.
+#' @param sud logical: if \code{FALSE}, the heading for subset and covariates/line adjustments (su display) is turned off.
 #' @param ndisp logical: if \code{FALSE}, n per level is no longer displayed in the subheadings.
 #' @param labels logical: if \code{FALSE}, sets all settable text surrounding the plot to \code{FALSE} (just so you don't
 #'   have to set all of them if you want a clean frame).
@@ -278,7 +280,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
   error.lwd=2,lim=9,lines=TRUE,...,x=NULL,by=NULL,between=NULL,cov=NULL,line.type='l',mv.scale='none',mv.as.x=FALSE,
   save=FALSE,format=cairo_pdf,dims=dev.size(),file.name='splot',colors='pastel',colorby=NULL,myl=NULL,mxl=NULL,autori=TRUE,
   xlas=0,ylas=1,bw='nrd0',adj=2,leg='outside',lpos='auto',lvn=TRUE,title=TRUE,labx=TRUE,laby=TRUE,lty=TRUE,lwd=2,sub=TRUE,
-  ndisp=TRUE,note=TRUE,font=c(title=2,leg=1,note=3),cex=c(title=1.5,leg=1,note=.7),sud=TRUE,labels=TRUE,
+  ndisp=TRUE,note=TRUE,font=c(title=2,sud=1,leg=1,note=3),cex=c(title=1.5,sud=.9,leg=1,note=.7),sud=TRUE,labels=TRUE,
   labels.filter='_|\\.',labels.trim=20,points=TRUE,points.first=TRUE,byx=TRUE,drop=c(x=TRUE,by=TRUE,bet=TRUE),
   prat=c(1,1),model=FALSE,options=NULL,add=NULL){
   #parsing input and preparing data
@@ -797,7 +799,6 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
     font.lab=2,
     cex.main=1,
     cex.lab=1,
-    cex.sub=.9,
     cex.axis=1,
     tcl=-.2,
     pch=19,
@@ -805,7 +806,12 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
     xpd=NA
   )
   if(length(pdo)!=0){
-    if(any(cpdo<-(npdo<-names(pdo))%in%names(dop))) op[npdo[cpdo]]=pdo[cpdo]
+    if(any(cpdo<-(npdo<-names(pdo))%in%names(dop))){
+      op[npdo[cpdo]]=pdo[cpdo]
+      if('font.sub'%in%names(op)) op$font.main=op$font.sub
+      if('cex.sub'%in%names(op)) op$cex.main=op$cex.sub
+      if('col.sub'%in%names(op)) op$col.main=op$col.sub
+    }
     pdo=pdo[!cpdo]
   }
   lega=list(col=if(ck$cb) cs else colors[names(ptxt$l.by)],lty=if(ck$lty && lty) seq_len(seg$by$ll) else if(!missing(lty)
@@ -1076,7 +1082,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
   if(sud) mtext(if(ck$sud) gsub(', (?=[A-z0-9 ]+$)',ifelse(length(ptxt$cov)>2,', & ',' & '),
     gsub('^ | $','',paste0(if(ck$su) paste('Subset:',paste0(txt$su[1],if(length(txt$su)!=1)'...')),if(ck$su && ck$c)', ',
       if(ck$c) paste(if(ck$t==1)'Covariates:' else 'Line adjustment:',paste(ptxt$cov,collapse=', ')))),TRUE,TRUE) else
-        '',3,0,TRUE,cex=par('cex.sub'),font=par('font.sub'))
+        '',3,0,TRUE,cex=cex['sud'],font=font['sud'])
   mtext(main,3,if(ck$sud) 1.5 else .5,TRUE,cex=cex['title'],font=font['title'])
   mtext(if(ck$t==2) 'Density' else ylab,2,-.2,TRUE,cex=par('cex.lab'),font=par('font.lab'))
   mtext(if(ck$t==2) ylab else xlab,1,0,TRUE,cex=par('cex.lab'),font=par('font.lab'))
