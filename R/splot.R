@@ -10,8 +10,12 @@
 #'   \code{"scatter"}. If \code{"density"}, \code{x} is ignored. Anything including the first letter of each is accepted
 #'   (e.g., \code{type='l'}).
 #' @param split how to split any continuous variables (those with more than \code{lim} levels as factors). Default is
-#'   \code{"median"}, with \code{"mean"}, \code{"standard deviation"}, \code{"quantile"}, or a number as options. If a number,
-#'   the variable is broken into roughly equal chunks.
+#'   \code{"median"}, with \code{"mean"}, \code{"standard deviation"}, \code{"quantile"}, or numbers as options. If numbers,
+#'   the variable is either cut at each value in a vector, or broken into roughly equal chunks. Entering an integer (e.g.,
+#'   \code{split = 3L}) that is greater than 1 will force splitting into segments. Otherwise variables will be split by value
+#'   if you enter a single value for split and there are at least two data less than or equal to and greater than the split,
+#'   or if you enter more than 1 value for split. If a numeric split is not compatible with splitting by value or segment,
+#'   splitting will default to the median.
 #' @param levels a list with entries corresponding to variable names, used to rename and/or reorder factor levels. To
 #'   reorder a factor, enter a vector of either numbers or existing level names in the new order (e.g.,
 #'   \code{levels =}\code{list(var =} \code{c(3,2,1))}). To rename levels of a factor, enter a character vector the same
@@ -133,7 +137,7 @@
 #' @param labels logical: if \code{FALSE}, sets all settable text surrounding the plot to \code{FALSE} (just so you don't
 #'   have to set all of them if you want a clean frame).
 #' @param labels.filter a regular expression string to be replaced in label texts with a blank space. Default is
-#'   \code{'_|\\\\.'}; underscores and periods appearing in the text of labels are replace with blank spaces. Set to
+#'   \code{'_'}, so underscores appearing in the text of labels are replace with blank spaces. Set to
 #'   \code{FALSE} to prevent all filtering.
 #' @param labels.trim numeric or logical: the maximum length of label texts (in number of characters). Default is 20, with
 #'   any longer labels being trimmed. Set to \code{FALSE} to prevent any trimming.
@@ -281,7 +285,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
   save=FALSE,format=cairo_pdf,dims=dev.size(),file.name='splot',colors='pastel',colorby=NULL,myl=NULL,mxl=NULL,autori=TRUE,
   xlas=0,ylas=1,bw='nrd0',adj=2,leg='outside',lpos='auto',lvn=TRUE,title=TRUE,labx=TRUE,laby=TRUE,lty=TRUE,lwd=2,sub=TRUE,
   ndisp=TRUE,note=TRUE,font=c(title=2,sud=1,leg=1,note=3),cex=c(title=1.5,sud=.9,leg=1,note=.7),sud=TRUE,labels=TRUE,
-  labels.filter='_|\\.',labels.trim=20,points=TRUE,points.first=TRUE,byx=TRUE,drop=c(x=TRUE,by=TRUE,bet=TRUE),
+  labels.filter='_',labels.trim=20,points=TRUE,points.first=TRUE,byx=TRUE,drop=c(x=TRUE,by=TRUE,bet=TRUE),
   prat=c(1,1),model=FALSE,options=NULL,add=NULL){
   #parsing input and preparing data
   if(!missing(options) && is.list(options) && length(options)!=0){
@@ -503,9 +507,12 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
       txt$split<<-'quantile'
       v=quantile(x)
       factor(ifelse(x<=v[2],0,ifelse(x>=v[4],2,1)),labels=c('2nd Quantile','Median','4th Quantile'))
+    }else if(s==4 && is.double(split) && (length(split)!=1 || all(c(sum(split>x),sum(split<x))>1))){
+      txt$split<<-paste(split,collapse=', ')
+      cut(x,c(-Inf,split,Inf),paste0('<=',c(split,'Inf')),ordered_result=TRUE)
     }else if(s==4 && is.numeric(split) && split>1){
       n=length(x)
-      split=min(n,split)
+      split=min(n,round(split))
       txt$split<<-paste0('segments (',split,')')
       factor(paste('seg',rep(seq_len(split),each=round(n/split+.5))[order(order(x))]))
     }else{

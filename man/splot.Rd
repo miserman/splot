@@ -15,7 +15,7 @@ splot(y, data = NULL, su = NULL, type = "", split = "median",
   lvn = TRUE, title = TRUE, labx = TRUE, laby = TRUE, lty = TRUE,
   lwd = 2, sub = TRUE, ndisp = TRUE, note = TRUE, font = c(title = 2,
   sud = 1, leg = 1, note = 3), cex = c(title = 1.5, sud = 0.9, leg = 1, note =
-  0.7), sud = TRUE, labels = TRUE, labels.filter = "_|\\\\.",
+  0.7), sud = TRUE, labels = TRUE, labels.filter = "_",
   labels.trim = 20, points = TRUE, points.first = TRUE, byx = TRUE,
   drop = c(x = TRUE, by = TRUE, bet = TRUE), prat = c(1, 1),
   model = FALSE, options = NULL, add = NULL)
@@ -34,8 +34,12 @@ in the environment.}
 (e.g., \code{type='l'}).}
 
 \item{split}{how to split any continuous variables (those with more than \code{lim} levels as factors). Default is
-\code{"median"}, with \code{"mean"}, \code{"standard deviation"}, \code{"quantile"}, or a number as options. If a number,
-the variable is broken into roughly equal chunks.}
+\code{"median"}, with \code{"mean"}, \code{"standard deviation"}, \code{"quantile"}, or numbers as options. If numbers,
+the variable is either cut at each value in a vector, or broken into roughly equal chunks. Entering an integer (e.g.,
+\code{split = 3L}) that is greater than 1 will force splitting into segments. Otherwise variables will be split by value
+if you enter a single value for split and there are at least two data less than or equal to and greater than the split,
+or if you enter more than 1 value for split. If a numeric split is not compatible with splitting by value or segment,
+splitting will default to the median.}
 
 \item{levels}{a list with entries corresponding to variable names, used to rename and/or reorder factor levels. To
 reorder a factor, enter a vector of either numbers or existing level names in the new order (e.g.,
@@ -200,7 +204,7 @@ In addition, \code{cex.lab} sets the x and y label size, \code{cex.sub} sets the
 have to set all of them if you want a clean frame).}
 
 \item{labels.filter}{a regular expression string to be replaced in label texts with a blank space. Default is
-\code{'_|\\\\.'}; underscores and periods appearing in the text of labels are replace with blank spaces. Set to
+\code{'_'}, so underscores appearing in the text of labels are replace with blank spaces. Set to
 \code{FALSE} to prevent all filtering.}
 
 \item{labels.trim}{numeric or logical: the maximum length of label texts (in number of characters). Default is 20, with

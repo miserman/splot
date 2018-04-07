@@ -1,3 +1,8 @@
+# splot 0.3.3
+
+## Additions
+* split by specified values.
+
 # splot 0.3.2
 
 ## Additions
