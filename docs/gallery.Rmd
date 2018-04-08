@@ -38,7 +38,7 @@ attach(data)
 ***
 # Density plots
 
-```{r, fig.height=5, fig.width=10, dev='CairoSVG'}
+```{r, fig.height=4.5, fig.width=10, dev='CairoSVG'}
 # when there is only one level of y, a histogram will also be drawn
 splot(y)
 
@@ -55,7 +55,7 @@ splot(cbind(x,y)~by*bet1, type='density')
 ***
 # Line and bar plots
 
-```{r, fig.height=5, fig.width=10, dev='CairoSVG'}
+```{r, fig.height=4.5, fig.width=10, dev='CairoSVG'}
 # when x is non-numerical, or has fewer unique values than lim, it is treated as categorical
 splot(y~group)
 
@@ -83,7 +83,7 @@ splot(cbind(x,y)~bet1, mv.scale=TRUE, mv.as.x=TRUE)
 ***
 # Scatter plots
 
-```{r, fig.height=5, fig.width=10, dev='CairoSVG'}
+```{r, fig.height=4.5, fig.width=10, dev='CairoSVG'}
 # any bar or line plot can also be represented as a scatter plot
 # this shows the actual data, rather than summaries
 # xlas sets the orientation of the x-axis labels; they default to vertical at the moment

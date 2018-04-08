@@ -963,7 +963,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
           aj=lapply(re,function(r)r+a)
           ylim=if(missing(myl)) c(
             min(aj$m)-max(abs(aj$m-aj$ne))*1.2,
-            max(aj$m)+max(abs(aj$m-aj$pe))*if(ck$leg==2 && seg$by$ll>1) seg$by$ll else 2.2
+            max(aj$m)+max(abs(aj$m-aj$pe))*if(ck$leg==2 && seg$by$ll>1) seg$by$ll+.7 else 1.2
           ) else myl+a
         }
         rownames(m)=ptxt$l.by[rn]
@@ -985,8 +985,8 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
       axis(1,apply(p,2,mean),colnames(m),FALSE,las=xlas,cex=par('cex.axis'),fg=par('col.axis'))
       a2a=list(2,las=ylas,cex=par('cex.axis'),fg=par('col.axis'))
       if(ck$b && autori){
-        a2a$at=seq_along(ayl)-1
-        a2a$labels=round(oyl,2)
+        a2a$at=ayl
+        a2a$labels=formatC(oyl,2,format='f')
       }
       do.call(axis,a2a)
       if(ck$el && !identical(ne,pe)){
