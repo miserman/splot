@@ -279,7 +279,8 @@
 #' @export
 #' @importFrom grDevices grey dev.copy dev.size dev.off cairo_pdf
 #' @importFrom graphics axis axTicks hist legend lines mtext plot barplot par points arrows strwidth layout plot.new
-#' @importFrom stats density median quantile sd lm confint update loess smooth.spline na.omit formula as.formula predict var
+#' @importFrom stats density median quantile sd lm glm confint update loess smooth.spline na.omit formula as.formula predict
+#' var binomial
 
 splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NULL,error='standard',error.color='#585858',
   error.lwd=2,lim=9,lines=TRUE,...,x=NULL,by=NULL,between=NULL,cov=NULL,line.type='l',mv.scale='none',mv.as.x=FALSE,
@@ -312,6 +313,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
       ifelse(grepl('^s',split,TRUE),3,4),
     ly=!(is.logical(laby) && !laby) || is.character(laby),
     lx=!(is.logical(labx) && !labx) || is.character(labx),
+    line=substitute(lines),
     lty=is.logical(lty),
     ltm=missing(line.type),
     leg=if(is.logical(leg) && !leg) 0 else if(!is.character(leg) || grepl('^o',leg,TRUE)) 1 else 2,
@@ -322,6 +324,10 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
     mv=FALSE,
     mlvn=missing(lvn)
   )
+  ck$ltck=(is.logical(ck$line) && ck$line) || !grepl('^F',ck$line)
+  ck$ltco=if(ck$ltck) if(is.logical(ck$line) || ck$c || grepl('^li|^lm|^st',ck$line,TRUE)) 'li' else
+    if(grepl('^loe|^po|^cu',ck$line,TRUE)) 'lo' else if(grepl('^sm|^sp|^in',ck$line,TRUE)) 'sm' else
+      if(grepl('^e|^co|^d',ck$line,TRUE)) 'e' else if(grepl('^pr|^log',ck$line,TRUE)) 'pr' else 'li' else 'li'
   if(any(!missing(font),!missing(cex),!missing(drop))){
     dop=as.list(args(splot))[c('font','cex','drop')]
     oco=function(s,d){
@@ -978,7 +984,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
         plot(NA,ylim=ylim,xlim=if(missing(mxl)) c(1-stw[1]/3,dm[2]+stw[length(stw)]/3) else mxl,ylab=NA,xlab=NA,
           main=if(sub) ptxt$sub else NA,axes=FALSE)
         if(is.numeric(lty)) lty=rep(lty,dm[1]) else if(is.logical(lty) && lty) lty=seq_len(dm[1])
-        for(a in seq_len(dm[1])) lines(m[a,],col=if(rck) colors[rn[a]] else colors,
+        for(a in seq_len(dm[1])) graphics::lines(m[a,],col=if(rck) colors[rn[a]] else colors,
           lty=if(is.numeric(lty)) lty[a] else 1,lwd=lwd,type=line.type)
         if(ck$leg==2) do.call(legend,c(list(lpos,legend=if(ck$cb) ptxt$cb else ptxt$l.by[rn]),lega))
       }
@@ -1012,14 +1018,14 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
         lty=if(is.numeric(lty)) rep(lty,length(m)) else if(is.logical(lty) && lty) seq_along(m) else rep(1,length(m))
         plot(NA,xlim=if(missing(mxl)) c(min(dx),max(dx)) else mxl,ylim=if(missing(myl)) c(0,max(c(dy))*1.2) else myl,
           main=if(sub) ptxt$sub else NA,ylab=NA,xlab=NA,axes=FALSE,xpd=if('xpd'%in%names(pdo)) pdo$xpd else FALSE)
-        for(l in seq_along(m)) lines(m[[l]],col=colors[rn[l]],lwd=lwd,lty=lty[l])
+        for(l in seq_along(m)) graphics::lines(m[[l]],col=colors[rn[l]],lwd=lwd,lty=lty[l])
         if(ck$leg==2) do.call(legend,c(list(if(ck$lp) ifelse(median(dx)<mean(range(dx)),'topleft','topright') else lpos,
           legend=ptxt$l.by[rn]),lega))
       }else{
         hist((if(cl) cdat[[i]][[1]] else cdat[[i]])[,'y'],border=if('border'%in%names(pdo)) pdo$border else par('bg'),
           freq=FALSE,main=if(sub) ptxt$sub else NA,ylab=NA,xlab=NA,axes=FALSE,
           col=if(length(colors)>1) colors[2] else colors)
-        if(!is.logical(lines) || lines) lines(m[[1]],col=colors[1],lwd=lwd,xpd=if('xpd'%in%names(pdo)) pdo$xpd else FALSE)
+        if(!is.logical(lines) || lines) graphics::lines(m[[1]],col=colors[1],lwd=lwd,xpd=if('xpd'%in%names(pdo)) pdo$xpd else FALSE)
       }
       axis(1,las=xlas,cex=par('cex.axis'),fg=par('col.axis'))
       axis(2,las=ylas,cex=par('cex.axis'),fg=par('col.axis'))
@@ -1062,25 +1068,21 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
         col=if((seg$by$ll==1 && ck$cb) || is.null(names(colors))) colors else colors[rn[l]]
         coll=if(length(col)>1 && seg$by$ll==1) '#666666' else col
         if(points && points.first) points(x,y,col=col)
-        lines=substitute(lines)
-        if(if(is.logical(lines)) lines else !grepl('^F',lines)){
-          lines=if(is.logical(lines) || ck$c || grepl('^li|^lm|^st',lines,TRUE)) 'li' else
-            if(grepl('^loe|^po|^cu',lines,TRUE)) 'lo' else if(grepl('^sm|^sp|^in',lines,TRUE)) 'sm' else
-              if(grepl('^e|^co|^d',lines,TRUE)) 'e' else if(grepl('^pr|^log',lines,TRUE)
-                && length(unique(y))==2) 'pr' else 'li'
+        if(ck$ltck){
+          lt=if(ck$ltco=='pr' && length(unique(y))!=2) 'li' else ck$ltco
           fit=tryCatch({
             if(ck$c) lm(y~x+as.matrix(td[,cvar,drop=FALSE]))$fitted else
-              if(lines=='e') y else if(lines=='pr'){
+              if(lt=='e') y else if(lt=='pr'){
                 yr=range(y)
                 y=factor(y,labels=c(0,1))
                 fit=predict(glm(y~x,binomial))
                 fit=exp(fit)/(1+exp(fit))
                 (fit-mean(fit))*(yr[2]-yr[1])+mean(yr)
-              }else predict(switch(lines,li=lm,lo=loess,sm=smooth.spline)(y~x))
+              }else predict(switch(lt,li=lm,lo=loess,sm=smooth.spline)(y~x))
           },error=function(e){warning('error estimating line: ',e$message,call.=FALSE);NULL})
           if(!is.null(fit)){
-            if(lines=='sm') {xo=fit$x; fit=fit$y} else {or=order(x); xo=x[or]; fit=fit[or]}
-            lines(xo,fit,col=coll,lty=if(ck$lty && lty) l else if(!missing(lty) && !ck$lty)
+            if(lt=='sm') {xo=fit$x; fit=fit$y} else {or=order(x); xo=x[or]; fit=fit[or]}
+            graphics::lines(xo,fit,col=coll,lty=if(ck$lty && lty) l else if(!missing(lty) && !ck$lty)
               ifelse(length(lty)>1,lty[l],l) else 1,lwd=lwd)
           }
         }
@@ -1092,8 +1094,8 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
       ,error=function(e)warning('error from add: ',e$message,call.=FALSE))
   },error=function(e){dev.off();stop(e)})}
   if(!success) stop("failed to make any plots with the current input",call.=FALSE)
-  if(ck$t==3 && ck$note && is.character(lines) && (!is.logical(note) || note))
-    note=paste0(if(is.logical(note)) '' else note, paste0('Line type: ',switch(lines,li='lm',
+  if(ck$t==3 && ck$note && (!is.logical(note) || note))
+    note=paste0(if(is.logical(note)) '' else note, paste0('Line type: ',switch(ck$ltco,li='lm',
       lo='loess',sm='spline',e='connected',pr='probability'),'.'))
   if(ck$leg==1){
     if(all(par('mfg')[1:2]!=0)){

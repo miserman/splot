@@ -70,6 +70,6 @@ splot(y ~ x * group, type='bar')
 Two-level y variable with a probability prediction line:
 ```R
 y_bin = rep(c(1,5),50)
-x_con = y_cat * .4 + rnorm(100)
-splot(y_bin ~ x_con, line='probability')
+x_con = y_bin * .4 + rnorm(100)
+splot(y_bin ~ x_con, lines='probability')
 ```

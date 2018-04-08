@@ -48,7 +48,7 @@ With this many levels of `by`, the legend isn't very useful in its current form,
 
 We're also interested in non-linear trends over the course of each text, so we'll switch to loess lines, and we'll use `myl` to zoom in (restrict the range) a bit:
 ```{r, fig.height=5, fig.width=10, dev='CairoSVG'}
-splot(anger~index*name, leg=FALSE, points=FALSE, lines='loess', myl=c(-.05,1.7))
+splot(anger~index*name, leg=FALSE, points=FALSE, lines=loess, myl=c(-.05,1.7))
 ```
 
 Much better, but still not very informative. 
