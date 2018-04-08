@@ -69,9 +69,10 @@ is treated as infinite (set to \code{Inf}).}
 
 \item{lines}{logical or a string specifying the type of lines to be drawn in scatter plots. By default (and whenever
 \code{cov} is not missing), a prediction line is fitted with \code{\link[stats]{lm}}. For (potentially) bendy lines,
-\code{'loess'} (matching \code{'^lo|^p|^cu'}) will use \code{\link[stats]{loess}}, and \code{'spline'}
-(\code{'^sm|^sp|^in'}) will use \code{\link[stats]{smooth.spline}}. \code{'connected'} (\code{'^e|^co|^d'}) will draw
-lines connecting all points, and \code{FALSE} will not draw any lines.}
+\code{'loess'} (matching \code{'^loe|^po|^cu'}) will use \code{\link[stats]{loess}}, and \code{'spline'}
+(\code{'^sm|^sp|^in'}) will use \code{\link[stats]{smooth.spline}}. If \code{y} is not numeric and has only 2 levels,
+\code{'probability'} (\code{'^pr|^log'}) will draw probabilities estimated by a logistic regression (\code{glm(y~x,binomial)}).
+\code{'connected'} (\code{'^e|^co|^d'}) will draw lines connecting all points, and \code{FALSE} will not draw any lines.}
 
 \item{...}{passes additional arguments to \code{\link[graphics]{par}} or \code{\link[graphics]{legend}}. The}
 

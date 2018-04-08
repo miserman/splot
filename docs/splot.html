@@ -109,9 +109,10 @@ is treated as infinite (set to <code>Inf</code>).</p>
 <td>
 <p>logical or a string specifying the type of lines to be drawn in scatter plots. By default (and whenever
 <code>cov</code> is not missing), a prediction line is fitted with <code>lm</code>. For (potentially) bendy lines,
-<code>'loess'</code> (matching <code>'^lo|^p|^cu'</code>) will use <code>loess</code>, and <code>'spline'</code>
-(<code>'^sm|^sp|^in'</code>) will use <code>smooth.spline</code>. <code>'connected'</code> (<code>'^e|^co|^d'</code>) will draw
-lines connecting all points, and <code>FALSE</code> will not draw any lines.</p>
+<code>'loess'</code> (matching <code>'^loe|^po|^cu'</code>) will use <code>loess</code>, and <code>'spline'</code>
+(<code>'^sm|^sp|^in'</code>) will use <code>smooth.spline</code>. If <code>y</code> is not numeric and has only 2 levels,
+<code>'probability'</code> (<code>'^pr|^log'</code>) will draw probabilities estimated by a logistic regression (<code>glm(y~x,binomial)</code>).
+<code>'connected'</code> (<code>'^e|^co|^d'</code>) will draw lines connecting all points, and <code>FALSE</code> will not draw any lines.</p>
 </td></tr>
 <tr valign="top"><td><code>...</code></td>
 <td>

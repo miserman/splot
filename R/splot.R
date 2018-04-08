@@ -38,9 +38,10 @@
 #'   is treated as infinite (set to \code{Inf}).
 #' @param lines logical or a string specifying the type of lines to be drawn in scatter plots. By default (and whenever
 #'   \code{cov} is not missing), a prediction line is fitted with \code{\link[stats]{lm}}. For (potentially) bendy lines,
-#'   \code{'loess'} (matching \code{'^lo|^p|^cu'}) will use \code{\link[stats]{loess}}, and \code{'spline'}
-#'   (\code{'^sm|^sp|^in'}) will use \code{\link[stats]{smooth.spline}}. \code{'connected'} (\code{'^e|^co|^d'}) will draw
-#'   lines connecting all points, and \code{FALSE} will not draw any lines.
+#'   \code{'loess'} (matching \code{'^loe|^po|^cu'}) will use \code{\link[stats]{loess}}, and \code{'spline'}
+#'   (\code{'^sm|^sp|^in'}) will use \code{\link[stats]{smooth.spline}}. If \code{y} is not numeric and has only 2 levels,
+#'   \code{'probability'} (\code{'^pr|^log'}) will draw probabilities estimated by a logistic regression (\code{glm(y~x,binomial)}).
+#'   \code{'connected'} (\code{'^e|^co|^d'}) will draw lines connecting all points, and \code{FALSE} will not draw any lines.
 #' @param ... passes additional arguments to \code{\link[graphics]{par}} or \code{\link[graphics]{legend}}. The
 #' @param x secondary variable, to be shown in on the x axis. If not specified, \code{type} will be set to \code{'density'}.
 #'   If \code{x} is a factor or vector of characters, or has fewer than \code{lim} levels when treated as a factor,
@@ -317,6 +318,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
     legm=missing(leg),
     lp=is.character(lpos) && grepl('^a',lpos,TRUE),
     mod=!missing(x) && model,
+    note=!is.character(note),
     mv=FALSE,
     mlvn=missing(lvn)
   )
@@ -491,6 +493,11 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
   }
   if(ck$ltm && !ck$el) line.type='b'
   if(missing(lty) && is.logical(lines) && !lines){ck$lty=FALSE; lty=1}
+  if(!is.numeric(dat$y)){
+    dat$y=as.factor(as.character(dat$y))
+    txt$yax=levels(dat$y)
+    dat$y=as.numeric(dat$y)
+  }
   odat=dat
   #splitting and parsing variables
   splt=function(x,s){
@@ -978,7 +985,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
       axis(1,apply(p,2,mean),colnames(m),FALSE,las=xlas,cex=par('cex.axis'),fg=par('col.axis'))
       a2a=list(2,las=ylas,cex=par('cex.axis'),fg=par('col.axis'))
       if(ck$b && autori){
-        a2a$at=ayl
+        a2a$at=seq_along(ayl)-1
         a2a$labels=round(oyl,2)
       }
       do.call(axis,a2a)
@@ -1027,6 +1034,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
       xch=if(is.numeric(cx)) cx else as.numeric(factor(cx))
       a2a=list(cex=par('cex.axis'),fg=par('col.axis'))
       if(length(ptxt$l.x)!=0){
+        a2a$tick=FALSE
         a2a$at=seq_along(ptxt$l.x)
         a2a$labels=ptxt$l.x
         if(missing(xlas) || xlas>1){
@@ -1037,7 +1045,8 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
       plot(NA,xlim=if(missing(mxl)) range(xch,na.rm=TRUE) else mxl,ylim=if(missing(myl))
         c(min(cy),max(cy)+max(cy)*ifelse(ck$leg==1 && seg$by$ll<lim,seg$by$ll/20,0)) else myl,
         main=if(sub) ptxt$sub else NA,ylab=NA,xlab=NA,axes=FALSE)
-      do.call(axis,c(list(2,las=ylas),a2a[c('cex','fg')]))
+      do.call(axis,c(list(2,las=ylas),c(a2a[c('cex','fg')],
+        if('yax'%in%names(txt))list(at=seq_along(txt$yax),labels=txt$yax,tick=FALSE))))
       do.call(axis,c(list(1,las=xlas),a2a))
       if(ck$leg>1){
         up=xch[cy>=quantile(cy)[4]]
@@ -1056,11 +1065,18 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
         lines=substitute(lines)
         if(if(is.logical(lines)) lines else !grepl('^F',lines)){
           lines=if(is.logical(lines) || ck$c || grepl('^li|^lm|^st',lines,TRUE)) 'li' else
-            if(grepl('^lo|^p|^cu',lines,TRUE)) 'lo' else if(grepl('^sm|^sp|^in',lines,TRUE)) 'sm' else
-              if(grepl('^e|^co|^d',lines,TRUE)) 'e' else 'li'
+            if(grepl('^loe|^po|^cu',lines,TRUE)) 'lo' else if(grepl('^sm|^sp|^in',lines,TRUE)) 'sm' else
+              if(grepl('^e|^co|^d',lines,TRUE)) 'e' else if(grepl('^pr|^log',lines,TRUE)
+                && length(unique(y))==2) 'pr' else 'li'
           fit=tryCatch({
             if(ck$c) lm(y~x+as.matrix(td[,cvar,drop=FALSE]))$fitted else
-              if(lines=='e') y else predict(switch(lines,li=lm,lo=loess,sm=smooth.spline)(y~x))
+              if(lines=='e') y else if(lines=='pr'){
+                yr=range(y)
+                y=factor(y,labels=c(0,1))
+                fit=predict(glm(y~x,binomial))
+                fit=exp(fit)/(1+exp(fit))
+                (fit-mean(fit))*(yr[2]-yr[1])+mean(yr)
+              }else predict(switch(lines,li=lm,lo=loess,sm=smooth.spline)(y~x))
           },error=function(e){warning('error estimating line: ',e$message,call.=FALSE);NULL})
           if(!is.null(fit)){
             if(lines=='sm') {xo=fit$x; fit=fit$y} else {or=order(x); xo=x[or]; fit=fit[or]}
@@ -1076,9 +1092,9 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
       ,error=function(e)warning('error from add: ',e$message,call.=FALSE))
   },error=function(e){dev.off();stop(e)})}
   if(!success) stop("failed to make any plots with the current input",call.=FALSE)
-  if(ck$t==3 && !is.character(note) && is.character(lines) && (!is.logical(note) || note))
+  if(ck$t==3 && ck$note && is.character(lines) && (!is.logical(note) || note))
     note=paste0(if(is.logical(note)) '' else note, paste0('Line type: ',switch(lines,li='lm',
-      lo='loess',sm='spline',e='connected'),'.'))
+      lo='loess',sm='spline',e='connected',pr='probability'),'.'))
   if(ck$leg==1){
     if(all(par('mfg')[1:2]!=0)){
       plot.new()

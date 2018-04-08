@@ -65,6 +65,12 @@ splot(y~group, type='bar')
 # for bar and line plots, levels of x can be renamed and sorted
 splot(y~group, type='bar', levels=list(group=list(c('d','e','f'),c(3,2,1))))
 
+# You can also plot categorical variables in the y position
+splot(group~y)
+
+# if y has only two levels, you can display predicted probability
+splot(by~y, line='probability')
+
 # multiple variable can also be displayed with lines or bars
 # often you'll want to center and/or scale these for more direct comparison
 splot(cbind(x,y)~bet1, mv.scale=TRUE)

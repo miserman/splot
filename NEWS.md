@@ -2,6 +2,11 @@
 
 ## Additions
 * split by specified values.
+* diplay predicted probability lines in scatter plots with a 2-level ys.
+* allows for text as y-axis labels in scatter plots.
+
+## Bug fixes
+* corrected barplot y-axis label positioning.
 
 # splot 0.3.2
 
