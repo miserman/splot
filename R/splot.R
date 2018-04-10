@@ -42,7 +42,7 @@
 #'   (\code{'^sm|^sp|^in'}) will use \code{\link[stats]{smooth.spline}}. If \code{y} is not numeric and has only 2 levels,
 #'   \code{'probability'} (\code{'^pr|^log'}) will draw probabilities estimated by a logistic regression (\code{glm(y~x,binomial)}).
 #'   \code{'connected'} (\code{'^e|^co|^d'}) will draw lines connecting all points, and \code{FALSE} will not draw any lines.
-#' @param ... passes additional arguments to \code{\link[graphics]{par}} or \code{\link[graphics]{legend}}. The
+#' @param ... passes additional arguments to \code{\link[graphics]{par}} or \code{\link[graphics]{legend}}.
 #' @param x secondary variable, to be shown in on the x axis. If not specified, \code{type} will be set to \code{'density'}.
 #'   If \code{x} is a factor or vector of characters, or has fewer than \code{lim} levels when treated as a factor,
 #'   \code{type} will be set to \code{'line'} unless specified.
@@ -347,7 +347,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
     if(!missing(drop)) drop=oco(drop,dop$drop)
   }
   dn=if(ck$d) names(data) else ''
-  if(any(grepl('~',substitute(y),fixed=TRUE))){
+  if(any(grepl('~',c(substitute(y),if(deparse(substitute(y))%in%ls(envir=globalenv())) y),fixed=TRUE))){
     f=as.character(as.formula(y))[-1]
     y=f[1]
     bl=function(x){

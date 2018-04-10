@@ -74,7 +74,7 @@ is treated as infinite (set to \code{Inf}).}
 \code{'probability'} (\code{'^pr|^log'}) will draw probabilities estimated by a logistic regression (\code{glm(y~x,binomial)}).
 \code{'connected'} (\code{'^e|^co|^d'}) will draw lines connecting all points, and \code{FALSE} will not draw any lines.}
 
-\item{...}{passes additional arguments to \code{\link[graphics]{par}} or \code{\link[graphics]{legend}}. The}
+\item{...}{passes additional arguments to \code{\link[graphics]{par}} or \code{\link[graphics]{legend}}.}
 
 \item{x}{secondary variable, to be shown in on the x axis. If not specified, \code{type} will be set to \code{'density'}.
 If \code{x} is a factor or vector of characters, or has fewer than \code{lim} levels when treated as a factor,

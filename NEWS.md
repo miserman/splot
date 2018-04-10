@@ -6,6 +6,7 @@
 * allows for text as y-axis labels in scatter plots.
 
 ## Improvements
+* now handles assigned formulas.
 * improved bar plot y-axis labels.
 
 # splot 0.3.2
