@@ -409,8 +409,10 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
       tx=tryCatch(eval(x,data,parent.frame(2)),error=function(e)NULL)
     }else if(is.null(tx)) tx=tryCatch(eval(x,data,parent.frame(3)),error=function(e)NULL)
     if(is.null(tx) || class(tx)%in%c('name','call','expression','function')) stop('could not find ',x,call.=FALSE)
-    if(!is.null(l) && is.null(ncol(tx))) if(length(tx)!=l)
+    if(!is.null(l) && is.null(ncol(tx))) if(length(tx)!=l){
+      tx=rep_len(tx,l)
       warning(x,' is not the same length as y',call.=FALSE)
+    }
     tx
   }
   if(!missing(data) && !class(data)%in%c('matrix','data.frame'))
@@ -628,7 +630,9 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
   cdat=split(dat,dsf)
   if(seg$by$e){
     cdat=lapply(cdat,function(s)if(length(unique(s$by))>1) split(s,s$by) else{
-      s=list(s)[seg$by$l];names(s)=seg$by$l;s[vapply(s,is.null,TRUE)]=0;s
+      s=lapply(seg$by$l,function(l) if(sum(s$by==l)) s else NULL)
+      names(s)=seg$by$l
+      s
     })
     if(all((seg$n<-vapply(cdat,length,0))==seg$by$ll)){
       seg$n=vapply(cdat,function(s)vapply(s,NROW,0),numeric(seg$by$ll))
@@ -1077,7 +1081,8 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
                 y=factor(y,labels=c(0,1))
                 fit=predict(glm(y~x,binomial))
                 fit=exp(fit)/(1+exp(fit))
-                (fit-mean(fit))*(yr[2]-yr[1])+mean(yr)
+                if(!all(yr==c(0,1))) fit=(fit-mean(fit))*(yr[2]-yr[1])+mean(yr)
+                if(max(fit)>yr[2]) fit-(max(fit)-yr[2]) else fit
               }else predict(switch(lt,li=lm,lo=loess,sm=smooth.spline)(y~x))
           },error=function(e){warning('error estimating line: ',e$message,call.=FALSE);NULL})
           if(!is.null(fit)){

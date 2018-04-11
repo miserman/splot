@@ -2,12 +2,16 @@
 
 ## Additions
 * split by specified values.
-* diplay predicted probability lines in scatter plots with a 2-level ys.
+* display predicted probability lines in scatter plots with a 2-level ys.
 * allows for text as y-axis labels in scatter plots.
 
 ## Improvements
 * now handles assigned formulas.
 * improved bar plot y-axis labels.
+
+## Bug fixes
+* now appropriately recycles short variables.
+* avoids an error when levels of by are missing within between splits.
 
 # splot 0.3.2
 
