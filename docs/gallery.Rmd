@@ -56,6 +56,9 @@ splot(cbind(x,y)~by*bet1, type='density')
 # Line and bar plots
 
 ```{r, fig.height=4.5, fig.width=10, dev='CairoSVG'}
+# if y is categorical, entering it with no x will show a bar plot by default
+splot(group)
+
 # when x is non-numerical, or has fewer unique values than lim, it is treated as categorical
 splot(y~group)
 

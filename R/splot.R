@@ -1,7 +1,7 @@
 #' Split Plot
 #'
 #' A plotting function aimed at automating some common visualization tasks in order to ease data exploration.
-#' @param y A formula (see note), or the primary variable(s) to be shown on the y axis unless (\code{x} is not specified).
+#' @param y A formula (see note), or the primary variable(s) to be shown on the y axis (unless \code{x} is not specified).
 #'   When not a formula, this can be one or more variables as objects or names in \code{data}.
 #' @param data a \code{data.frame} to pull variables from. If variables aren't found in \code{data}, they will be looked for
 #'   in the environment.
@@ -301,7 +301,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
     ff=list(bet=FALSE,cov=FALSE),
     t=if(grepl('^b|^l',type,TRUE)) 1 else if(grepl('^d',type,TRUE)) 2 else 3,
     b=grepl('^b',type,TRUE),
-    tt=!missing(type) && if(grepl('^b|^l',type,TRUE)) FALSE else TRUE,
+    tt=!missing(type) && !grepl('^b|^l',type,TRUE),
     d=!missing(data) && !is.null(data),
     su=!missing(su),
     c=!missing(cov),
@@ -347,7 +347,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
     if(!missing(drop)) drop=oco(drop,dop$drop)
   }
   dn=if(ck$d) names(data) else ''
-  if(any(grepl('~',c(substitute(y),if(deparse(substitute(y))%in%ls(envir=globalenv())) y),fixed=TRUE))){
+  if(any(grepl('~',c(substitute(y),if(paste(deparse(substitute(y)),collapse='')%in%ls(envir=globalenv())) y),fixed=TRUE))){
     f=as.character(as.formula(y))[-1]
     y=f[1]
     bl=function(x){
@@ -420,8 +420,26 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
   dat=data.frame(y=tdc(txt$y))
   if(ncol(dat)==1) names(dat)='y'
   rn=nrow(dat)
-  if(length(txt$y)==rn) txt$y='y'
-  for(n in names(txt)[-c(1,2,7)]){
+  ckv=c(1,2,7)
+  if(missing(x) && ncol(dat)==1 && !is.numeric(dat$y)){
+    ckv=c(ckv,3)
+    y=table(dat$y)
+    dat$x=dat$y
+    dat$y=numeric(rn)
+    for(l in unique(dat$x)){
+      tsu=dat$x==l
+      dat$y[tsu]=sum(tsu)
+    }
+    txt[c('y','x')]=c('count',txt$y)
+    ck$el=FALSE
+    if(missing(type)){
+      ck$b=TRUE
+      ck$t=1
+      ck[c('b','t','tt')]=list(TRUE,1,FALSE)
+    }
+    if(missing(autori)) autori=FALSE
+  }
+  for(n in names(txt)[-ckv]){
     l=length(txt[[n]])
     if(l==0) next
     if(l==rn){
@@ -429,21 +447,30 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
       txt[[n]]=n
     }else if(l==1) dat[,n]=tdc(txt[[n]],rn) else for(i in seq_along(txt[[n]])) dat[,paste0(n,'.',i)]=tdc(txt[[n]][[i]],rn)
   }
+  if(length(txt$y)==rn) txt$y='y'
   if(NCOL(dat$x)>1){
     ck$c=TRUE
     txt$cov=c(txt$x,txt$cov)
     dat$cov=cbind(dat$cov,dat$x[,-1])
     dat$x=dat$x[,1]
   }
+  if(ck$su && length(substitute(su))!=rn){
+    tsu=tryCatch(eval(substitute(su),if(ck$d) data),error=function(e)NULL)
+    if(is.null(tsu) || length(tsu)!=rn){
+      tsu=tryCatch(eval(substitute(su),if(ck$d) data else dat),error=function(e)NULL)
+      if(!ck$d && (is.null(tsu) || length(tsu)!=rn)) tsu=tryCatch(eval(substitute(su),dat),error=function(e)NULL)
+    }
+    if(!is.null(tsu)) su=tsu
+  }
   if(!missing(colorby)){
     colorby=substitute(colorby)
     dat$cb=tdc(colorby,rn)
-    if(ck$su) dat=if(ck$d) dat[eval(substitute(su),data),,drop=FALSE] else dat[su,,drop=FALSE]
+    if(ck$su) dat=dat[su,,drop=FALSE]
     dat=na.omit(dat)
     colorby=dat$cb
-    dat=dat[-ncol(dat)]
+    dat=dat[,-ncol(dat)]
   }else{
-    if(ck$su) dat=if(ck$d) dat[eval(substitute(su),data),,drop=FALSE] else dat[su,,drop=FALSE]
+    if(ck$su) dat=dat[su,,drop=FALSE]
     dat=na.omit(dat)
   }
   if(nrow(dat)==0) stop('this combination of variables/splits has no complete cases')

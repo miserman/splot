@@ -2,11 +2,11 @@
 
 ## Additions
 * split by specified values.
-* display predicted probability lines in scatter plots with a 2-level ys.
-* allows for text as y-axis labels in scatter plots.
+* display predicted probability lines in scatter plots with 2-level ys.
+* allows for non-numeric y variables.
 
 ## Improvements
-* now handles assigned formulas.
+* improved reading of the y and su arguments.
 * improved bar plot y-axis labels.
 
 ## Bug fixes

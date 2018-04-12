@@ -21,7 +21,7 @@ splot(y, data = NULL, su = NULL, type = "", split = "median",
   model = FALSE, options = NULL, add = NULL)
 }
 \arguments{
-\item{y}{A formula (see note), or the primary variable(s) to be shown on the y axis unless (\code{x} is not specified).
+\item{y}{A formula (see note), or the primary variable(s) to be shown on the y axis (unless \code{x} is not specified).
 When not a formula, this can be one or more variables as objects or names in \code{data}.}
 
 \item{data}{a \code{data.frame} to pull variables from. If variables aren't found in \code{data}, they will be looked for
