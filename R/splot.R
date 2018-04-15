@@ -100,6 +100,7 @@
 #' @param bw sets the smoothing bandwidth when plotting densities. Default is \code{'nrd0'}. See
 #'   \code{\link[stats]{density}}.
 #' @param adj adjusts the smoothing of densities (\code{adj * bw}). See \code{\link[stats]{density}}.
+#' @param breaks determines the width of histogram bars. See \code{\link[graphics]{hist}}.
 #' @param leg sets the legend inside or outside the plot frames (when a character matching \code{'^i'}, or a character
 #'   matching \code{'^o'} or a number respectively), or turns it off (when \code{FALSE}). When inside, a legend is drawn in
 #'   each plot frame. When outside, a single legend is drawn either to the right of all plot frames, or within an empty plot
@@ -285,9 +286,9 @@
 splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NULL,error='standard',error.color='#585858',
   error.lwd=2,lim=9,lines=TRUE,...,x=NULL,by=NULL,between=NULL,cov=NULL,line.type='l',mv.scale='none',mv.as.x=FALSE,
   save=FALSE,format=cairo_pdf,dims=dev.size(),file.name='splot',colors='pastel',colorby=NULL,myl=NULL,mxl=NULL,autori=TRUE,
-  xlas=0,ylas=1,bw='nrd0',adj=2,leg='outside',lpos='auto',lvn=TRUE,title=TRUE,labx=TRUE,laby=TRUE,lty=TRUE,lwd=2,sub=TRUE,
-  ndisp=TRUE,note=TRUE,font=c(title=2,sud=1,leg=1,note=3),cex=c(title=1.5,sud=.9,leg=1,note=.7),sud=TRUE,labels=TRUE,
-  labels.filter='_',labels.trim=20,points=TRUE,points.first=TRUE,byx=TRUE,drop=c(x=TRUE,by=TRUE,bet=TRUE),
+  xlas=0,ylas=1,bw='nrd0',adj=2,breaks='scott',leg='outside',lpos='auto',lvn=TRUE,title=TRUE,labx=TRUE,laby=TRUE,lty=TRUE,
+  lwd=2,sub=TRUE,ndisp=TRUE,note=TRUE,font=c(title=2,sud=1,leg=1,note=3),cex=c(title=1.5,sud=.9,leg=1,note=.7),sud=TRUE,
+  labels=TRUE,labels.filter='_',labels.trim=20,points=TRUE,points.first=TRUE,byx=TRUE,drop=c(x=TRUE,by=TRUE,bet=TRUE),
   prat=c(1,1),model=FALSE,options=NULL,add=NULL){
   #parsing input and preparing data
   if(!missing(options) && is.list(options) && length(options)!=0){
@@ -430,7 +431,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
       tsu=dat$x==l
       dat$y[tsu]=sum(tsu)
     }
-    txt[c('y','x')]=c('count',txt$y)
+    if(ck$t!=2) txt[c('y','x')]=c('count',txt$y)
     ck$el=FALSE
     if(missing(type)){
       ck$b=TRUE
@@ -748,14 +749,22 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
     'by',ptxt$x),if(seg$by$e && !ck$mv) paste(' at levels of',ptxt$by), if(length(ptxt$bet)!=0) paste(' between',
       paste(ptxt$bet,collapse=' & '))) else if (is.character(title)) title else ''
   if(!is.character(note)) if(!is.logical(note) || note){
-    if(txt$split!='none' || (ck$t==1 && ck$el)){
-      tv=c(if(seg$x$s) ptxt$x else '',if(seg$by$s) ptxt$by else '',if(seg$f1$s) ptxt$bet[1] else '',
-        if(seg$f2$s) ptxt$bet[2] else '')
-      tv=tv[tv!='']
-      tv=gsub(', (?=[a-z0-9]+$)',ifelse(length(tv)>2,', & ',' & '),paste(tv,collapse=', '),TRUE,TRUE)
+    ck$er=ck$t==1 && ck$el
+    ck$spm=txt$split!='none'
+    if(ck$er && all(vapply(cdat,function(d){
+      if(!is.data.frame(d)) all(vapply(d,function(dd)all(tabulate(as.factor(dd$x))==1),TRUE)) else
+        all(tabulate(as.factor(d$x))==1)
+    },TRUE))) ck[c('el','er')]=FALSE
+    if(ck$spm || ck$er){
+      if(ck$spm){
+        tv=c(if(seg$x$s) ptxt$x else '',if(seg$by$s) ptxt$by else '',if(seg$f1$s) ptxt$bet[1] else '',
+          if(seg$f2$s) ptxt$bet[2] else '')
+        tv=tv[tv!='']
+        tv=gsub(', (?=[a-z0-9]+$)',ifelse(length(tv)>2,', & ',' & '),paste(tv,collapse=', '),TRUE,TRUE)
+      }
       note=paste0(
-        if(txt$split!='none') paste0(tv,' split by ',txt$split,'. '),
-        if(ck$t==1 && ck$el) paste('Error bars show',ifelse(ck$e,'standard error.','95% confidence intervals.'))
+        if(ck$spm) paste0(tv,' split by ',txt$split,'. '),
+        if(ck$er) paste('Error bars show',ifelse(ck$e,'standard error.','95% confidence intervals.'))
       )
     }
   }else note=''
@@ -987,6 +996,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
           colnames(m)[ln]=sub('$','...',strtrim(n[ln],mh))
         }
       }
+      if(min(re$ne,na.rm=TRUE)>=0) autori=FALSE
       rck=nrow(m)>1
       if(!rck && ck$ltm && identical(ne,pe)) line.type='b'
       if(ck$b){
@@ -1053,9 +1063,9 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
         if(ck$leg==2) do.call(legend,c(list(if(ck$lp) ifelse(median(dx)<mean(range(dx)),'topleft','topright') else lpos,
           legend=ptxt$l.by[rn]),lega))
       }else{
-        hist((if(cl) cdat[[i]][[1]] else cdat[[i]])[,'y'],border=if('border'%in%names(pdo)) pdo$border else par('bg'),
-          freq=FALSE,main=if(sub) ptxt$sub else NA,ylab=NA,xlab=NA,axes=FALSE,
-          col=if(length(colors)>1) colors[2] else colors)
+        if(ck$co) colors[2]='#777777'
+        hist((if(cl) cdat[[i]][[1]] else cdat[[i]])[,'y'],breaks,FALSE,border=if('border'%in%names(pdo)) pdo$border else
+          par('bg'),main=if(sub) ptxt$sub else NA,ylab=NA,xlab=NA,axes=FALSE,col=if(length(colors)>1) colors[2] else colors)
         if(!is.logical(lines) || lines) graphics::lines(m[[1]],col=colors[1],lwd=lwd,xpd=if('xpd'%in%names(pdo)) pdo$xpd else FALSE)
       }
       axis(1,las=xlas,cex=par('cex.axis'),fg=par('col.axis'))

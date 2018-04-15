@@ -1,0 +1,178 @@
+---
+title: "Introduction to R and splot"
+output: rmarkdown::html_document
+vignette: >
+  %\VignetteIndexEntry{Exploring Data with splot}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+*Built with R 
+`r getRversion()`
+on 
+`r format(Sys.time(),'%B %d %Y')`*
+
+***
+
+**R** is a programing language and software environment with a focus on statistics.  
+**Splot** is an R package for visualizing data.  
+This guide will introduce you to both.
+
+# Setting up
+
+### Downloading R
+Follow the link matching your system to download R:  
+[Windows](https://cloud.r-project.org/bin/windows/base/) | [Mac](https://cloud.r-project.org/bin/macosx/) | [Linux](https://cloud.r-project.org/bin/linux/)
+
+In Windows, you may see two versions, starting with R i386 and R x64. These correspond to the 32 and 64 bit versions of R. The 64 bit version should be fine on most modern systems, but if you run into issues, you might try the 32 bit version.
+
+### Installing packages
+Packages offer additional functionality beyond base R, usually to make certain processes easier.
+
+The initial download of R includes a few base packages, but there are many packages available through the Comprehensive R Archive Network (CRAN). 
+
+Packages can be downloaded and installed from within R using the `install.packages()` function. For example, this will install splot:
+```r
+install.packages('splot')
+```
+
+The first time you install packages, you'll need to select a mirror. These are CRAN hosts---they have the same files, but are in different physical locations. Choose a mirror that is geographically close to you for the best download speeds. If a package fails to download, try changing mirrors.
+
+### Loading packages
+Each time you start R, packages that aren't part of base R need to be loaded using the `library()` function. For example:
+```{r}
+library('splot')
+```
+
+***
+The rest of the guide may be most useful if you get R set up and started, then follow along.  
+Try entering the commands in the colorful boxes into an R console; the expected result of those commands is below each colorful box (with lines preceded by ##).
+
+
+# Working with data
+Data are single numbers (e.g., `100`) or strings (e.g., `'abc'`). These are generally contained in vectors (sets of values; e.g., `1, 2, 3`).
+
+In R, vectors can be created with the `c()` function. For example:
+```{r}
+c(1,2,3)
+```
+
+You can also make a vector of sequential values with the `:` function:
+```{r}
+1:3
+```
+
+Multiple vectors can be represented as a matrix:
+```{r}
+matrix(0,2,3)
+```
+For the `matrix()` function, the first argument---the value entered before the first comma within the parentheses---dictates the value within each cell of the matrix, the second argument dictates the number of rows (horizontal lines), and the third argument dictates the number of columns (vertical lines).
+
+To save a matrix, we can assign it a name with the `=` function (the `<-` function would also work):
+```{r}
+m = matrix(1:6,3)
+```
+Entering the name now prints the matrix:
+```{r}
+m
+```
+We can selected specific values within the matrix with the `[` function. For example, this will select the cell in the third row of the second column:
+```{r}
+m[3,2]
+```
+Datasets are generally represented as matrices with variables as columns. For example, we can add names to our matrix:
+```{r}
+colnames(m) = c('V1','V2')
+m
+```
+Then we can select columns by name:
+```{r}
+m[,'V1']
+```
+And we can do the same for rows:
+```{r}
+rownames(m) = c('R1','R2','R3')
+m['R1',]
+```
+This is the way the Motor Trend car dataset (`mtcars`) is arranged, which is included in base R.  
+Each row is a car, and each column is a feature of that car:
+```{r}
+mtcars
+```
+You can use the help function (`?`) followed by a function or dataset name to access its documentation (e.g., `?mtcars`).
+
+# Visualizing data
+`splot()` is the main function of the splot package. Its first argument is for variable names, and its second argument is for the dataset containing those variables.
+
+For example, we can look at the density distribution (and histogram) of the `mpg` variable in `mtcars` like this:
+```{r, fig.height=4.5, fig.width=10, dev='CairoSVG'}
+splot(mpg, mtcars)
+```
+Here, the bars depict the frequency of the value-range they cover (which is the histogram part), and the line is the estimated theoretical distribution of the variable (if more cars were sampled from the same source, they would theoretically resemble this distribution; e.g., most cars would go between 15 and 20 miles per gallon).
+
+### Prediction lines
+The first argument in the `splot()` function can be entered as a formula, which is a way to specify relationships between variables. The first part of a formula is the tilde (`~`), which separates a y variable (before the tilde; on the vertical axis of a plot) from an x variable (after the tilde; on the horizontal axis of a plot).
+
+For example, we can look at the relationship between the `mpg` and `wt` variables like this:
+```{r, fig.height=4.5, fig.width=10, dev='CairoSVG'}
+splot(mpg ~ wt, mtcars)
+```
+Each dot represents a car, and its position is a combination of its MPG and weight; the higher it is vertically, the more miles it can go per gallon of gas, and the farther it is horizontally, the more it weighs (in tons).
+
+The line is from a linear regression, which is attempting to predict y given x. For example, from this data, if the regression were to see a car that weighed about 3 tons, it would predict its MPG to be around 22.
+
+Something we might do to improve this prediction (model fit) is to consider other variables. Weight seems to be closely related to MPG (going by the last plot), but maybe MPG depends on something else as well, such as the car's style of transmission (automatic versus manual). To look at this, we can add a splitting variable to the formula.
+
+Splitting variables break the data up into groups based on their value. For example, this will separate cars that have an automatic transmission (0; green) from those that have a manual transmission (1; purple), and estimate a line for each group.
+```{r, fig.height=4.5, fig.width=10, dev='CairoSVG'}
+splot(mpg ~ wt * am, mtcars)
+```
+From this, it seems (in this sample of cars at least) that the negative relationship between weight and MPG is stronger among cars with a manual transmission; transmission appears to moderate the relationship between weight and MPG. That is, the purple line has a steeper slope than the green line.
+
+Another way we can improve model fit is by allowing our prediction lines to bend. A particularly clear case where this seems to help is in modeling the relationship between weight and displacement:
+```{r, fig.height=4.5, fig.width=10, dev='CairoSVG'}
+splot(wt ~ disp + disp^2 + disp^3, mtcars)
+```
+The `^` function raises the preceding vector by the following value, so `disp^2` is the squared `disp` variable, and `disp^3` is the cubed `disp` variable. Each of these transformations of x increases the prediction line's ability to bend.
+
+Maybe the relationship between displacement and weight is actually curvy like this, but we might suspect there are just different types of cars represented here. For example, it kind of looks like there are clusters in the data, one under 200, and one between 200 and 400. We can visualize this by splitting displacement by itself at those points:
+```{r, fig.height=4.5, fig.width=10, dev='CairoSVG'}
+splot(wt ~ disp * disp, mtcars, split=c(200,400))
+```
+This cleans up the data nicely, but if we wanted to say these clusters actually represent different types of cars, it would be more convincing if we could find another variable that defines groups like these...
+
+### Categorical variables
+We started by looking at the `mpg` variable by itself, but since this dataset has named entries (unlike sets with less meaningful rows like participant IDs), it might be informative to visualize the MPG of each entry:
+```{r, fig.height=4.5, fig.width=10, dev='CairoSVG'}
+splot(mpg ~ rownames(mtcars), mtcars, type='bar', sort=TRUE)
+```
+Here, the additional arguments are changing aspects of the display from the way they would show up by default: The `type` argument sets the look of the data (bars rather than lines or points), and the `sort` argument changes the way the x variable is ordered (by y's value rather than alphabetically).
+
+The `splot()` function has many more arguments which mostly affect the way each element of the figure is displayed. For example, in this figure, you might want to adjust the range of the y axis (with the `myl` argument), and maybe make the labels more informative (with the `laby` and `labx` arguments):
+```{r, fig.height=4.5, fig.width=10, dev='CairoSVG'}
+splot(mpg ~ rownames(mtcars), mtcars, type='bar', sort=TRUE, myl=c(10,35), laby='Miles Per Gallon', labx='Car')
+```
+
+To explore the data more broadly we might look at a few variables as once. These can be entered as a matrix in the y position:
+```{r, fig.height=4.5, fig.width=10, dev='CairoSVG'}
+splot(mtcars[,c('cyl','carb','gear')]~mpg, mtcars, mv.as.x=TRUE)
+```
+The `mv.as.x` argument is saying the columns of y should be displayed as levels on the x axis (the "mv" stands for "multiple variables"). Otherwise, they would be displayed as levels of a by variable, with MPG on the x axis.
+
+This type of plot is more commonly displayed as a bar plot, because lines are sometimes taken to imply that there's some movement between levels (as in the same participants experiencing different conditions; within-person experimental designs).
+
+Another way to interpret lines, however, is as regression lines. This is particularly clear if we look at the raw data by representing this line plot as a scatter plot:
+```{r, fig.height=4.5, fig.width=10, dev='CairoSVG'}
+splot(mtcars[,c('cyl','carb','gear')]~mpg, mtcars, mv.as.x=TRUE, type='scatter', xlas=1, lpos='topright')
+```
+The `xlas` argument sets the orientation of the x-axis labels (since they default to vertical for scatter plots), and the `lpos` argument sets the position of the legend.
+
+This representation isn't very informative in terms of the data (as there is a lot of overlap at each level of each variable), but these lines are actually prediction lines from regressions. The line plot depicts each part of the regression: Where each line crosses an x-axis label is the mean of the data represented by the line within that level; the error bars show the standard errors around those means (which correspond to the p-value of the associated t-test; if they cross, the difference is non-significant); and the slope of the line between levels corresponds to the associated beta weight. In this sense, a line plot can be somewhat more informative than a bar plot.
+
+***
+
+For more applied examples, see the [explore](https://miserman.github.io/splot/#explore) and [refine](https://miserman.github.io/splot/#refine) vignettes.  
+For more splot specific information, see the [style guide](https://miserman.github.io/splot/#style) and [full documentation](https://miserman.github.io/splot/#main_function).
+
+<div style='text-align:center'>
+![Brought to you by the <a href="https://www.depts.ttu.edu/psy/lusi/resources.php" target="_blank">Language Use and Social Interaction</a> lab at Texas Tech University](https://www.depts.ttu.edu/psy/lusi/files/lusi.jpg)
+</div>

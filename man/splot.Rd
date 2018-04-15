@@ -11,14 +11,14 @@ splot(y, data = NULL, su = NULL, type = "", split = "median",
   mv.scale = "none", mv.as.x = FALSE, save = FALSE, format = cairo_pdf,
   dims = dev.size(), file.name = "splot", colors = "pastel",
   colorby = NULL, myl = NULL, mxl = NULL, autori = TRUE, xlas = 0,
-  ylas = 1, bw = "nrd0", adj = 2, leg = "outside", lpos = "auto",
-  lvn = TRUE, title = TRUE, labx = TRUE, laby = TRUE, lty = TRUE,
-  lwd = 2, sub = TRUE, ndisp = TRUE, note = TRUE, font = c(title = 2,
-  sud = 1, leg = 1, note = 3), cex = c(title = 1.5, sud = 0.9, leg = 1, note =
-  0.7), sud = TRUE, labels = TRUE, labels.filter = "_",
-  labels.trim = 20, points = TRUE, points.first = TRUE, byx = TRUE,
-  drop = c(x = TRUE, by = TRUE, bet = TRUE), prat = c(1, 1),
-  model = FALSE, options = NULL, add = NULL)
+  ylas = 1, bw = "nrd0", adj = 2, breaks = "scott", leg = "outside",
+  lpos = "auto", lvn = TRUE, title = TRUE, labx = TRUE, laby = TRUE,
+  lty = TRUE, lwd = 2, sub = TRUE, ndisp = TRUE, note = TRUE,
+  font = c(title = 2, sud = 1, leg = 1, note = 3), cex = c(title = 1.5, sud
+  = 0.9, leg = 1, note = 0.7), sud = TRUE, labels = TRUE,
+  labels.filter = "_", labels.trim = 20, points = TRUE,
+  points.first = TRUE, byx = TRUE, drop = c(x = TRUE, by = TRUE, bet =
+  TRUE), prat = c(1, 1), model = FALSE, options = NULL, add = NULL)
 }
 \arguments{
 \item{y}{A formula (see note), or the primary variable(s) to be shown on the y axis (unless \code{x} is not specified).
@@ -151,6 +151,8 @@ that they extend to the bottom of the y axis.}
 \code{\link[stats]{density}}.}
 
 \item{adj}{adjusts the smoothing of densities (\code{adj * bw}). See \code{\link[stats]{density}}.}
+
+\item{breaks}{determines the width of histogram bars. See \code{\link[graphics]{hist}}.}
 
 \item{leg}{sets the legend inside or outside the plot frames (when a character matching \code{'^i'}, or a character
 matching \code{'^o'} or a number respectively), or turns it off (when \code{FALSE}). When inside, a legend is drawn in

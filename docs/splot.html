@@ -23,14 +23,14 @@ splot(y, data = NULL, su = NULL, type = "", split = "median",
   mv.scale = "none", mv.as.x = FALSE, save = FALSE, format = cairo_pdf,
   dims = dev.size(), file.name = "splot", colors = "pastel",
   colorby = NULL, myl = NULL, mxl = NULL, autori = TRUE, xlas = 0,
-  ylas = 1, bw = "nrd0", adj = 2, leg = "outside", lpos = "auto",
-  lvn = TRUE, title = TRUE, labx = TRUE, laby = TRUE, lty = TRUE,
-  lwd = 2, sub = TRUE, ndisp = TRUE, note = TRUE, font = c(title = 2,
-  sud = 1, leg = 1, note = 3), cex = c(title = 1.5, sud = 0.9, leg = 1, note =
-  0.7), sud = TRUE, labels = TRUE, labels.filter = "_",
-  labels.trim = 20, points = TRUE, points.first = TRUE, byx = TRUE,
-  drop = c(x = TRUE, by = TRUE, bet = TRUE), prat = c(1, 1),
-  model = FALSE, options = NULL, add = NULL)
+  ylas = 1, bw = "nrd0", adj = 2, breaks = "scott", leg = "outside",
+  lpos = "auto", lvn = TRUE, title = TRUE, labx = TRUE, laby = TRUE,
+  lty = TRUE, lwd = 2, sub = TRUE, ndisp = TRUE, note = TRUE,
+  font = c(title = 2, sud = 1, leg = 1, note = 3), cex = c(title = 1.5, sud
+  = 0.9, leg = 1, note = 0.7), sud = TRUE, labels = TRUE,
+  labels.filter = "_", labels.trim = 20, points = TRUE,
+  points.first = TRUE, byx = TRUE, drop = c(x = TRUE, by = TRUE, bet =
+  TRUE), prat = c(1, 1), model = FALSE, options = NULL, add = NULL)
 </pre>
 
 
@@ -231,6 +231,10 @@ that they extend to the bottom of the y axis.</p>
 <tr valign="top"><td><code>adj</code></td>
 <td>
 <p>adjusts the smoothing of densities (<code>adj * bw</code>). See <code>density</code>.</p>
+</td></tr>
+<tr valign="top"><td><code>breaks</code></td>
+<td>
+<p>determines the width of histogram bars. See <code>hist</code>.</p>
 </td></tr>
 <tr valign="top"><td><code>leg</code></td>
 <td>
