@@ -325,6 +325,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
     mv=FALSE,
     mlvn=missing(lvn)
   )
+  if(ck$d && !is.data.frame(data)) data=as.data.frame(data)
   ck$ltck=(is.logical(ck$line) && ck$line) || !grepl('^F',ck$line)
   ck$ltco=if(ck$ltck) if(is.logical(ck$line) || ck$c || grepl('^li|^lm|^st',ck$line,TRUE)) 'li' else
     if(grepl('^loe|^po|^cu',ck$line,TRUE)) 'lo' else if(grepl('^sm|^sp|^in',ck$line,TRUE)) 'sm' else
@@ -462,6 +463,10 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
       if(!ck$d && (is.null(tsu) || length(tsu)!=rn)) tsu=tryCatch(eval(substitute(su),dat),error=function(e)NULL)
     }
     if(!is.null(tsu)) su=tsu
+    if(is.logical(tsu) && sum(tsu)==0 || length(tsu)==0){
+      ck$su=FALSE
+      warning('su excludes all rows, so it was ignored.',.call=FALSE)
+    }
   }
   if(!missing(colorby)){
     colorby=substitute(colorby)
@@ -500,7 +505,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
     by=sub('^y\\.','',ck$mvn)
     by=factor(rep(by,each=nrow(dat)),levels=by)
     dat=data.frame(y=unlist(dat[,dn],use.names=FALSE))
-    if(ncol(td)>length(dn)) dat=cbind(dat,apply(td[,-dn,drop=FALSE],2,function(c)rep.int(c,length(dn))))
+    if(ncol(td)>length(dn)) dat=cbind(dat,do.call(rbind,lapply(seq_along(dn),function(i)td[,-dn,drop=FALSE])))
     if(mv.as.x){
       txt$by=txt$x
       txt$x=if(missing(labx)) 'variable' else if(labx==txt$by) paste0(labx,'.1') else labx
