@@ -462,7 +462,10 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
       tsu=tryCatch(eval(substitute(su),if(ck$d) data else dat),error=function(e)NULL)
       if(!ck$d && (is.null(tsu) || length(tsu)!=rn)) tsu=tryCatch(eval(substitute(su),dat),error=function(e)NULL)
     }
-    if(!is.null(tsu)) su=tsu
+    if(!is.null(tsu)){
+      tsu[is.na(tsu)]=FALSE
+      su=tsu
+    }
     if(is.logical(tsu) && sum(tsu)==0 || length(tsu)==0){
       ck$su=FALSE
       warning('su excludes all rows, so it was ignored.',.call=FALSE)
