@@ -90,6 +90,7 @@
 #'   condition. If \code{by} is missing, \code{colorby} will only be applied if its levels are unique, in which case a color
 #'   will be assigned to each level. The variable entered here is passed to \code{\link{splot.color}}, with \code{colors} as
 #'   its \code{set} argument, and \code{by} as its \code{by} argument.
+#' @param opacity a number between 0 and 1; sets the opacity of points if they are drawn, and lines or bars otherwise.
 #' @param myl sets the range of the y axis (\code{ylim} of \code{\link[graphics]{plot}} or \code{\link[graphics]{barplot}}).
 #'   If not specified, this will be calculated from the data.
 #' @param mxl sets the range of the x axis (\code{xlim} of \code{\link[graphics]{plot}}). If not specified, this will be
@@ -278,18 +279,18 @@
 #' )~x, dat, myl=c(-10,15), lines='loess', laby='y + versions of x')
 #'
 #' @export
-#' @importFrom grDevices grey dev.copy dev.size dev.off cairo_pdf
+#' @importFrom grDevices grey dev.copy dev.size dev.off cairo_pdf adjustcolor
 #' @importFrom graphics axis axTicks hist legend lines mtext plot barplot par points arrows strwidth layout plot.new
 #' @importFrom stats density median quantile sd lm glm confint update loess smooth.spline formula as.formula predict
 #' var binomial
 
 splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NULL,error='standard',error.color='#585858',
   error.lwd=2,lim=9,lines=TRUE,...,x=NULL,by=NULL,between=NULL,cov=NULL,line.type='l',mv.scale='none',mv.as.x=FALSE,
-  save=FALSE,format=cairo_pdf,dims=dev.size(),file.name='splot',colors='pastel',colorby=NULL,myl=NULL,mxl=NULL,autori=TRUE,
-  xlas=0,ylas=1,bw='nrd0',adj=2,breaks='scott',leg='outside',lpos='auto',lvn=TRUE,title=TRUE,labx=TRUE,laby=TRUE,lty=TRUE,
-  lwd=2,sub=TRUE,ndisp=TRUE,note=TRUE,font=c(title=2,sud=1,leg=1,note=3),cex=c(title=1.5,sud=.9,leg=1,note=.7),sud=TRUE,
-  labels=TRUE,labels.filter='_',labels.trim=20,points=TRUE,points.first=TRUE,byx=TRUE,drop=c(x=TRUE,by=TRUE,bet=TRUE),
-  prat=c(1,1),model=FALSE,options=NULL,add=NULL){
+  save=FALSE,format=cairo_pdf,dims=dev.size(),file.name='splot',colors='pastel',colorby=NULL,opacity=1,myl=NULL,mxl=NULL,
+  autori=TRUE,xlas=0,ylas=1,bw='nrd0',adj=2,breaks='scott',leg='outside',lpos='auto',lvn=TRUE,title=TRUE,labx=TRUE,laby=TRUE,
+  lty=TRUE,lwd=2,sub=TRUE,ndisp=TRUE,note=TRUE,font=c(title=2,sud=1,leg=1,note=3),cex=c(title=1.5,sud=.9,leg=1,note=.7),
+  sud=TRUE,labels=TRUE,labels.filter='_',labels.trim=20,points=TRUE,points.first=TRUE,byx=TRUE,drop=c(x=TRUE,by=TRUE,
+  bet=TRUE),prat=c(1,1),model=FALSE,options=NULL,add=NULL){
   #parsing input and preparing data
   if(!missing(options) && is.list(options) && length(options)!=0){
     a=as.list(match.call())[-1]
@@ -323,7 +324,8 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
     mod=!missing(x) && model,
     note=!is.character(note),
     mv=FALSE,
-    mlvn=missing(lvn)
+    mlvn=missing(lvn),
+    opacity=!missing(opacity) && opacity<=1 && opacity>0
   )
   if(ck$d && !is.data.frame(data)) data=as.data.frame(data)
   ck$ltck=(is.logical(ck$line) && ck$line) || !grepl('^F',ck$line)
@@ -757,6 +759,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
   if(lvn && length(ptxt$by)!=0) ptxt$l.by=paste0(paste0(ptxt$by,': '),ptxt$l.by)
   if(length(colors)==length(ptxt$l.by)) names(colors)=names(ptxt$l.by)=if(seg$by$l[1]=='NA') ptxt$l.by else seg$by$l
   if(ck$t==3 && length(colors)==1) colors[2]=if(!ck$co && length(cs)>1) cs[2] else if(ck$t==3) '#999999' else '#adadad'
+  if(ck$opacity && (ck$t!=3 || !points)) colors[]=adjustcolor(colors,opacity)
   ylab=if(ck$ly) ptxt$y else ''
   xlab=if(ck$lx) ptxt$x else ''
   main=if(is.logical(title) && title) paste0(if(ck$t==2)paste('Density of',ptxt$y) else paste(ptxt$y,
@@ -1122,6 +1125,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
         y=td[,'y']
         col=if((seg$by$ll==1 && ck$cb) || is.null(names(colors))) colors else colors[rn[l]]
         coll=if(length(col)>1 && seg$by$ll==1) '#666666' else col
+        if(ck$opacity) col=adjustcolor(col,opacity)
         if(points && points.first) points(x,y,col=col)
         if(ck$ltck){
           lt=if(ck$ltco=='pr' && length(unique(y))!=2) 'li' else ck$ltco
@@ -1168,7 +1172,6 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
   mtext(if(ck$t==2) 'Density' else ylab,2,-.2,TRUE,cex=par('cex.lab'),font=par('font.lab'))
   mtext(if(ck$t==2) ylab else xlab,1,0,TRUE,cex=par('cex.lab'),font=par('font.lab'))
   if(is.character(note)) mtext(note,1,ck$lx,TRUE,adj=if(ck$ly) 0 else .01,font=font['note'],cex=cex['note'])
-  par(dop)
   if(save || (missing(save) && any(!missing(format),!missing(file.name),!missing(dims)))) tryCatch({
     t=substitute(format)
     tt=if(any(grepl('cairo',t))){paste0('.',strsplit(deparse(t),'_')[[1]][2])

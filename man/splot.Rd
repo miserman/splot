@@ -10,13 +10,13 @@ splot(y, data = NULL, su = NULL, type = "", split = "median",
   x = NULL, by = NULL, between = NULL, cov = NULL, line.type = "l",
   mv.scale = "none", mv.as.x = FALSE, save = FALSE, format = cairo_pdf,
   dims = dev.size(), file.name = "splot", colors = "pastel",
-  colorby = NULL, myl = NULL, mxl = NULL, autori = TRUE, xlas = 0,
-  ylas = 1, bw = "nrd0", adj = 2, breaks = "scott", leg = "outside",
-  lpos = "auto", lvn = TRUE, title = TRUE, labx = TRUE, laby = TRUE,
-  lty = TRUE, lwd = 2, sub = TRUE, ndisp = TRUE, note = TRUE,
-  font = c(title = 2, sud = 1, leg = 1, note = 3), cex = c(title = 1.5, sud
-  = 0.9, leg = 1, note = 0.7), sud = TRUE, labels = TRUE,
-  labels.filter = "_", labels.trim = 20, points = TRUE,
+  colorby = NULL, opacity = 1, myl = NULL, mxl = NULL, autori = TRUE,
+  xlas = 0, ylas = 1, bw = "nrd0", adj = 2, breaks = "scott",
+  leg = "outside", lpos = "auto", lvn = TRUE, title = TRUE,
+  labx = TRUE, laby = TRUE, lty = TRUE, lwd = 2, sub = TRUE,
+  ndisp = TRUE, note = TRUE, font = c(title = 2, sud = 1, leg = 1, note =
+  3), cex = c(title = 1.5, sud = 0.9, leg = 1, note = 0.7), sud = TRUE,
+  labels = TRUE, labels.filter = "_", labels.trim = 20, points = TRUE,
   points.first = TRUE, byx = TRUE, drop = c(x = TRUE, by = TRUE, bet =
   TRUE), prat = c(1, 1), model = FALSE, options = NULL, add = NULL)
 }
@@ -135,6 +135,8 @@ observations from a given participant, \code{colorby} would assign a single colo
 condition. If \code{by} is missing, \code{colorby} will only be applied if its levels are unique, in which case a color
 will be assigned to each level. The variable entered here is passed to \code{\link{splot.color}}, with \code{colors} as
 its \code{set} argument, and \code{by} as its \code{by} argument.}
+
+\item{opacity}{a number between 0 and 1; sets the opacity of points if they are drawn, and lines or bars otherwise.}
 
 \item{myl}{sets the range of the y axis (\code{ylim} of \code{\link[graphics]{plot}} or \code{\link[graphics]{barplot}}).
 If not specified, this will be calculated from the data.}
