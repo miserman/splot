@@ -484,11 +484,11 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
   if(!missing(colorby)){
     colorby=substitute(colorby)
     dat$cb=tdc(colorby,rn)
-    dat=dat[ck$omited$all,]
+    dat=dat[ck$omited$all,,drop=FALSE]
     colorby=dat$cb
     dat=dat[,-ncol(dat)]
   }else{
-    dat=dat[ck$omited$all,]
+    dat=dat[ck$omited$all,,drop=FALSE]
   }
   ck$omited=vapply(ck$omited,sum,0)
   dn=colnames(dat)
