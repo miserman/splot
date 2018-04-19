@@ -280,7 +280,7 @@
 #' @export
 #' @importFrom grDevices grey dev.copy dev.size dev.off cairo_pdf
 #' @importFrom graphics axis axTicks hist legend lines mtext plot barplot par points arrows strwidth layout plot.new
-#' @importFrom stats density median quantile sd lm glm confint update loess smooth.spline na.omit formula as.formula predict
+#' @importFrom stats density median quantile sd lm glm confint update loess smooth.spline formula as.formula predict
 #' var binomial
 
 splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NULL,error='standard',error.color='#585858',
@@ -471,18 +471,24 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
       warning('su excludes all rows, so it was ignored.',.call=FALSE)
     }
   }
+  if(ck$su) dat=dat[su,,drop=FALSE]
+  tsu=vapply(dat,is.numeric,TRUE)
+  ck$omited=list(
+    na=apply(dat,1,function(r)any(is.na(r))),
+    inf=apply(dat[,tsu],1,function(r)any(is.infinite(r)))
+  )
+  ck$omited$all=!Reduce('|',ck$omited)
+  if(sum(ck$omited$all)==0) stop('this combination of variables/splits has no complete cases')
   if(!missing(colorby)){
     colorby=substitute(colorby)
     dat$cb=tdc(colorby,rn)
-    if(ck$su) dat=dat[su,,drop=FALSE]
-    dat=na.omit(dat)
+    dat=dat[ck$omited$all,]
     colorby=dat$cb
     dat=dat[,-ncol(dat)]
   }else{
-    if(ck$su) dat=dat[su,,drop=FALSE]
-    dat=na.omit(dat)
+    dat=dat[ck$omited$all,]
   }
-  if(nrow(dat)==0) stop('this combination of variables/splits has no complete cases')
+  ck$omited=vapply(ck$omited,sum,0)
   dn=colnames(dat)
   if(sum(grepl('^y',dn))>1){
     #setting up multiple y variables
