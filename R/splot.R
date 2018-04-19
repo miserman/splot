@@ -477,7 +477,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
   tsu=vapply(dat,is.numeric,TRUE)
   ck$omited=list(
     na=apply(dat,1,function(r)any(is.na(r))),
-    inf=apply(dat[,tsu],1,function(r)any(is.infinite(r)))
+    inf=apply(dat[,tsu,drop=FALSE],1,function(r)any(is.infinite(r)))
   )
   ck$omited$all=!Reduce('|',ck$omited)
   if(sum(ck$omited$all)==0) stop('this combination of variables/splits has no complete cases')
