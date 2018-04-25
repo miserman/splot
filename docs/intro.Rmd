@@ -84,7 +84,11 @@ Datasets are generally represented as matrices with variables as columns. For ex
 colnames(m) = c('V1','V2')
 m
 ```
-Then we can select columns by name:
+Here, the `=` function is assigning names by way of the `colnames()` function, but `colnames()` can also display names:
+```{r}
+colnames(m)
+```
+Now that the `m` matrix's columns have names, we can select them by name:
 ```{r}
 m[,'V1']
 ```
@@ -92,6 +96,10 @@ And we can do the same for rows:
 ```{r}
 rownames(m) = c('R1','R2','R3')
 m['R1',]
+```
+Printing the `m` matrix again will now display it and all of its column and row names:
+```{r}
+m
 ```
 This is the way the Motor Trend car dataset (`mtcars`) is arranged, which is included in base R.  
 Each row is a car, and each column is a feature of that car:
@@ -103,13 +111,14 @@ You can use the help function (`?`) followed by a function or dataset name to ac
 # Visualizing data
 `splot()` is the main function of the splot package. Its first argument is for variable names, and its second argument is for the dataset containing those variables.
 
+### Distribution of a single variable
 For example, we can look at the density distribution (and histogram) of the `mpg` variable in `mtcars` like this:
 ```{r, fig.height=4.5, fig.width=10, dev='CairoSVG'}
 splot(mpg, mtcars)
 ```
 Here, the bars depict the frequency of the value-range they cover (which is the histogram part), and the line is the estimated theoretical distribution of the variable (if more cars were sampled from the same source, they would theoretically resemble this distribution; e.g., most cars would go between 15 and 20 miles per gallon).
 
-### Prediction lines
+### Relationship between two variables
 The first argument in the `splot()` function can be entered as a formula, which is a way to specify relationships between variables. The first part of a formula is the tilde (`~`), which separates a y variable (before the tilde; on the vertical axis of a plot) from an x variable (after the tilde; on the horizontal axis of a plot).
 
 For example, we can look at the relationship between the `mpg` and `wt` variables like this:
