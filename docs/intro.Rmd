@@ -1,6 +1,11 @@
 ---
 title: "Introduction to R and splot"
-output: rmarkdown::html_document
+output:
+  html_document:
+    toc: true
+    toc_depth: 4
+    toc_float: true
+    css: intro.css
 vignette: >
   %\VignetteIndexEntry{Exploring Data with splot}
   %\VignetteEngine{knitr::rmarkdown}
@@ -30,7 +35,7 @@ Packages offer additional functionality beyond base R, usually to make certain p
 
 The initial download of R includes a few base packages, but there are many packages available through the Comprehensive R Archive Network (CRAN). 
 
-Packages can be downloaded and installed from within R using the `install.packages()` function. For example, this will install splot:
+Packages can be downloaded and installed from within R using the `install.packages` function. For example, this will install splot:
 ```r
 install.packages('splot')
 ```
@@ -38,78 +43,53 @@ install.packages('splot')
 The first time you install packages, you'll need to select a mirror. These are CRAN hosts---they have the same files, but are in different physical locations. Choose a mirror that is geographically close to you for the best download speeds. If a package fails to download, try changing mirrors.
 
 ### Loading packages
-Each time you start R, packages that aren't part of base R need to be loaded using the `library()` function. For example:
+Each time you start R, packages that aren't part of base R need to be loaded using the `library` function. For example:
 ```{r}
 library('splot')
 ```
 
 ***
-The rest of the guide may be most useful if you get R set up and started, then follow along.  
-Try entering the commands in the colorful boxes into an R console; the expected result of those commands is below each colorful box (with lines preceded by ##).
 
+# Understanding R
 
-# Working with data
-Data are single numbers (e.g., `100`) or strings (e.g., `'abc'`). These are generally contained in vectors (sets of values; e.g., `1, 2, 3`).
+### The underlying system
+**The interpreter**. When you enter commands into the console, the interpreter tries to understand it. You might think of this understanding in terms of functions (operators) and data (operands). For example, if you enter `1 + 1` into the console, R will understand that each `1` is a number, and the `+` is a function.
 
-In R, vectors can be created with the `c()` function. For example:
-```{r}
-c(1,2,3)
-```
+**Functions**. Almost everything in R is a function. Most functions are called by the `(` function; the name of the function followed by parentheses (e.g., `sum()`). Many functions accepts *arguments*---data entered inside the parentheses, separated by commas. For example, `sum(1, 2)` is a call to the `sum` function, with `1` as the first argument, and `2` as the second argument. The `+` function works on its own, but it can also be called by the `(` function: `1 + 1` is the same as `'+'(1, 1)`.
 
-You can also make a vector of sequential values with the `:` function:
-```{r}
-1:3
-```
+Most functions will output some form of data (in `+`'s case, the output is a single numeric value). This means that functions can be entered as arguments to other function. For example, `sum(sum(1, 1), 2)` is another call to the `sum` function, with the output of `sum(1, 1)` as the first argument, and `2` as the second argument.
 
-Multiple vectors can be represented as a matrix:
-```{r}
-matrix(0,2,3)
-```
-For the `matrix()` function, the first argument---the value entered before the first comma within the parentheses---dictates the value within each cell of the matrix, the second argument dictates the number of rows (horizontal lines), and the third argument dictates the number of columns (vertical lines).
+### Data representations
+In what follows, the colorful boxes contain commands which could be entered into an R console. The box beneath each colorful box is the expected output.
 
-To save a matrix, we can assign it a name with the `=` function (the `<-` function would also work):
-```{r}
-m = matrix(1:6,3)
-```
-Entering the name now prints the matrix:
-```{r}
-m
-```
-We can selected specific values within the matrix with the `[` function. For example, this will select the cell in the third row of the second column:
-```{r}
-m[3,2]
-```
-Datasets are generally represented as matrices with variables as columns. For example, we can add names to our matrix:
-```{r}
-colnames(m) = c('V1','V2')
-m
-```
-Here, the `=` function is assigning names by way of the `colnames()` function, but `colnames()` can also display names:
-```{r}
-colnames(m)
-```
-Now that the `m` matrix's columns have names, we can select them by name:
-```{r}
-m[,'V1']
-```
-And we can do the same for rows:
-```{r}
-rownames(m) = c('R1','R2','R3')
-m['R1',]
-```
-Printing the `m` matrix again will now display it and all of its column and row names:
-```{r}
-m
-```
-This is the way the Motor Trend car dataset (`mtcars`) is arranged, which is included in base R.  
-Each row is a car, and each column is a feature of that car:
+#### Matrices
+Matrices store sets of data. For example, take a look at the Motor Trend dataset, which is include in base R:
 ```{r}
 mtcars
 ```
-You can use the help function (`?`) followed by a function or dataset name to access its documentation (e.g., `?mtcars`).
 
-# Visualizing data
-`splot()` is the main function of the splot package. Its first argument is for variable names, and its second argument is for the dataset containing those variables.
+In the `mtcars` matrix, each row represents a particular car, and each column represents a feature of that car (a variable). You can use the `?` function (`?mtcars`) to access documentation.
+
+#### Matrices as arguments
+Some functions accept entire matrices as arguments. For example, the `colnames` function will output a matrix's column names:
+```{r}
+colnames(mtcars)
+```
+
+#### Vectors as arguments
+Other functions only accept values or vectors (single columns or rows) as arguments. You can use the `[` function to select single columns or rows by name or index. `[`'s first argument selects rows, and its second argument selects columns. For example, you can select the `mpg` variable like this (note that variable names are case sensitive):
+```{r}
+mtcars[,'mpg']
+```
+Fun note: The `[` function can also be called by the `(` function: `'['(mtcars,,'mpg')`.
+
+Since the `[` function outputs a vector, you can enter it as an argument to another function, such as the `sum` function:
+```{r}
+sum(mtcars[,'mpg'])
+```
+
+# Visualizing data with splot
+The `splot` function generates all sorts of plots. Its first argument is for variable names, and its second argument is for the dataset containing those variables.
 
 ### Distribution of a single variable
 For example, we can look at the density distribution (and histogram) of the `mpg` variable in `mtcars` like this:
@@ -119,19 +99,19 @@ splot(mpg, mtcars)
 Here, the bars depict the frequency of the value-range they cover (which is the histogram part), and the line is the estimated theoretical distribution of the variable (if more cars were sampled from the same source, they would theoretically resemble this distribution; e.g., most cars would go between 15 and 20 miles per gallon).
 
 ### Relationship between two variables
-The first argument in the `splot()` function can be entered as a formula, which is a way to specify relationships between variables. The first part of a formula is the tilde (`~`), which separates a y variable (before the tilde; on the vertical axis of a plot) from an x variable (after the tilde; on the horizontal axis of a plot).
+The first argument in the `splot` function can be entered as a formula, which is a way to specify relationships between variables. The first part of a formula is the tilde (`~`), which separates a y variable (before the tilde; on the vertical axis of a plot) from an x variable (after the tilde; on the horizontal axis of a plot).
 
 For example, we can look at the relationship between the `mpg` and `wt` variables like this:
 ```{r, fig.height=4.5, fig.width=10, dev='CairoSVG'}
 splot(mpg ~ wt, mtcars)
 ```
-Each dot represents a car, and its position is a combination of its MPG and weight; the higher it is vertically, the more miles it can go per gallon of gas, and the farther it is horizontally, the more it weighs (in tons).
+Each dot represents a car, and its position is a combination of its miles per gallon (MPG) and weight; the higher it is vertically, the more miles it can go per gallon of gas, and the farther it is horizontally, the more it weighs (in tons).
 
 The line is from a linear regression, which is attempting to predict y given x. For example, from this data, if the regression were to see a car that weighed about 3 tons, it would predict its MPG to be around 22.
 
-Something we might do to improve this prediction (model fit) is to consider other variables. Weight seems to be closely related to MPG (going by the last plot), but maybe MPG depends on something else as well, such as the car's style of transmission (automatic versus manual). To look at this, we can add a splitting variable to the formula.
+Something we might do to improve this prediction (model fit) is to consider other variables. Weight seems to be closely related to MPG (going by the last plot), but maybe MPG depends on something else as well, such as the car's style of transmission (automatic versus manual). To look at this, we can add a splitting variable to the formula with an asterisk (`*`).
 
-Splitting variables break the data up into groups based on their value. For example, this will separate cars that have an automatic transmission (0; green) from those that have a manual transmission (1; purple), and estimate a line for each group.
+Splitting variables break the data up into groups based on their value. For example, this will separate cars that have an automatic transmission (0; green in the plot) from those that have a manual transmission (1; purple in the plot), and estimate a line for each group.
 ```{r, fig.height=4.5, fig.width=10, dev='CairoSVG'}
 splot(mpg ~ wt * am, mtcars)
 ```
@@ -156,7 +136,7 @@ splot(mpg ~ rownames(mtcars), mtcars, type='bar', sort=TRUE)
 ```
 Here, the additional arguments are changing aspects of the display from the way they would show up by default: The `type` argument sets the look of the data (bars rather than lines or points), and the `sort` argument changes the way the x variable is ordered (by y's value rather than alphabetically).
 
-The `splot()` function has many more arguments which mostly affect the way each element of the figure is displayed. For example, in this figure, you might want to adjust the range of the y axis (with the `myl` argument), and maybe make the labels more informative (with the `laby` and `labx` arguments):
+The `splot` function has many more arguments which mostly affect the way each element of the figure is displayed. For example, in this figure, you might want to adjust the range of the y axis (with the `myl` argument), and maybe make the labels more informative (with the `laby` and `labx` arguments):
 ```{r, fig.height=4.5, fig.width=10, dev='CairoSVG'}
 splot(mpg ~ rownames(mtcars), mtcars, type='bar', sort=TRUE, myl=c(10,35), laby='Miles Per Gallon', labx='Car')
 ```
