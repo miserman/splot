@@ -89,7 +89,7 @@ sum(mtcars[,'mpg'])
 ```
 
 # Visualizing data with splot
-The `splot` function generates all sorts of plots. Its first argument is for variable names, and its second argument is for the dataset containing those variables. See the documentation for more information about the `splot` function (enter `?splot` in an R console, or [view online](https://miserman.github.io/splot/splot.html)).
+The `splot` function generates all sorts of plots. Its first argument is for variable names, and its second argument is for the dataset containing those variables. See the documentation for more information about the `splot` function (enter `?splot` in an R console, or [view online](https://miserman.github.io/splot/#main_function)).
 
 ### Distribution of a single variable
 For example, we can look at the density distribution (and histogram) of the `mpg` variable in `mtcars` like this:
