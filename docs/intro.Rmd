@@ -159,8 +159,8 @@ This representation isn't very informative in terms of the data (as there is a l
 
 ***
 
-For more applied examples, see the [explore](https://miserman.github.io/splot/#explore) and [refine](https://miserman.github.io/splot/#refine) vignettes.  
-For more splot specific information, see the [style guide](https://miserman.github.io/splot/#style) and [full documentation](https://miserman.github.io/splot/#main_function).
+For more applied examples, see the <a href='https://miserman.github.io/splot/#explore' target='_blank'>explore</a> and <a href='https://miserman.github.io/splot/#refine' target='_blank'>refine</a> vignettes.  
+For more splot specific information, see the <a href='https://miserman.github.io/splot/#style' target='_blank'>style guide</a> and <a href='https://miserman.github.io/splot/#main_function' target='_blank'>full documentation</a>.
 
 <div style='text-align:center'>
 ![Brought to you by the <a href="https://www.depts.ttu.edu/psy/lusi/resources.php" target="_blank">Language Use and Social Interaction</a> lab at Texas Tech University](https://www.depts.ttu.edu/psy/lusi/files/lusi.jpg)
