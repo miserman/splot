@@ -15,9 +15,11 @@ Multiple `y` variables or data at levels of a `by` variable are shown in the sam
 and data at levels of one or two `between` variable are shown in separate plot frames, organized in a grid.
 
 ## resources
-Settings guide: [miserman.github.io/splot](https://miserman.github.io/splot/)
-
-Vignettes: [Gallery](https://miserman.github.io/splot/#gallery) | [Exploring Data](https://miserman.github.io/splot/#explore) | [Refining a Result](https://miserman.github.io/splot/#refine)
+* [Introduction](https://miserman.github.io/splot/)
+* [Documentation](https://miserman.github.io/splot/#main_function)  
+* [Style Guide](https://miserman.github.io/splot/#style)  
+* [Gallery](https://miserman.github.io/splot/#gallery)
+* Applied examples: [Exploring Data](https://miserman.github.io/splot/#explore) | [Refining a Result](https://miserman.github.io/splot/#refine)
 
 ## installation
 Download R from [r-project.org](https://www.r-project.org/).
