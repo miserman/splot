@@ -113,9 +113,11 @@ To better compare each variable between texts, we can put the variables on the x
 
 While we're at it, we'll also pretty things up with better axis titles, and by removing the subset message (which can be done with `sub=FALSE` or just by subsetting the data), and changing colors and legend position:
 ```{r, fig.height=5, fig.width=10, dev='CairoSVG'}
-splot(cbind(i, we, you, shehe, they, ipron)~name, type='bar', mv.as.x=TRUE, mv.scale=TRUE,
-  data=data[grep('Hit|Rod', data$name),], title='Pronoun Usage between Texts', laby='Pronouns (z-scored)',
-  labx='Category', colors='grey', lpos='topright')
+splot(
+  cbind(i, we, you, shehe, they, ipron)~name, type='bar', mv.as.x=TRUE, mv.scale=TRUE,
+  data=data[grep('Hit|Rod', data$name),], title='Pronoun Usage between Texts',
+  laby='Pronouns (z-scored)',labx='Category', colors='grey', lpos='topright', leg.title=FALSE
+)
 ```
 
 ***

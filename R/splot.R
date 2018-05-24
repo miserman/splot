@@ -3,34 +3,34 @@
 #' A plotting function aimed at automating some common visualization tasks in order to ease data exploration.
 #' @param y A formula (see note), or the primary variable(s) to be shown on the y axis (unless \code{x} is not specified).
 #'   When not a formula, this can be one or more variables as objects or names in \code{data}.
-#' @param data a \code{data.frame} to pull variables from. If variables aren't found in \code{data}, they will be looked for
-#'   in the environment.
+#' @param data a \code{data.frame} to pull variables from. If variables aren't found in \code{data}, they will be looked
+#'   for in the environment.
 #' @param su a subset to all variables, applied after they are all retrieved from \code{data} or the environment.
 #' @param type determines the type of plot to make, between \code{"bar"}, \code{"line"}, \code{"density"}, or
 #'   \code{"scatter"}. If \code{"density"}, \code{x} is ignored. Anything including the first letter of each is accepted
 #'   (e.g., \code{type='l'}).
 #' @param split how to split any continuous variables (those with more than \code{lim} levels as factors). Default is
-#'   \code{"median"}, with \code{"mean"}, \code{"standard deviation"}, \code{"quantile"}, or numbers as options. If numbers,
-#'   the variable is either cut at each value in a vector, or broken into roughly equal chunks. Entering an integer (e.g.,
-#'   \code{split = 3L}) that is greater than 1 will force splitting into segments. Otherwise variables will be split by value
-#'   if you enter a single value for split and there are at least two data less than or equal to and greater than the split,
-#'   or if you enter more than 1 value for split. If a numeric split is not compatible with splitting by value or segment,
-#'   splitting will default to the median.
+#'   \code{"median"}, with \code{"mean"}, \code{"standard deviation"}, \code{"quantile"}, or numbers as options. If
+#'   numbers, the variable is either cut at each value in a vector, or broken into roughly equal chunks. Entering an
+#'   integer (e.g., \code{split = 3L}) that is greater than 1 will force splitting into segments. Otherwise variables will
+#'   be split by value if you enter a single value for split and there are at least two data less than or equal to and
+#'   greater than the split, or if you enter more than 1 value for split. If a numeric split is not compatible with
+#'   splitting by value or segment, splitting will default to the median.
 #' @param levels a list with entries corresponding to variable names, used to rename and/or reorder factor levels. To
 #'   reorder a factor, enter a vector of either numbers or existing level names in the new order (e.g.,
 #'   \code{levels =}\code{list(var =} \code{c(3,2,1))}). To rename levels of a factor, enter a character vector the same
 #'   length as the number of levels. To rename and reorder, enter a list, with names as the first entry, and order as the
-#'   second entry (e.g., \code{levels =} \code{list(var =} \code{list(c('a','b','c'),} \code{c(3,2,1)))}). This happens after
-#'   variables are split, so names and orders should correspond to the new split levels of split variables. For example, if
-#'   a continuous variable is median split, it now has two levels ('Under Median' and 'Over Median'), which are the levels
-#'   reordering or renaming would apply to. Multiple variables entered as \code{y} can be renamed and sorted with an entry
-#'   titled 'mv'.
-#' @param sort string: if \code{x} is a character or factor, specifies how it should be sorted in terms of the level's \code{y}
-#'   value. Unspecified or \code{NULL} won't do any additional sorting. Anything starting with 'd' or 't' will sort highest to
-#'   lowest.
-#' @param error string: sets the type of error bars to show in bar or line plots, or turns them off. If \code{FALSE}, no error
-#'   bars will be shown. Otherwise, the default is \code{"standard error"} (\code{'^s'}), with \code{"confidence intervals"}
-#'   (anything else) as an option.
+#'   second entry (e.g., \code{levels =} \code{list(var =} \code{list(c('a','b','c'),} \code{c(3,2,1)))}). This happens
+#'   after variables are split, so names and orders should correspond to the new split levels of split variables. For
+#'   example, if a continuous variable is median split, it now has two levels ('Under Median' and 'Over Median'), which are
+#'   the levels reordering or renaming would apply to. Multiple variables entered as \code{y} can be renamed and sorted
+#'   with an entry titled 'mv'.
+#' @param sort string: if \code{x} is a character or factor, specifies how it should be sorted in terms of the level's
+#'   \code{y} value. Unspecified or \code{NULL} won't do any additional sorting. Anything starting with 'd' or 't' will
+#'   sort highest to lowest.
+#' @param error string: sets the type of error bars to show in bar or line plots, or turns them off. If \code{FALSE}, no
+#'   error bars will be shown. Otherwise, the default is \code{"standard error"} (\code{'^s'}), with \code{"confidence
+#'   intervals"} (anything else) as an option.
 #' @param error.color color of the error bars. Default is \code{'#585858'}.
 #' @param error.lwd line weight of error bars. Default is 2.
 #' @param lim numeric. Checked against the number of factor levels of each variable. Used to decide which variables should
@@ -40,8 +40,9 @@
 #'   \code{cov} is not missing), a prediction line is fitted with \code{\link[stats]{lm}}. For (potentially) bendy lines,
 #'   \code{'loess'} (matching \code{'^loe|^po|^cu'}) will use \code{\link[stats]{loess}}, and \code{'spline'}
 #'   (\code{'^sm|^sp|^in'}) will use \code{\link[stats]{smooth.spline}}. If \code{y} is not numeric and has only 2 levels,
-#'   \code{'probability'} (\code{'^pr|^log'}) will draw probabilities estimated by a logistic regression (\code{glm(y~x,binomial)}).
-#'   \code{'connected'} (\code{'^e|^co|^d'}) will draw lines connecting all points, and \code{FALSE} will not draw any lines.
+#'   \code{'probability'} (\code{'^pr|^log'}) will draw probabilities estimated by a logistic regression
+#'   (\code{glm(y~x,binomial)}). \code{'connected'} (\code{'^e|^co|^d'}) will draw lines connecting all points, and
+#'   \code{FALSE} will not draw any lines.
 #' @param ... passes additional arguments to \code{\link[graphics]{par}} or \code{\link[graphics]{legend}}.
 #' @param x secondary variable, to be shown in on the x axis. If not specified, \code{type} will be set to \code{'density'}.
 #'   If \code{x} is a factor or vector of characters, or has fewer than \code{lim} levels when treated as a factor,
@@ -78,18 +79,18 @@
 #' @param file.name a string with the name of the file to be save (excluding the extension, as this is added depending on
 #'   \code{format}).
 #' @param colors sets a color theme or manually specifies colors. Default theme is \code{"pastel"}, with \code{"dark"} and
-#'   \code{"bright"} as options; these are passed to \code{\link{splot.color}}. If set to \code{"grey"}, or if \code{by} has
-#'   more than 9 levels, a grey scale is calculated using \code{\link[grDevices]{grey}}. See the \code{col} parameter in
-#'   \code{\link[graphics]{par}} for acceptable manual inputs. To set text and axis colors, \code{col} sets outside texts
-#'   (title, sud, labx, laby, and note), \code{col.sub} or \code{col.main} sets the frame titles, and \code{col.axis} sets
-#'   the axis text and line colors.
+#'   \code{"bright"} as options; these are passed to \code{\link{splot.color}}. If set to \code{"grey"}, or if \code{by}
+#'   has more than 9 levels, a grey scale is calculated using \code{\link[grDevices]{grey}}. See the \code{col} parameter
+#'   in \code{\link[graphics]{par}} for acceptable manual inputs. To set text and axis colors, \code{col} sets outside
+#'   texts (title, sud, labx, laby, and note), \code{col.sub} or \code{col.main} sets the frame titles, and \code{col.axis}
+#'   sets the axis text and line colors.
 #' @param colorby a variable used to set colors and the legend, alternatively to \code{by}. If \code{by} is not missing,
-#'   \code{colorby} will be reduced to only the unique combinations of \code{by} and \code{colorby}. For example, if \code{by}
-#'   is a participant ID with multiple observations per participant, and \code{by} is a condition ID which is the same for all
-#'   observations from a given participant, \code{colorby} would assign a single color to each participant based on their
-#'   condition. If \code{by} is missing, \code{colorby} will only be applied if its levels are unique, in which case a color
-#'   will be assigned to each level. The variable entered here is passed to \code{\link{splot.color}}, with \code{colors} as
-#'   its \code{set} argument, and \code{by} as its \code{by} argument.
+#'   \code{colorby} will be reduced to only the unique combinations of \code{by} and \code{colorby}. For example, if
+#'   \code{by} is a participant ID with multiple observations per participant, and \code{by} is a condition ID which is the
+#'   same for all observations from a given participant, \code{colorby} would assign a single color to each participant
+#'   based on their condition. If \code{by} is missing, \code{colorby} will only be applied if its levels are unique, in
+#'   which case a color will be assigned to each level. The variable entered here is passed to \code{\link{splot.color}},
+#'   with \code{colors} as its \code{set} argument, and \code{by} as its \code{by} argument.
 #' @param opacity a number between 0 and 1; sets the opacity of points if they are drawn, and lines or bars otherwise.
 #' @param myl sets the range of the y axis (\code{ylim} of \code{\link[graphics]{plot}} or \code{\link[graphics]{barplot}}).
 #'   If not specified, this will be calculated from the data.
@@ -104,19 +105,23 @@
 #' @param breaks determines the width of histogram bars. See \code{\link[graphics]{hist}}.
 #' @param leg sets the legend inside or outside the plot frames (when a character matching \code{'^i'}, or a character
 #'   matching \code{'^o'} or a number respectively), or turns it off (when \code{FALSE}). When inside, a legend is drawn in
-#'   each plot frame. When outside, a single legend is drawn either to the right of all plot frames, or within an empty plot
-#'   frame. By default, this will be determined automatically, tending to set legends outside when there are multiple levels
-#'   of \code{between}. A number will try and set the legend in an empty frame within the grid of plot frames. If there are
-#'   no empty frames, the legend will just go to the side as if \code{leg='outside'}.
+#'   each plot frame. When outside, a single legend is drawn either to the right of all plot frames, or within an empty
+#'   plot frame. By default, this will be determined automatically, tending to set legends outside when there are multiple
+#'   levels of \code{between}. A number will try and set the legend in an empty frame within the grid of plot frames. If
+#'   there are no empty frames, the legend will just go to the side as if \code{leg='outside'}.
 #' @param lpos sets the position of the legend within its frame (whether inside or outside of the plot frames) based on
 #'   keywords (see \code{\link[graphics]{legend}}. By default, when the legend is outside, \code{lpos} is either
 #'   \code{'right'} when the legend is in a right-hand column, or \code{'center'} when in an empty plot frame. When the
-#'   legend is inside and \code{lpos} is not specified, the legend will be placed automatically based on the data.
-#' @param lvn legend variable name. Logical: if \code{FALSE}, the names of by and between variables will not be shown before
-#'   their level (e.g., for a sex variable with a "female" level, "sex: female" would become "female" in the legend or above
-#'   each plot window).
-#' @param title logical or a character: if \code{FALSE}, the main title is turned off. If a character, this will be shown as
-#'   the main title.
+#'   legend is inside and \code{lpos} is not specified, the legend will be placed automatically based on the data. Set to
+#'   \code{'place'} to manually place the legend; clicking the plot frame will set the top left corner of the legend.
+#' @param lvn level variable name. Logical: if \code{FALSE}, the names of by and between variables will not be shown
+#'   before their level (e.g., for a sex variable with a "female" level, "sex: female" would become "female" above each
+#'   plot window).
+#' @param leg.title sets the title of the legend (which is the by variable name by default), or turns it off with
+#'   \code{FALSE}.
+#' @param leg.args a list passing arguments to the \code{\link[graphics]{legend}} call.
+#' @param title logical or a character: if \code{FALSE}, the main title is turned off. If a character, this will be shown
+#'   as the main title.
 #' @param labx logical or a character: if \code{FALSE}, the label on the x axis is turned off. If a character, this will be
 #'   shown as the x axis label.
 #' @param laby logical or a character: if \code{FALSE}, the label on the y axis is turned off. If a character, this will be
@@ -128,13 +133,13 @@
 #' @param sub logical: if \code{FALSE}, the small title above each plot showing \code{between} levels is turned off.
 #' @param note logical: if \code{FALSE}, the note at the bottom about splits and/or lines or error bars is turned off.
 #' @param font named numeric vector: \code{c(title,sud,leg,note)}. Sets the font of the title, su display, legend, and note.
-#'   In addition, \code{font.lab} sets the x and y label font, \code{font.sub} sets the font of the little title in each panel,
-#'   \code{font.axis} sets the axis label font, and \code{font.main} sets the between level/n heading font; these are passed to
-#'   \code{\link[graphics]{par}}. See the input section.
-#' @param cex named numeric vector: \code{c(title,sud,leg,note)}. Sets the font size of the title, su display, legend, and note.
-#'   In addition, \code{cex.lab} sets the x and y label size, \code{cex.sub} sets the size of the little title in each panel,
-#'   \code{cex.axis} sets the axis label size, and \code{cex.main} sets the between level/n heading size; these are passed to
-#'   \code{\link[graphics]{par}}. See the input section.
+#'   In addition, \code{font.lab} sets the x and y label font, \code{font.sub} sets the font of the little title in each
+#'   panel, \code{font.axis} sets the axis label font, and \code{font.main} sets the between level/n heading font; these
+#'   are passed to \code{\link[graphics]{par}}. See the input section.
+#' @param cex named numeric vector: \code{c(title,sud,leg,note)}. Sets the font size of the title, su display, legend, and
+#'   note. In addition, \code{cex.lab} sets the x and y label size, \code{cex.sub} sets the size of the little title in
+#'   each panel, \code{cex.axis} sets the axis label size, and \code{cex.main} sets the between level/n heading size; these
+#'   are passed to \code{\link[graphics]{par}}. See the input section.
 #' @param sud logical: if \code{FALSE}, the heading for subset and covariates/line adjustments (su display) is turned off.
 #' @param ndisp logical: if \code{FALSE}, n per level is no longer displayed in the subheadings.
 #' @param labels logical: if \code{FALSE}, sets all settable text surrounding the plot to \code{FALSE} (just so you don't
@@ -148,28 +153,28 @@
 #' @param points.first logical: if \code{FALSE}, points are plotted after lines are drawn in a scatter plot, placing lines
 #'   behind points. This does not apply to points or lines added in \code{add}, as that is always evaluated after the main
 #'   points and lines are drawn.
-#' @param byx logical: if \code{TRUE} (default) and \code{by} is specified, regressions for bar or line plots compare levels
-#'   of \code{by} for each level of \code{x}. This makes for more intuitive error bars when comparing levels of \code{by}
-#'   within a level of \code{x}.
+#' @param byx logical: if \code{TRUE} (default) and \code{by} is specified, regressions for bar or line plots compare
+#'   levels of \code{by} for each level of \code{x}. This makes for more intuitive error bars when comparing levels of
+#'   \code{by} within a level of \code{x}.
 #' @param drop named logical vector: \code{c(x,by,bet)}. Specifies how levels with no data should be treated. All are
 #'   \code{TRUE} by default, meaning only levels with data will be presented, and the layout of \code{between} levels
 #'   will be minimized. \code{x} only applies to bar or line plots. \code{by} relates to levels presented in the legend.
 #'   If \code{bet} is \code{FALSE}, the layout of \code{between} variables will be strict, with levels of \code{between[1]}
 #'   as rows, and levels of \code{between[2]} as columns -- if there are no data at an intersection of levels, the
 #'   corresponding panel will be blank. See the input section.
-#' @param prat panel ratio, referring to the ratio between plot frames and the legend frame when the legend is out. A single
-#'   number will make all panels of equal width. A vector of two numbers will adjust the ratio between plot panels and the
-#'   legend panel (e.g., \code{prat=c(3,1)} makes all plot panels a relative width of 3, and the legend frame a relative
-#'   width of 1).
+#' @param prat panel ratio, referring to the ratio between plot frames and the legend frame when the legend is out. A
+#'   single number will make all panels of equal width. A vector of two numbers will adjust the ratio between plot panels
+#'   and the legend panel (e.g., \code{prat=c(3,1)} makes all plot panels a relative width of 3, and the legend frame a
+#'   relative width of 1).
 #' @param model logical: if \code{TRUE}, the summary of an interaction model will be printed.
 #' @param options a list with named arguments, useful for setting temporary defaults if you plan on using some of the same
-#'   options for multiple plots (e.g., \code{opt =} \code{list(type = 'bar',} \code{colors = 'grey',} \code{bg = '#999999');}
-#'   \code{splot(x~y,} \code{options = opt)}).
+#'   options for multiple plots (e.g., \code{opt =} \code{list(type = 'bar',} \code{colors = 'grey',}
+#'   \code{bg = '#999999');} \code{splot(x~y,} \code{options = opt)}).
 #'   use \code{\link[base]{quote}} to include options that are to be evaluated within the function (e.g.,
 #'   \code{opt =} \code{list(su =} \code{quote(y>0))}).
 #' @param add evaluated within the function. Useful for adding things like lines to a plot while the parameters are still
-#'   those set by the function (e.g., \code{add =} \code{abline(v =} \code{mean(x),} \code{xpd = FALSE)} for a vertical line
-#'   at the mean of x).
+#'   those set by the function (e.g., \code{add =} \code{abline(v =} \code{mean(x),} \code{xpd = FALSE)} for a vertical
+#'   line at the mean of x).
 #'
 #' @return A list containing data and settings is invisibly returned, which might be useful to check for errors.
 #' Each of these objects can also be pulled from within \code{add}:
@@ -217,19 +222,19 @@
 #' variable, at all or at a level of \code{by} or \code{between}. Sometimes error bars cannot be estimated (if, say, there
 #' is only one observation at the given level), but lines are still drawn in these cases, so you may sometimes see levels
 #' without error bars even when error bars are turned on. Sometimes (particularly when \code{drop['x']} is \code{FALSE}),
-#' you might see floating error bars with no lines drawn to them, or what appear to be completely empty levels. This happens,
-#' when there is a missing level of \code{x} between two non-missing levels, potentially making an orphaned level (if a
-#' non-missing level is surrounded by missing levels). If there are no error bars for this orphaned level, by default
+#' you might see floating error bars with no lines drawn to them, or what appear to be completely empty levels. This
+#' happens, when there is a missing level of \code{x} between two non-missing levels, potentially making an orphaned level
+#' (if a non-missing level is surrounded by missing levels). If there are no error bars for this orphaned level, by default
 #' nothing will be drawn to indicate it. If you set \code{line.type} to \code{'b'} (or any other type with points), a point
 #' will be drawn at such error-bar-less orphaned levels.
 #'
 #' \strong{unexpected failures}
 #'
 #' splot tries to clean up after itself in the case of an error, but you may still run into errors that break things before
-#' this can happen. If after a failed plot you find that you're unable to make any new plots, or new plots are drawn over old
-#' ones, you might try entering \code{dev.off()} into the console. If new plots look off (splot's \code{\link[graphics]{par}}
-#' settings didn't get reset), you may have to close the plot window to reset \code{\link[graphics]{par}} (if you're using
-#' RStudio, Plots > "Remove Plot..." or "Clear All..."), or restart R.
+#' this can happen. If after a failed plot you find that you're unable to make any new plots, or new plots are drawn over
+#' old ones, you might try entering \code{dev.off()} into the console. If new plots look off (splot's
+#' \code{\link[graphics]{par}} settings didn't get reset), you may have to close the plot window to reset
+#' \code{\link[graphics]{par}} (if you're using RStudio, Plots > "Remove Plot..." or "Clear All..."), or restart R.
 #'
 #' @examples
 #' #simulating data
@@ -280,17 +285,18 @@
 #'
 #' @export
 #' @importFrom grDevices grey dev.copy dev.size dev.off cairo_pdf adjustcolor
-#' @importFrom graphics axis axTicks hist legend lines mtext plot barplot par points arrows strwidth layout plot.new
+#' @importFrom graphics axis axTicks hist legend lines text mtext plot barplot par points arrows strwidth layout plot.new
+#' locator
 #' @importFrom stats density median quantile sd lm glm confint update loess smooth.spline formula as.formula predict
 #' var binomial
 
 splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NULL,error='standard',error.color='#585858',
   error.lwd=2,lim=9,lines=TRUE,...,x=NULL,by=NULL,between=NULL,cov=NULL,line.type='l',mv.scale='none',mv.as.x=FALSE,
   save=FALSE,format=cairo_pdf,dims=dev.size(),file.name='splot',colors='pastel',colorby=NULL,opacity=1,myl=NULL,mxl=NULL,
-  autori=TRUE,xlas=0,ylas=1,bw='nrd0',adj=2,breaks='scott',leg='outside',lpos='auto',lvn=TRUE,title=TRUE,labx=TRUE,laby=TRUE,
-  lty=TRUE,lwd=2,sub=TRUE,ndisp=TRUE,note=TRUE,font=c(title=2,sud=1,leg=1,note=3),cex=c(title=1.5,sud=.9,leg=1,note=.7),
-  sud=TRUE,labels=TRUE,labels.filter='_',labels.trim=20,points=TRUE,points.first=TRUE,byx=TRUE,drop=c(x=TRUE,by=TRUE,
-  bet=TRUE),prat=c(1,1),model=FALSE,options=NULL,add=NULL){
+  autori=TRUE,xlas=0,ylas=1,bw='nrd0',adj=2,breaks='scott',leg='outside',lpos='auto',lvn=TRUE,leg.title=TRUE,leg.args=list(),
+  title=TRUE,labx=TRUE,laby=TRUE,lty=TRUE,lwd=2,sub=TRUE,ndisp=TRUE,note=TRUE,font=c(title=2,sud=1,leg=1,note=3),
+  cex=c(title=1.5,sud=.9,leg=.9,note=.7),sud=TRUE,labels=TRUE,labels.filter='_',labels.trim=20,points=TRUE,points.first=TRUE,
+  byx=TRUE,drop=c(x=TRUE,by=TRUE,bet=TRUE),prat=c(1,1),model=FALSE,options=NULL,add=NULL){
   #parsing input and preparing data
   if(!missing(options) && is.list(options) && length(options)!=0){
     a=as.list(match.call())[-1]
@@ -320,13 +326,16 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
     ltm=missing(line.type),
     leg=if(is.logical(leg) && !leg) 0 else if(!is.character(leg) || grepl('^o',leg,TRUE)) 1 else 2,
     legm=missing(leg),
+    legt=!(is.logical(leg.title) && !leg.title),
     lp=is.character(lpos) && grepl('^a',lpos,TRUE),
+    lpm=is.character(lpos) && grepl('^p|^m',lpos,TRUE),
     mod=!missing(x) && model,
     note=!is.character(note),
     mv=FALSE,
     mlvn=missing(lvn),
     opacity=!missing(opacity) && opacity<=1 && opacity>0
   )
+  if(ck$lpm) lpos='center'
   if(ck$d && !is.data.frame(data)) data=as.data.frame(data)
   ck$ltck=(is.logical(ck$line) && ck$line) || !grepl('^F',ck$line)
   ck$ltco=if(ck$ltck) if(is.logical(ck$line) || ck$c || grepl('^li|^lm|^st',ck$line,TRUE)) 'li' else
@@ -373,7 +382,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
     f=strsplit(bl(f[-1]),' _COV_ ',fixed=TRUE)[[1]]
     if(any(grepl(' _VAR_ ',f,fixed=TRUE))){
       r=strsplit(f[1],' _VAR_ ',fixed=TRUE)[[1]]
-      if(length(r)>0) x=r[1]
+      if(length(r)) x=r[1]
       if(length(r)>1) by=r[2]
       if(length(r)>2){
         ck$ff$bet=TRUE
@@ -385,7 +394,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
       x=f[1]
       f=f[-1]
     }
-    if(length(f)>0){
+    if(length(f)){
       cov=f
       ck$c=ck$ff$cov=TRUE
     }
@@ -481,14 +490,14 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
   )
   ck$omited$all=!Reduce('|',ck$omited)
   if(sum(ck$omited$all)==0) stop('this combination of variables/splits has no complete cases')
-  if(!missing(colorby)){
+  dat=if(!missing(colorby)){
     colorby=substitute(colorby)
     dat$cb=tdc(colorby,rn)
     dat=dat[ck$omited$all,,drop=FALSE]
     colorby=dat$cb
-    dat=dat[,-ncol(dat)]
+    dat[,-ncol(dat)]
   }else{
-    dat=dat[ck$omited$all,,drop=FALSE]
+    dat[ck$omited$all,,drop=FALSE]
   }
   ck$omited=vapply(ck$omited,sum,0)
   dn=colnames(dat)
@@ -526,6 +535,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
       txt$by='variable'
       dat$by=by
     }
+    if(missing(leg.title) && !mv.as.x) ck$legt=FALSE
     if(!missing(levels) && 'mv'%in%names(levels)) names(levels)[names(levels)=='mv']=txt[[if(mv.as.x)'x'else'by']]
     dn=colnames(dat)
     if(!missing(mv.scale) && mv.scale!='none'){
@@ -629,7 +639,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
       if(seg$by$e) paste0('*',vs['by']),
       if(seg$f1$e) paste0('*',vs[grep('^bet',names(vs))[1]]),
       if(seg$f2$e) paste0('*',vs['bet2']),
-      if(length(cvar)>0) paste0('+',paste0(vs['cov'],collapse='+'))
+      if(length(cvar)) paste0('+',paste0(vs['cov'],collapse='+'))
     ))
     fmod=lm(mod,data=odat)
     if(model){
@@ -756,7 +766,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
     cs=colors
     colors=rep_len(colors,seg$by$ll)
   }
-  if(lvn && length(ptxt$by)!=0) ptxt$l.by=paste0(paste0(ptxt$by,': '),ptxt$l.by)
+  if(lvn && length(ptxt$by)) ptxt$l.by=paste0(paste0(ptxt$by,': '),ptxt$l.by)
   if(length(colors)==length(ptxt$l.by)) names(colors)=names(ptxt$l.by)=if(seg$by$l[1]=='NA') ptxt$l.by else seg$by$l
   if(ck$t==3 && length(colors)==1) colors[2]=if(!ck$co && length(cs)>1) cs[2] else if(ck$t==3) '#999999' else '#adadad'
   if(ck$opacity && (ck$t!=3 || !points)) colors[]=adjustcolor(colors,opacity)
@@ -833,6 +843,13 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
     }
   }
   ck$legcol=FALSE
+  lega=list(
+    x=lpos,col=if(ck$cb) cs else colors[names(ptxt$l.by)],lty=if(ck$lty && lty) seq_len(seg$by$ll) else
+    if(!missing(lty) && !ck$lty) lty else 1,lwd=lwd,cex=cex['leg'],text.font=font['leg'],bty='n',x.intersp=.5,
+    legend=if(ck$cb) ptxt$cb else rn,xjust=.5
+  )
+  if(ck$legt) lega$title=if(is.character(leg.title)) leg.title else ptxt$by
+  if(!missing(leg.args)) lega[names(leg.args)]=leg.args
   if(ck$leg==1){
     if(ck$legm && nc>seg$ll) leg=which(!seg$lc)[1]
     if(nc>seg$ll && leg<=nc){
@@ -859,11 +876,11 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
       seg$dmat=rbind(seg$dmat,rep(seg$ll+1,seg$dim[1]))
       ck$legcol=TRUE
     }
-    if(ck$lp) lpos=if(ck$legcol) 'right' else 'center'
+    if(ck$lp) lega$x='right'
   }
   seg[c('dmat','lc')]=lapply(seg[c('dmat','lc')],t)
   seg$prat=if(missing(prat) && ck$legcol){
-    lw=max(.4,strwidth(ptxt$l.by,'i'))+if(all(seg$dim==1)) .5 else .2
+    lw=max(.4,if(ck$legt) strwidth(lega$title,'i'),strwidth(names(ptxt$l.by),'i'))+if(all(seg$dim==1)) .5 else .2
     fw=(dev.size(units='in')[1]-lw)/seg$dim[2]
     c(fw,max(fw/10,lw))
   }else prat
@@ -891,8 +908,6 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
     }
     pdo=pdo[!cpdo]
   }
-  lega=list(col=if(ck$cb) cs else colors[names(ptxt$l.by)],lty=if(ck$lty && lty) seq_len(seg$by$ll) else if(!missing(lty)
-    && !ck$lty) lty else 1,lwd=lwd,cex=cex['leg'],text.font=font['leg'],bty='n',x.intersp=.5)
   if(!'horiz'%in%names(pdo)) lega$ncol=1
   if(length(pdo)!=0){
     if(any(cpdo<-npdo%in%names(as.list(args(legend))))) lega[npdo[cpdo]]=pdo[cpdo]
@@ -917,7 +932,8 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
         if(seg$f2$e) paste0(', ',if(lvn || (ck$mlvn && grepl('^[0-9]',cl[2]))) paste0(ptxt$bet[2],': '),cl[2])
       ),if((length(names(cdat))>1 || !missing(ndisp)) && ndisp) paste(', n =',seg$n[i])
     ) else if(is.character(sub)) sub else ''
-    if(!is.null(sort) && ck$t!=2 && class(if(seg$by$e) cdat[[i]][[1]][,'x'] else cdat[[i]][,'x'])%in%c('factor','character')){
+    if(!is.null(sort) && ck$t!=2 && class(if(seg$by$e) cdat[[i]][[1]][,'x'] else cdat[[i]][,'x']) %in%
+        c('factor','character')){
       sdir=grepl('^d|^t',as.character(sort),TRUE)
       td=if(seg$by$e) do.call(rbind,cdat[[i]]) else cdat[[i]]
       cdat[[i]]=do.call(rbind,lapply(names(sort(vapply(split(td[,'y'],as.character(td[,'x'])),mean,0,na.rm=TRUE),sdir)),
@@ -993,7 +1009,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
       dm=dim(m)
       ylim=if(missing(myl))
         c(lb,max(re$m)+max(abs(re$m-re$pe))*if(ck$leg==2 && seg$by$ll>1) seg$by$ll+1 else 1) else myl
-      if(ck$leg==2 && ck$lp) lpos=ifelse(any(!is.na(m[1,])) && any(!is.na(m[dm[1],])),
+      if(ck$leg==2 && ck$lp) lega$x=ifelse(any(!is.na(m[1,])) && any(!is.na(m[dm[1],])),
         ifelse(max(m[1,!is.na(m[1,])])>max(m[dm[1],!is.na(m[dm[1],])]),'topleft','topright'),'topright')
       if(any(is.na(ylim))) next
       oyl=axTicks(2,axp=c(ylim[1],ylim[2],par('yaxp')[3]))
@@ -1031,12 +1047,11 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
           ) else myl+a
         }
         rownames(m)=ptxt$l.by[rn]
-        if(ck$leg==2) lega$x=lpos
-        lega$xpd=NA
-        lega=lega[!names(lega)%in%c('lty','lwd')]
-        p=barplot(m,beside=TRUE,legend.text=if(ck$leg==2) if(ck$cb) ptxt$cb else rownames(m) else FALSE,
-          col=if(rck) colors[rn] else colors,axes=FALSE,axisnames=FALSE,border=NA,ylab=NA,xlab=NA,ylim=ylim,
-          main=if(sub) ptxt$sub else NA,args.legend=lega,xpd=if('xpd'%in%names(pdo)) pdo$xpd else if(autori) NA else FALSE)
+        lega[c('lwd','lty')]=NULL
+        lega[c('pch','pt.cex','x.intersp','y.intersp','adj')]=list(15,2,1,1.2,c(0,.35))
+        p=barplot(m,beside=TRUE,col=if(rck) colors[rn] else colors,axes=FALSE,axisnames=FALSE,
+          border=NA,ylab=NA,xlab=NA,ylim=ylim,main=if(sub) ptxt$sub else NA,
+          xpd=if('xpd'%in%names(pdo)) pdo$xpd else if(autori) NA else FALSE)
       }else{
         p=matrix(rep(seq_len(dm[2]),dm[1]),nrow=dm[1],byrow=TRUE)
         plot(NA,ylim=ylim,xlim=if(missing(mxl)) c(1-stw[1]/3,dm[2]+stw[length(stw)]/3) else mxl,ylab=NA,xlab=NA,
@@ -1044,8 +1059,8 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
         if(is.numeric(lty)) lty=rep(lty,dm[1]) else if(is.logical(lty) && lty) lty=seq_len(dm[1])
         for(a in seq_len(dm[1])) graphics::lines(m[a,],col=if(rck) colors[rn[a]] else colors,
           lty=if(is.numeric(lty)) lty[a] else 1,lwd=lwd,type=line.type)
-        if(ck$leg==2) do.call(legend,c(list(lpos,legend=if(ck$cb) ptxt$cb else ptxt$l.by[rn]),lega))
       }
+      lega$legend=if(ck$cb) ptxt$cb else rn
       axis(1,apply(p,2,mean),colnames(m),FALSE,las=xlas,cex=par('cex.axis'),fg=par('col.axis'))
       a2a=list(2,las=ylas,cex=par('cex.axis'),fg=par('col.axis'))
       if(ck$b && autori){
@@ -1060,12 +1075,11 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
         if(any(te)) ne[te]=pe[te]=NA
         arrows(p,ne,p,pe,lwd=error.lwd,col=error.color,angle=90,code=3,length=.05)
       }
-      success=TRUE
     }else if(ck$t==2){
       #density
       m=list()
       dl=if(cl<-class(cdat[[i]])=='list') length(cdat[[i]]) else 1
-      rn=if(is.data.frame(cdat[[i]])) ptxt$l.by else names(cdat[[i]])
+      rn=if(is.data.frame(cdat[[i]])) names(ptxt$l.by) else names(cdat[[i]])
       dx=dy=numeric(512*seg$by$ll)
       for(l in seq_len(dl)) tryCatch({
         m[[l]]=density((if(cl) cdat[[i]][[l]] else cdat[[i]])[,'y'],bw,adj)
@@ -1077,17 +1091,17 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
         plot(NA,xlim=if(missing(mxl)) c(min(dx),max(dx)) else mxl,ylim=if(missing(myl)) c(0,max(c(dy))*1.2) else myl,
           main=if(sub) ptxt$sub else NA,ylab=NA,xlab=NA,axes=FALSE,xpd=if('xpd'%in%names(pdo)) pdo$xpd else FALSE)
         for(l in seq_along(m)) graphics::lines(m[[l]],col=colors[rn[l]],lwd=lwd,lty=lty[l])
-        if(ck$leg==2) do.call(legend,c(list(if(ck$lp) ifelse(median(dx)<mean(range(dx)),'topleft','topright') else lpos,
-          legend=ptxt$l.by[rn]),lega))
+        lega$legend=rn
+        if(ck$lp && ck$leg==2) lega$x=ifelse(median(dx)<mean(range(dx)),'topleft','topright')
       }else{
         if(ck$co) colors[2]='#777777'
         hist((if(cl) cdat[[i]][[1]] else cdat[[i]])[,'y'],breaks,FALSE,border=if('border'%in%names(pdo)) pdo$border else
           par('bg'),main=if(sub) ptxt$sub else NA,ylab=NA,xlab=NA,axes=FALSE,col=if(length(colors)>1) colors[2] else colors)
-        if(!is.logical(lines) || lines) graphics::lines(m[[1]],col=colors[1],lwd=lwd,xpd=if('xpd'%in%names(pdo)) pdo$xpd else FALSE)
+        if(!is.logical(lines) || lines) graphics::lines(m[[1]],col=colors[1],lwd=lwd,xpd=if('xpd'%in%names(pdo))
+          pdo$xpd else FALSE)
       }
       axis(1,las=xlas,cex=par('cex.axis'),fg=par('col.axis'))
       axis(2,las=ylas,cex=par('cex.axis'),fg=par('col.axis'))
-      success=TRUE
     }else{
       #scatter
       dl=if(cl<-class(cdat[[i]])=='list') length(cdat[[i]]) else 1
@@ -1115,8 +1129,8 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
       if(ck$leg>1){
         up=xch[cy>=quantile(cy)[4]]
         mr=quantile(xch)
-        do.call(legend,c(list(if(ck$lp) ifelse(sum(up<mr[2])>sum(up>mr[4]),'topright','topleft') else lpos
-          ,legend=if(ck$cb) ptxt$cb else ptxt$l.by[rn]),lega))
+        if(ck$lp) lega$x=ifelse(sum(up<mr[2])>sum(up>mr[4]),'topright','topleft')
+        lega$legend=if(ck$cb) ptxt$cb else rn
       }
       for(l in seq_len(dl)){
         td=if(cl) cdat[[i]][[rn[l]]] else cdat[[i]]
@@ -1148,8 +1162,15 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
         }
         if(points && !points.first) points(x,y,col=col)
       }
-      success=TRUE
     }
+    if(ck$leg==2){
+      if(ck$lpm){
+        message('click to place the legend')
+        lega[c('x','y')]=locator(1)
+      }
+      do.call(legend,lega)
+    }
+    success=TRUE
     if(!missing(add)) tryCatch(eval(substitute(add),envir=cbind(dat,odat))
       ,error=function(e)warning('error from add: ',e$message,call.=FALSE))
   },error=function(e){dev.off();stop(e)})}
@@ -1161,7 +1182,12 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
     if(all(par('mfg')[1:2]!=0)){
       plot.new()
       if(ck$b) lega[c('pch','pt.cex','x.intersp','y.intersp','adj')]=list(15,2,1,1.2,c(0,.35))
-      do.call(legend,c(list(lpos,legend=if(ck$cb) ptxt$cb else ptxt$l.by),lega))
+      if(ck$lpm){
+        message('click to place the legend')
+        lega[c('x','y')]=locator(1)
+      }
+      lega$legend=if(ck$cb) ptxt$cb else names(ptxt$l.by)
+      do.call(legend,lega)
     }else warning('legend positioning failed',call.=FALSE)
   }
   if(sud) mtext(if(ck$sud) gsub(', (?=[A-z0-9 ]+$)',ifelse(length(ptxt$cov)>2,', & ',' & '),

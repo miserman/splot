@@ -138,7 +138,10 @@ Here, the additional arguments are changing aspects of the display from the way 
 
 The `splot` function has many more arguments which mostly affect the way each element of the figure is displayed. For example, in this figure, you might want to adjust the range of the y axis (with the `myl` argument), and maybe make the labels more informative (with the `laby` and `labx` arguments):
 ```{r, fig.height=4.5, fig.width=10, dev='CairoSVG'}
-splot(mpg ~ rownames(mtcars), mtcars, type='bar', sort=TRUE, myl=c(10,35), laby='Miles Per Gallon', labx='Car')
+splot(
+  mpg ~ rownames(mtcars), mtcars, type='bar', sort=TRUE,
+  myl=c(10,35), laby='Miles Per Gallon', labx='Car'
+)
 ```
 
 To explore the data more broadly we might look at a few variables as once. These can be entered as a matrix in the y position:
@@ -151,7 +154,10 @@ This type of plot is more commonly displayed as a bar plot, because lines are so
 
 Another way to interpret lines, however, is as regression lines. This is particularly clear if we look at the raw data by representing this line plot as a scatter plot:
 ```{r, fig.height=4.5, fig.width=10, dev='CairoSVG'}
-splot(mtcars[,c('cyl','carb','gear')]~mpg, mtcars, mv.as.x=TRUE, type='scatter', xlas=1, lpos='topright')
+splot(
+  mtcars[,c('cyl','carb','gear')]~mpg, mtcars,
+  mv.as.x=TRUE, type='scatter', xlas=1, lpos='topright'
+)
 ```
 The `xlas` argument sets the orientation of the x-axis labels (since they default to vertical for scatter plots), and the `lpos` argument sets the position of the legend.
 

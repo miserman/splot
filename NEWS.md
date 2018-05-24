@@ -1,6 +1,8 @@
 # splot 0.3.3
 
 ## Additions
+* place the legend interactively.
+* display the legend variable name as a title above the legend.
 * split by specified values.
 * display predicted probability lines in scatter plots with 2-level ys.
 * allows for non-numeric y variables.
