@@ -129,7 +129,8 @@
 #'   value. Otherwise loops through available line types, see \code{\link[graphics]{par}}.
 #' @param lwd numeric: sets the weight of lines in line, density, and scatter plots. Default is 2. See
 #'   \code{\link[graphics]{par}}.
-#' @param sub logical: if \code{FALSE}, the small title above each plot showing \code{between} levels is turned off.
+#' @param sub affects the small title above each plot showing \code{between} levels; text replaces it, and \code{FALSE}
+#'   turns it off.
 #' @param note logical: if \code{FALSE}, the note at the bottom about splits and/or lines or error bars is turned off.
 #' @param font named numeric vector: \code{c(title,sud,leg,note)}. Sets the font of the title, su display, legend, and note.
 #'   In addition, \code{font.lab} sets the x and y label font, \code{font.sub} sets the font of the little title in each
@@ -139,7 +140,8 @@
 #'   note. In addition, \code{cex.lab} sets the x and y label size, \code{cex.sub} sets the size of the little title in
 #'   each panel, \code{cex.axis} sets the axis label size, and \code{cex.main} sets the between level/n heading size; these
 #'   are passed to \code{\link[graphics]{par}}. See the input section.
-#' @param sud logical: if \code{FALSE}, the heading for subset and covariates/line adjustments (su display) is turned off.
+#' @param sud affects the heading for subset and covariates/line adjustments (su display); text replaces it, and
+#'   \code{FALSE} turns it off.
 #' @param ndisp logical: if \code{FALSE}, n per level is no longer displayed in the subheadings.
 #' @param labels logical: if \code{FALSE}, sets all settable text surrounding the plot to \code{FALSE} (just so you don't
 #'   have to set all of them if you want a clean frame).
@@ -796,8 +798,8 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
       )
     }
   }else note=''
-  ck$sud=sud && (ck$su || ck$c)
-  ck$sub=sub && (seg$ll>1 || ndisp)
+  ck$sud=(!is.logical(sud) || sud) && (is.character(sud) || ck$su || ck$c)
+  ck$sub=(!is.logical(sub) || sub) && (is.character(sub) || seg$ll>1 || ndisp)
   pdo=list(...)
   l2m=function(l){tl=round(l^.5); c(tl+all(l>c(tl^2,tl*(tl-1))),tl)}
   seg$dim=if(any(ckl<-c('mfrow','mfcol')%in%names(pdo))) pdo[[if(ckl[1]) 'mfrow' else 'mfcol']] else
@@ -928,12 +930,12 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
       if(length(cdat[[i]])==0) next
     }
     cl=strsplit(i,'.^^.',fixed=TRUE)[[1]]
-    ptxt$sub=if(sub) if(seg$ll>1 || (!missing(ndisp) && ndisp)) paste0(
+    ptxt$sub=if(is.character(sub)) sub else if(ck$sub) if(seg$ll>1 || (!missing(ndisp) && ndisp)) paste0(
       if(seg$f1$e) paste0(
         if(lvn || (ck$mlvn && grepl('^[0-9]',cl[1]))) paste0(ptxt$bet[1],': '),cl[1],
         if(seg$f2$e) paste0(', ',if(lvn || (ck$mlvn && grepl('^[0-9]',cl[2]))) paste0(ptxt$bet[2],': '),cl[2])
       ),if((length(names(cdat))>1 || !missing(ndisp)) && ndisp) paste(', n =',seg$n[i])
-    ) else if(is.character(sub)) sub else ''
+    ) else ''
     if(!is.null(sort) && ck$t!=2 && class(if(seg$by$e) cdat[[i]][[1]][,'x'] else cdat[[i]][,'x']) %in%
         c('factor','character')){
       sdir=grepl('^d|^t',as.character(sort),TRUE)
@@ -1052,12 +1054,12 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
         lega[c('lwd','lty')]=NULL
         lega[c('pch','pt.cex','x.intersp','y.intersp','adj')]=list(15,2,1,1.2,c(0,.35))
         p=barplot(m,beside=TRUE,col=if(rck) colors[rn] else colors,axes=FALSE,axisnames=FALSE,
-          border=NA,ylab=NA,xlab=NA,ylim=ylim,main=if(sub) ptxt$sub else NA,
+          border=NA,ylab=NA,xlab=NA,ylim=ylim,main=if(ck$sub) ptxt$sub else NA,
           xpd=if('xpd'%in%names(pdo)) pdo$xpd else if(autori) NA else FALSE)
       }else{
         p=matrix(rep(seq_len(dm[2]),dm[1]),nrow=dm[1],byrow=TRUE)
         plot(NA,ylim=ylim,xlim=if(missing(mxl)) c(1-stw[1]/3,dm[2]+stw[length(stw)]/3) else mxl,ylab=NA,xlab=NA,
-          main=if(sub) ptxt$sub else NA,axes=FALSE)
+          main=if(ck$sub) ptxt$sub else NA,axes=FALSE)
         if(is.numeric(lty)) lty=rep(lty,dm[1]) else if(is.logical(lty) && lty) lty=seq_len(dm[1])
         for(a in seq_len(dm[1])) graphics::lines(m[a,],col=if(rck) colors[rn[a]] else colors,
           lty=if(is.numeric(lty)) lty[a] else 1,lwd=lwd,type=line.type)
@@ -1091,14 +1093,14 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
       if(seg$by$ll>1){
         lty=if(is.numeric(lty)) rep(lty,length(m)) else if(is.logical(lty) && lty) seq_along(m) else rep(1,length(m))
         plot(NA,xlim=if(missing(mxl)) c(min(dx),max(dx)) else mxl,ylim=if(missing(myl)) c(0,max(c(dy))*1.2) else myl,
-          main=if(sub) ptxt$sub else NA,ylab=NA,xlab=NA,axes=FALSE,xpd=if('xpd'%in%names(pdo)) pdo$xpd else FALSE)
+          main=if(ck$sub) ptxt$sub else NA,ylab=NA,xlab=NA,axes=FALSE,xpd=if('xpd'%in%names(pdo)) pdo$xpd else FALSE)
         for(l in seq_along(m)) graphics::lines(m[[l]],col=colors[rn[l]],lwd=lwd,lty=lty[l])
         lega$legend=rn
         if(ck$lp && ck$leg==2) lega$x=ifelse(median(dx)<mean(range(dx)),'topleft','topright')
       }else{
         if(ck$co) colors[2]='#777777'
         hist((if(cl) cdat[[i]][[1]] else cdat[[i]])[,'y'],breaks,FALSE,border=if('border'%in%names(pdo)) pdo$border else
-          par('bg'),main=if(sub) ptxt$sub else NA,ylab=NA,xlab=NA,axes=FALSE,col=if(length(colors)>1) colors[2] else colors)
+          par('bg'),main=if(ck$sub) ptxt$sub else NA,ylab=NA,xlab=NA,axes=FALSE,col=if(length(colors)>1) colors[2] else colors)
         if(!is.logical(lines) || lines) graphics::lines(m[[1]],col=colors[1],lwd=lwd,xpd=if('xpd'%in%names(pdo))
           pdo$xpd else FALSE)
       }
@@ -1124,7 +1126,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
       }
       plot(NA,xlim=if(missing(mxl)) range(xch,na.rm=TRUE) else mxl,ylim=if(missing(myl))
         c(min(cy),max(cy)+max(cy)*ifelse(ck$leg==1 && seg$by$ll<lim,seg$by$ll/20,0)) else myl,
-        main=if(sub) ptxt$sub else NA,ylab=NA,xlab=NA,axes=FALSE)
+        main=if(ck$sub) ptxt$sub else NA,ylab=NA,xlab=NA,axes=FALSE)
       if(yaxis) do.call(axis,c(list(2,las=ylas),c(a2a[c('cex','fg')],
         if('yax'%in%names(txt))list(at=seq_along(txt$yax),labels=txt$yax,tick=FALSE))))
       if(xaxis) do.call(axis,c(list(1,las=xlas),a2a))
@@ -1192,10 +1194,11 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
       do.call(legend,lega)
     }else warning('legend positioning failed',call.=FALSE)
   }
-  if(sud) mtext(if(ck$sud) gsub(', (?=[A-z0-9 ]+$)',ifelse(length(ptxt$cov)>2,', & ',' & '),
-    gsub('^ | $','',paste0(if(ck$su) paste('Subset:',paste0(txt$su[1],if(length(txt$su)!=1)'...')),if(ck$su && ck$c)', ',
-      if(ck$c) paste(if(ck$t==1)'Covariates:' else 'Line adjustment:',paste(ptxt$cov,collapse=', ')))),TRUE,TRUE) else
-        '',3,0,TRUE,cex=cex['sud'],font=font['sud'])
+  if(ck$sud && any(ck$su,ck$c,is.character(sud))) mtext(if(is.character(sud)) sud else
+    gsub(', (?=[A-z0-9 ]+$)',ifelse(length(ptxt$cov)>2,', & ',' & '), gsub('^ | $','',paste0(if(ck$su)
+      paste('Subset:',paste0(txt$su[1],if(length(txt$su)!=1)'...')),if(ck$su && ck$c)', ',if(ck$c)
+        paste(if(ck$t==1)'Covariates:' else 'Line adjustment:',paste(ptxt$cov,collapse=', ')))),TRUE,TRUE)
+  ,3,0,TRUE,cex=cex['sud'],font=font['sud'])
   mtext(main,3,if(ck$sud) 1.5 else .5,TRUE,cex=cex['title'],font=font['title'])
   mtext(if(ck$t==2) 'Density' else ylab,2,-.2,TRUE,cex=par('cex.lab'),font=par('font.lab'))
   mtext(if(ck$t==2) ylab else xlab,1,0,TRUE,cex=par('cex.lab'),font=par('font.lab'))

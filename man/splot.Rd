@@ -194,7 +194,8 @@ value. Otherwise loops through available line types, see \code{\link[graphics]{p
 \item{lwd}{numeric: sets the weight of lines in line, density, and scatter plots. Default is 2. See
 \code{\link[graphics]{par}}.}
 
-\item{sub}{logical: if \code{FALSE}, the small title above each plot showing \code{between} levels is turned off.}
+\item{sub}{affects the small title above each plot showing \code{between} levels; text replaces it, and \code{FALSE}
+turns it off.}
 
 \item{ndisp}{logical: if \code{FALSE}, n per level is no longer displayed in the subheadings.}
 
@@ -210,7 +211,8 @@ note. In addition, \code{cex.lab} sets the x and y label size, \code{cex.sub} se
 each panel, \code{cex.axis} sets the axis label size, and \code{cex.main} sets the between level/n heading size; these
 are passed to \code{\link[graphics]{par}}. See the input section.}
 
-\item{sud}{logical: if \code{FALSE}, the heading for subset and covariates/line adjustments (su display) is turned off.}
+\item{sud}{affects the heading for subset and covariates/line adjustments (su display); text replaces it, and
+\code{FALSE} turns it off.}
 
 \item{labels}{logical: if \code{FALSE}, sets all settable text surrounding the plot to \code{FALSE} (just so you don't
 have to set all of them if you want a clean frame).}
