@@ -1204,8 +1204,10 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
   mtext(if(ck$t==2) ylab else xlab,1,0,TRUE,cex=par('cex.lab'),font=par('font.lab'))
   if(is.character(note)) mtext(note,1,ck$lx,TRUE,adj=if(ck$ly) 0 else .01,font=font['note'],cex=cex['note'])
   if(save || (missing(save) && any(!missing(format),!missing(file.name),!missing(dims)))) tryCatch({
-    t=substitute(format)
-    tt=if(any(grepl('cairo',t))){paste0('.',strsplit(deparse(t),'_')[[1]][2])
+    if(is.character(format)) stop('format should be a function, e.g., format=svg',call.=FALSE)
+    t=deparse(substitute(format))
+    if(is.function(format)) t=sub('^[^:]*::','',t)
+    tt=if(any(grepl('cairo',t,TRUE))){paste0('.',tolower(strsplit(t,'_|Cairo')[[1]][2]))
     }else if(t=='postscript') '.ps' else paste0('.',t)
     if(missing(dims) && grepl('jpeg|png|tiff|bmp|bit',t,TRUE)) dims=dev.size(units='px')
     fn=paste0(if(main=='' || !missing(file.name)) file.name else gsub(' ','_',gsub('^ +| +$|  ','',main),fixed=TRUE),tt)
