@@ -1207,7 +1207,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
     t=substitute(format)
     tt=if(any(grepl('cairo',t))){paste0('.',strsplit(deparse(t),'_')[[1]][2])
     }else if(t=='postscript') '.ps' else paste0('.',t)
-    if(grepl('jpeg|png|tiff|bmp|bit',t) && missing(dims)) dims=dev.size(units='px')
+    if(missing(dims) && grepl('jpeg|png|tiff|bmp|bit',t,TRUE)) dims=dev.size(units='px')
     fn=paste0(if(main=='' || !missing(file.name)) file.name else gsub(' ','_',gsub('^ +| +$|  ','',main),fixed=TRUE),tt)
     dev.copy(format,fn,width=dims[1],height=dims[2])
     dev.off()
