@@ -23,13 +23,13 @@ splot(y, data = NULL, su = NULL, type = "", split = "median",
   mv.scale = "none", mv.as.x = FALSE, save = FALSE, format = cairo_pdf,
   dims = dev.size(), file.name = "splot", colors = "pastel",
   colorby = NULL, opacity = 1, myl = NULL, mxl = NULL, autori = TRUE,
-  xlas = 0, ylas = 1, bw = "nrd0", adj = 2, breaks = "scott",
-  leg = "outside", lpos = "auto", lvn = TRUE, leg.title = TRUE,
-  leg.args = list(), title = TRUE, labx = TRUE, laby = TRUE,
-  lty = TRUE, lwd = 2, sub = TRUE, ndisp = TRUE, note = TRUE,
-  font = c(title = 2, sud = 1, leg = 1, note = 3), cex = c(title = 1.5, sud
-  = 0.9, leg = 0.9, note = 0.7), sud = TRUE, labels = TRUE,
-  labels.filter = "_", labels.trim = 20, points = TRUE,
+  xlas = 0, ylas = 1, xaxis = TRUE, yaxis = TRUE, bw = "nrd0",
+  adj = 2, breaks = "scott", leg = "outside", lpos = "auto",
+  lvn = TRUE, leg.title = TRUE, leg.args = list(), title = TRUE,
+  labx = TRUE, laby = TRUE, lty = TRUE, lwd = 2, sub = TRUE,
+  ndisp = TRUE, note = TRUE, font = c(title = 2, sud = 1, leg = 1, note =
+  3), cex = c(title = 1.5, sud = 0.9, leg = 0.9, note = 0.7), sud = TRUE,
+  labels = TRUE, labels.filter = "_", labels.trim = 20, points = TRUE,
   points.first = TRUE, byx = TRUE, drop = c(x = TRUE, by = TRUE, bet =
   TRUE), prat = c(1, 1), model = FALSE, options = NULL, add = NULL)
 </pre>
@@ -229,6 +229,10 @@ that they extend to the bottom of the y axis.</p>
 <td>
 <p>numeric: sets the orientation of the x- and y-axis labels. See <code>par</code>.</p>
 </td></tr>
+<tr valign="top"><td><code>xaxis, yaxis</code></td>
+<td>
+<p>logical: if <code>FALSE</code>, the axis will not be drawn.</p>
+</td></tr>
 <tr valign="top"><td><code>bw</code></td>
 <td>
 <p>sets the smoothing bandwidth when plotting densities. Default is <code>'nrd0'</code>. See
@@ -279,15 +283,10 @@ plot window).</p>
 <p>logical or a character: if <code>FALSE</code>, the main title is turned off. If a character, this will be shown
 as the main title.</p>
 </td></tr>
-<tr valign="top"><td><code>labx</code></td>
+<tr valign="top"><td><code>labx, laby</code></td>
 <td>
 <p>logical or a character: if <code>FALSE</code>, the label on the x axis is turned off. If a character, this will be
-shown as the x axis label.</p>
-</td></tr>
-<tr valign="top"><td><code>laby</code></td>
-<td>
-<p>logical or a character: if <code>FALSE</code>, the label on the y axis is turned off. If a character, this will be
-shown as the y axis label.</p>
+shown as the axis label.</p>
 </td></tr>
 <tr valign="top"><td><code>lty</code></td>
 <td>

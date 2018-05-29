@@ -99,6 +99,7 @@
 #' @param autori logical: if \code{FALSE}, the origin of plotted bars will be set to 0. Otherwise, bars are adjusted such
 #'   that they extend to the bottom of the y axis.
 #' @param xlas,ylas numeric: sets the orientation of the x- and y-axis labels. See \code{\link[graphics]{par}}.
+#' @param xaxis,yaxis logical: if \code{FALSE}, the axis will not be drawn.
 #' @param bw sets the smoothing bandwidth when plotting densities. Default is \code{'nrd0'}. See
 #'   \code{\link[stats]{density}}.
 #' @param adj adjusts the smoothing of densities (\code{adj * bw}). See \code{\link[stats]{density}}.
@@ -122,10 +123,8 @@
 #' @param leg.args a list passing arguments to the \code{\link[graphics]{legend}} call.
 #' @param title logical or a character: if \code{FALSE}, the main title is turned off. If a character, this will be shown
 #'   as the main title.
-#' @param labx logical or a character: if \code{FALSE}, the label on the x axis is turned off. If a character, this will be
-#'   shown as the x axis label.
-#' @param laby logical or a character: if \code{FALSE}, the label on the y axis is turned off. If a character, this will be
-#'   shown as the y axis label.
+#' @param labx,laby logical or a character: if \code{FALSE}, the label on the x axis is turned off. If a character, this will be
+#'   shown as the axis label.
 #' @param lty logical or a vector: if \code{FALSE}, lines are always solid. If a vector, changes line type based on each
 #'   value. Otherwise loops through available line types, see \code{\link[graphics]{par}}.
 #' @param lwd numeric: sets the weight of lines in line, density, and scatter plots. Default is 2. See
@@ -293,10 +292,11 @@
 splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NULL,error='standard',error.color='#585858',
   error.lwd=2,lim=9,lines=TRUE,...,x=NULL,by=NULL,between=NULL,cov=NULL,line.type='l',mv.scale='none',mv.as.x=FALSE,
   save=FALSE,format=cairo_pdf,dims=dev.size(),file.name='splot',colors='pastel',colorby=NULL,opacity=1,myl=NULL,mxl=NULL,
-  autori=TRUE,xlas=0,ylas=1,bw='nrd0',adj=2,breaks='scott',leg='outside',lpos='auto',lvn=TRUE,leg.title=TRUE,leg.args=list(),
-  title=TRUE,labx=TRUE,laby=TRUE,lty=TRUE,lwd=2,sub=TRUE,ndisp=TRUE,note=TRUE,font=c(title=2,sud=1,leg=1,note=3),
-  cex=c(title=1.5,sud=.9,leg=.9,note=.7),sud=TRUE,labels=TRUE,labels.filter='_',labels.trim=20,points=TRUE,points.first=TRUE,
-  byx=TRUE,drop=c(x=TRUE,by=TRUE,bet=TRUE),prat=c(1,1),model=FALSE,options=NULL,add=NULL){
+  autori=TRUE,xlas=0,ylas=1,xaxis=TRUE,yaxis=TRUE,bw='nrd0',adj=2,breaks='scott',leg='outside',lpos='auto',lvn=TRUE,
+  leg.title=TRUE,leg.args=list(),title=TRUE,labx=TRUE,laby=TRUE,lty=TRUE,lwd=2,sub=TRUE,ndisp=TRUE,note=TRUE,
+  font=c(title=2,sud=1,leg=1,note=3),cex=c(title=1.5,sud=.9,leg=.9,note=.7),sud=TRUE,labels=TRUE,labels.filter='_',
+  labels.trim=20,points=TRUE,points.first=TRUE,byx=TRUE,drop=c(x=TRUE,by=TRUE,bet=TRUE),prat=c(1,1),model=FALSE,
+  options=NULL,add=NULL){
   #parsing input and preparing data
   if(!missing(options) && is.list(options) && length(options)!=0){
     a=as.list(match.call())[-1]
@@ -490,8 +490,9 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
   )
   ck$omited$all=!Reduce('|',ck$omited)
   if(sum(ck$omited$all)==0) stop('this combination of variables/splits has no complete cases')
-  dat=if(!missing(colorby)){
+  dat=if(ck$cb){
     colorby=substitute(colorby)
+    txt$cby=deparse(colorby)
     dat$cb=tdc(colorby,rn)
     dat=dat[ck$omited$all,,drop=FALSE]
     colorby=dat$cb
@@ -734,7 +735,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
   if(is.character(labx)) ptxt$x=labx
   if(is.character(laby)) ptxt$y=laby
   #figuring out parts of the plot
-  if(!missing(colors)) colors=eval(substitute(colors),data)
+  if(ck$cb) colors=eval(substitute(colors),data)
   if(length(colors)==1){
     if(grepl('^bri|^dar|^pas',colors,TRUE) && (seg$by$ll>1 && (ck$cb || seg$by$ll<9))){
       colors=splot.color(colors)
@@ -755,7 +756,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
     }else{
       colorby=cbind(dat$x,as.character(colorby))
       if(is.factor(dat$x)) colorby=colorby[order(dat$x),]
-      ptxt$l.by=unique(colorby[,2])
+      ptxt[c('by','l.by')]=list(txt$cby,unique(colorby[,2]))
     }
   }
   if(ck$cb){
@@ -848,7 +849,8 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
     if(!missing(lty) && !ck$lty) lty else 1,lwd=lwd,cex=cex['leg'],text.font=font['leg'],bty='n',x.intersp=.5,
     legend=if(ck$cb) ptxt$cb else rn,xjust=.5
   )
-  if(ck$legt) lega$title=if(is.character(leg.title)) leg.title else ptxt$by
+  if(ck$legt && (is.character(leg.title) || length(ptxt$by)))
+    lega$title=if(is.character(leg.title)) leg.title else ptxt$by
   if(!missing(leg.args)) lega[names(leg.args)]=leg.args
   if(ck$leg==1){
     if(ck$legm && nc>seg$ll) leg=which(!seg$lc)[1]
@@ -1061,13 +1063,13 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
           lty=if(is.numeric(lty)) lty[a] else 1,lwd=lwd,type=line.type)
       }
       lega$legend=if(ck$cb) ptxt$cb else rn
-      axis(1,apply(p,2,mean),colnames(m),FALSE,las=xlas,cex=par('cex.axis'),fg=par('col.axis'))
+      if(xaxis) axis(1,apply(p,2,mean),colnames(m),FALSE,las=xlas,cex=par('cex.axis'),fg=par('col.axis'))
       a2a=list(2,las=ylas,cex=par('cex.axis'),fg=par('col.axis'))
       if(ck$b && autori){
         a2a$at=ayl
         a2a$labels=formatC(oyl,2,format='f')
       }
-      do.call(axis,a2a)
+      if(yaxis) do.call(axis,a2a)
       if(ck$el && !identical(ne,pe)){
         te=round(Reduce('-',list(ne,pe)),8)
         te[is.na(te)]=0
@@ -1100,8 +1102,8 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
         if(!is.logical(lines) || lines) graphics::lines(m[[1]],col=colors[1],lwd=lwd,xpd=if('xpd'%in%names(pdo))
           pdo$xpd else FALSE)
       }
-      axis(1,las=xlas,cex=par('cex.axis'),fg=par('col.axis'))
-      axis(2,las=ylas,cex=par('cex.axis'),fg=par('col.axis'))
+      if(xaxis) axis(1,las=xlas,cex=par('cex.axis'),fg=par('col.axis'))
+      if(yaxis) axis(2,las=ylas,cex=par('cex.axis'),fg=par('col.axis'))
     }else{
       #scatter
       dl=if(cl<-class(cdat[[i]])=='list') length(cdat[[i]]) else 1
@@ -1123,9 +1125,9 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
       plot(NA,xlim=if(missing(mxl)) range(xch,na.rm=TRUE) else mxl,ylim=if(missing(myl))
         c(min(cy),max(cy)+max(cy)*ifelse(ck$leg==1 && seg$by$ll<lim,seg$by$ll/20,0)) else myl,
         main=if(sub) ptxt$sub else NA,ylab=NA,xlab=NA,axes=FALSE)
-      do.call(axis,c(list(2,las=ylas),c(a2a[c('cex','fg')],
+      if(yaxis) do.call(axis,c(list(2,las=ylas),c(a2a[c('cex','fg')],
         if('yax'%in%names(txt))list(at=seq_along(txt$yax),labels=txt$yax,tick=FALSE))))
-      do.call(axis,c(list(1,las=xlas),a2a))
+      if(xaxis) do.call(axis,c(list(1,las=xlas),a2a))
       if(ck$leg>1){
         up=xch[cy>=quantile(cy)[4]]
         mr=quantile(xch)
