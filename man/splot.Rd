@@ -6,20 +6,22 @@
 \usage{
 splot(y, data = NULL, su = NULL, type = "", split = "median",
   levels = list(), sort = NULL, error = "standard",
-  error.color = "#585858", error.lwd = 2, lim = 9, lines = TRUE, ...,
-  x = NULL, by = NULL, between = NULL, cov = NULL, line.type = "l",
-  mv.scale = "none", mv.as.x = FALSE, save = FALSE, format = cairo_pdf,
-  dims = dev.size(), file.name = "splot", colors = "pastel",
-  colorby = NULL, opacity = 1, myl = NULL, mxl = NULL, autori = TRUE,
+  error.color = "#585858", error.lwd = 2, lim = 9, lines = TRUE,
+  colors = "pastel", ..., colorby = NULL, color.lock = FALSE,
+  color.offset = 1.1, opacity = 1, x = NULL, by = NULL,
+  between = NULL, cov = NULL, line.type = "l", mv.scale = "none",
+  mv.as.x = FALSE, save = FALSE, format = cairo_pdf, dims = dev.size(),
+  file.name = "splot", myl = NULL, mxl = NULL, autori = TRUE,
   xlas = 0, ylas = 1, xaxis = TRUE, yaxis = TRUE, bw = "nrd0",
   adj = 2, breaks = "scott", leg = "outside", lpos = "auto",
   lvn = TRUE, leg.title = TRUE, leg.args = list(), title = TRUE,
   labx = TRUE, laby = TRUE, lty = TRUE, lwd = 2, sub = TRUE,
-  ndisp = TRUE, note = TRUE, font = c(title = 2, sud = 1, leg = 1, note =
-  3), cex = c(title = 1.5, sud = 0.9, leg = 0.9, note = 0.7), sud = TRUE,
-  labels = TRUE, labels.filter = "_", labels.trim = 20, points = TRUE,
-  points.first = TRUE, byx = TRUE, drop = c(x = TRUE, by = TRUE, bet =
-  TRUE), prat = c(1, 1), model = FALSE, options = NULL, add = NULL)
+  ndisp = TRUE, note = TRUE, font = c(title = 2, sud = 1, leg = 1,
+  leg.title = 2, note = 3), cex = c(title = 1.5, sud = 0.9, leg = 0.9, note =
+  0.7, points = 1), sud = TRUE, labels = TRUE, labels.filter = "_",
+  labels.trim = 20, points = TRUE, points.first = TRUE, byx = TRUE,
+  drop = c(x = TRUE, by = TRUE, bet = TRUE), prat = c(1, 1),
+  check.height = TRUE, model = FALSE, options = NULL, add = NULL)
 }
 \arguments{
 \item{y}{A formula (see note), or the primary variable(s) to be shown on the y axis (unless \code{x} is not specified).
@@ -76,7 +78,29 @@ is treated as infinite (set to \code{Inf}).}
 (\code{glm(y~x,binomial)}). \code{'connected'} (\code{'^e|^co|^d'}) will draw lines connecting all points, and
 \code{FALSE} will not draw any lines.}
 
+\item{colors}{sets a color theme or manually specifies colors. Default theme is \code{"pastel"}, with \code{"dark"} and
+\code{"bright"} as options; these are passed to \code{\link{splot.color}}. If set to \code{"grey"}, or if \code{by}
+has more than 9 levels, a grey scale is calculated using \code{\link[grDevices]{grey}}. See the \code{col} parameter
+in \code{\link[graphics]{par}} for acceptable manual inputs. To set text and axis colors, \code{col} sets outside
+texts (title, sud, labx, laby, and note), \code{col.sub} or \code{col.main} sets the frame titles, and \code{col.axis}
+sets the axis text and line colors.}
+
 \item{...}{passes additional arguments to \code{\link[graphics]{par}} or \code{\link[graphics]{legend}}.}
+
+\item{colorby}{a variable used to set colors and the legend, alternatively to \code{by}. If \code{by} is not missing,
+\code{colorby} will be reduced to only the unique combinations of \code{by} and \code{colorby}. For example, if
+\code{by} is a participant ID with multiple observations per participant, and \code{by} is a condition ID which is the
+same for all observations from a given participant, \code{colorby} would assign a single color to each participant
+based on their condition. If \code{by} is missing, \code{colorby} will only be applied if its levels are unique, in
+which case a color will be assigned to each level. The variable entered here is passed to \code{\link{splot.color}},
+with \code{colors} as its \code{set} argument, and \code{by} as its \code{by} argument.}
+
+\item{color.lock}{logical; if \code{FALSE}, colors will not be adjusted to offset lines from points or histogram bars.}
+
+\item{color.offset}{how much points or histogram bars should be offset from the initial color used for lines. Default is
+1.1; values greater than 1 lighten, and less than 1 darken.}
+
+\item{opacity}{a number between 0 and 1; sets the opacity of points if they are drawn, and lines or bars otherwise.}
 
 \item{x}{secondary variable, to be shown in on the x axis. If not specified, \code{type} will be set to \code{'density'}.
 If \code{x} is a factor or vector of characters, or has fewer than \code{lim} levels when treated as a factor,
@@ -123,23 +147,6 @@ pixels depending on \code{format}. Defaults to the dimensions of the plot window
 \item{file.name}{a string with the name of the file to be save (excluding the extension, as this is added depending on
 \code{format}).}
 
-\item{colors}{sets a color theme or manually specifies colors. Default theme is \code{"pastel"}, with \code{"dark"} and
-\code{"bright"} as options; these are passed to \code{\link{splot.color}}. If set to \code{"grey"}, or if \code{by}
-has more than 9 levels, a grey scale is calculated using \code{\link[grDevices]{grey}}. See the \code{col} parameter
-in \code{\link[graphics]{par}} for acceptable manual inputs. To set text and axis colors, \code{col} sets outside
-texts (title, sud, labx, laby, and note), \code{col.sub} or \code{col.main} sets the frame titles, and \code{col.axis}
-sets the axis text and line colors.}
-
-\item{colorby}{a variable used to set colors and the legend, alternatively to \code{by}. If \code{by} is not missing,
-\code{colorby} will be reduced to only the unique combinations of \code{by} and \code{colorby}. For example, if
-\code{by} is a participant ID with multiple observations per participant, and \code{by} is a condition ID which is the
-same for all observations from a given participant, \code{colorby} would assign a single color to each participant
-based on their condition. If \code{by} is missing, \code{colorby} will only be applied if its levels are unique, in
-which case a color will be assigned to each level. The variable entered here is passed to \code{\link{splot.color}},
-with \code{colors} as its \code{set} argument, and \code{by} as its \code{by} argument.}
-
-\item{opacity}{a number between 0 and 1; sets the opacity of points if they are drawn, and lines or bars otherwise.}
-
 \item{myl}{sets the range of the y axis (\code{ylim} of \code{\link[graphics]{plot}} or \code{\link[graphics]{barplot}}).
 If not specified, this will be calculated from the data.}
 
@@ -185,8 +192,8 @@ plot window).}
 \item{title}{logical or a character: if \code{FALSE}, the main title is turned off. If a character, this will be shown
 as the main title.}
 
-\item{labx, laby}{logical or a character: if \code{FALSE}, the label on the x axis is turned off. If a character, this will be
-shown as the axis label.}
+\item{labx, laby}{logical or a character: if \code{FALSE}, the label on the x axis is turned off. If a character, this
+will be shown as the axis label.}
 
 \item{lty}{logical or a vector: if \code{FALSE}, lines are always solid. If a vector, changes line type based on each
 value. Otherwise loops through available line types, see \code{\link[graphics]{par}}.}
@@ -246,6 +253,9 @@ single number will make all panels of equal width. A vector of two numbers will 
 and the legend panel (e.g., \code{prat=c(3,1)} makes all plot panels a relative width of 3, and the legend frame a
 relative width of 1).}
 
+\item{check.height}{logical; if \code{FALSE}, the height of the plot frame will not be checked before plotting is
+attempted. The check tries to avoid later errors,}
+
 \item{model}{logical: if \code{TRUE}, the summary of an interaction model will be printed.}
 
 \item{options}{a list with named arguments, useful for setting temporary defaults if you plan on using some of the same
@@ -254,7 +264,9 @@ options for multiple plots (e.g., \code{opt =} \code{list(type = 'bar',} \code{c
 use \code{\link[base]{quote}} to include options that are to be evaluated within the function (e.g.,
 \code{opt =} \code{list(su =} \code{quote(y>0))}).}
 
-\item{add}{evaluated within the function. Useful for adding things like lines to a plot while the parameters are still
+\item{add}{evaluated within the function, so you can refer to the objects that are returned, to variable names (those
+from an entered data frame or entered as arguments), or entered data by their position, preceded by '.' (e.g.,
+\code{mod =} \code{lm(.y~.x)}). Useful for adding things like lines to a plot while the parameters are still
 those set by the function (e.g., \code{add =} \code{abline(v =} \code{mean(x),} \code{xpd = FALSE)} for a vertical
 line at the mean of x).}
 }
@@ -262,13 +274,14 @@ line at the mean of x).}
 A list containing data and settings is invisibly returned, which might be useful to check for errors.
 Each of these objects can also be pulled from within \code{add}:
 \tabular{ll}{
-  \code{data} \tab a \code{data.frame} of processed, unsegmented data.\cr
+  \code{dat} \tab a \code{data.frame} of processed, unsegmented data.\cr
   \code{cdat} \tab a \code{list} of \code{list}s of \code{data.frame}s of processed, segmented data.\cr
   \code{txt} \tab a \code{list} of variable names. used mostly to pull variables from \code{data} or the environment.\cr
   \code{ptxt} \tab a \code{list} of processed variable and level names. Used mostly for labeling.\cr
   \code{seg} \tab a \code{list} containing segmentation information (such as levels) for each variable.\cr
   \code{ck} \tab a \code{list} of settings.\cr
-  \code{model} \tab an \code{lm} object if \code{model} is \code{TRUE}, and the model succeeded.
+  \code{lega} \tab a \code{list} of arguments that were or would have been passed to \code{\link[graphics]{legend}}.\cr
+  \code{fmod} \tab an \code{lm} object if \code{model} is \code{TRUE}, and the model succeeded.
 }
 }
 \description{

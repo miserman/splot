@@ -37,21 +37,21 @@ To look at a particular category across segments of text, we can just plot the c
 splot(anger~index*name)
 ```
 
-Quite a mess.
+Quite messy, and the legend is not drawn automatically when there are so many levels of `by`.
 
-We could arange the legend and get rid of points to clean things up a bit:
+We could add an arranged legend, and get rid of points to clean things up a bit:
 ```{r, fig.height=5, fig.width=10, dev='CairoSVG'}
 #lpos positions, ncol changes the number of columns, and cex['leg'] changes the font size of the legend.
 splot(anger~index*name, lpos='top', ncol=4, cex=c(leg=.8), points=FALSE)
 ```
-With this many levels of `by`, the legend isn't very useful in its current form, so we might just remove it.
+With this many levels of `by`, the legend isn't very useful, so we might just keep it off.
 
 We're also interested in non-linear trends over the course of each text, so we'll switch to loess lines, and we'll use `myl` to zoom in (restrict the range) a bit:
 ```{r, fig.height=5, fig.width=10, dev='CairoSVG'}
-splot(anger~index*name, leg=FALSE, points=FALSE, lines=loess, myl=c(-.05,1.7))
+splot(anger~index*name, points=FALSE, lines=loess, myl=c(-.05,1.7))
 ```
 
-Much better, but still not very informative. 
+Prettier at least, but still not very informative. 
 
 This project was mostly interested in the Rodger text---how it relates to the Hitler text, and how both of those relate to other autobiographies. As such, it would be nice to know which lines are the Rodger and Hitler texts, and which are (in this case) the highest comparison texts.
 
@@ -72,7 +72,7 @@ Here, the `mnc` part is calculating the mean of each text across segments, then 
 
 In the first `legend` call, the constants are position (set in the first argument), and line weight (`lwd`) and box type (`bty`; `'n'` for none). Dynamic arguments are pulled from the `disp` object we created before, based on the names in `mnc`.
 ```{r, fig.height=5, fig.width=10, dev='CairoSVG'}
-splot(anger~index*name, leg=FALSE, points=FALSE, lines='loess', myl=c(0,2.2), colors=disp$col, lty=disp$lty, add={
+splot(anger~index*name, points=FALSE, lines='loess', myl=c(0,2.2), colors=disp$col, lty=disp$lty, add={
     mnc=names(sort(colMeans(sapply(cdat$`.^^.`, '[[', 'y'))[-grep('Hit|Rod', names(cdat$`.^^.`))], TRUE)[1:2])
     legend('topleft', sort(mnc), lty=disp[disp$name%in%mnc, 2], col=disp[disp$name%in%mnc, 3], lwd=2, bty='n')
     legend('topright', c('Adolf Hitler', 'Elliot Rodger'), lty=1:2, col=disp$col[1], lwd=2, bty='n')
@@ -83,7 +83,6 @@ If we were planning on applying these settings to several graphs (if, say, we wa
 ```{r}
 #quote() prevents things from being evaluated outside of the function.
 opt = list(
-  leg = FALSE,
   points = FALSE,
   lines = 'loess',
   colors = disp$col,

@@ -125,10 +125,11 @@ splot(data[,metrics]~prompt, between=Study, su=Study>2, mv.scale=T)
 
 In Studies 3 and 4, each participant replied to two prompts, so we can look at changes in their matching from one prompt to another (it looks pretty random, which is generally what we want):
 ```{r, fig.height=6, fig.width=10, dev='CairoSVG'}
-#lim is the only necessary additional argument -- it keeps ParticipantID from being split.
-#lty makes all of the lines solid, line.type prevents a point from being drawn at the end
-#of each line, and mxl spreads the replies out a little more.
-splot(Canberra~reply*ParticipantID, su=Study==4, lim=FALSE, lty=1, line.type='l', mxl=c(1,2))
+#turning ParticipantID into characters or setting lim to FALSE will prevent it from being split.
+#other aspects are just cosmetic;
+#  line.type affects the appearence of the lines,
+#  and mxl speads the x labels a little more.
+splot(Canberra~reply*as.character(ParticipantID), su=Study==4, line.type='l', mxl=c(1,2))
 ```
 
 ***

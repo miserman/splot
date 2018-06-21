@@ -18,20 +18,22 @@
 <pre>
 splot(y, data = NULL, su = NULL, type = "", split = "median",
   levels = list(), sort = NULL, error = "standard",
-  error.color = "#585858", error.lwd = 2, lim = 9, lines = TRUE, ...,
-  x = NULL, by = NULL, between = NULL, cov = NULL, line.type = "l",
-  mv.scale = "none", mv.as.x = FALSE, save = FALSE, format = cairo_pdf,
-  dims = dev.size(), file.name = "splot", colors = "pastel",
-  colorby = NULL, opacity = 1, myl = NULL, mxl = NULL, autori = TRUE,
+  error.color = "#585858", error.lwd = 2, lim = 9, lines = TRUE,
+  colors = "pastel", ..., colorby = NULL, color.lock = FALSE,
+  color.offset = 1.1, opacity = 1, x = NULL, by = NULL,
+  between = NULL, cov = NULL, line.type = "l", mv.scale = "none",
+  mv.as.x = FALSE, save = FALSE, format = cairo_pdf, dims = dev.size(),
+  file.name = "splot", myl = NULL, mxl = NULL, autori = TRUE,
   xlas = 0, ylas = 1, xaxis = TRUE, yaxis = TRUE, bw = "nrd0",
   adj = 2, breaks = "scott", leg = "outside", lpos = "auto",
   lvn = TRUE, leg.title = TRUE, leg.args = list(), title = TRUE,
   labx = TRUE, laby = TRUE, lty = TRUE, lwd = 2, sub = TRUE,
-  ndisp = TRUE, note = TRUE, font = c(title = 2, sud = 1, leg = 1, note =
-  3), cex = c(title = 1.5, sud = 0.9, leg = 0.9, note = 0.7), sud = TRUE,
-  labels = TRUE, labels.filter = "_", labels.trim = 20, points = TRUE,
-  points.first = TRUE, byx = TRUE, drop = c(x = TRUE, by = TRUE, bet =
-  TRUE), prat = c(1, 1), model = FALSE, options = NULL, add = NULL)
+  ndisp = TRUE, note = TRUE, font = c(title = 2, sud = 1, leg = 1,
+  leg.title = 2, note = 3), cex = c(title = 1.5, sud = 0.9, leg = 0.9, note =
+  0.7, points = 1), sud = TRUE, labels = TRUE, labels.filter = "_",
+  labels.trim = 20, points = TRUE, points.first = TRUE, byx = TRUE,
+  drop = c(x = TRUE, by = TRUE, bet = TRUE), prat = c(1, 1),
+  check.height = TRUE, model = FALSE, options = NULL, add = NULL)
 </pre>
 
 
@@ -116,9 +118,41 @@ is treated as infinite (set to <code>Inf</code>).</p>
 (<code>glm(y~x,binomial)</code>). <code>'connected'</code> (<code>'^e|^co|^d'</code>) will draw lines connecting all points, and
 <code>FALSE</code> will not draw any lines.</p>
 </td></tr>
+<tr valign="top"><td><code>colors</code></td>
+<td>
+<p>sets a color theme or manually specifies colors. Default theme is <code>"pastel"</code>, with <code>"dark"</code> and
+<code>"bright"</code> as options; these are passed to <code>splot.color</code>. If set to <code>"grey"</code>, or if <code>by</code>
+has more than 9 levels, a grey scale is calculated using <code>grey</code>. See the <code>col</code> parameter
+in <code>par</code> for acceptable manual inputs. To set text and axis colors, <code>col</code> sets outside
+texts (title, sud, labx, laby, and note), <code>col.sub</code> or <code>col.main</code> sets the frame titles, and <code>col.axis</code>
+sets the axis text and line colors.</p>
+</td></tr>
 <tr valign="top"><td><code>...</code></td>
 <td>
 <p>passes additional arguments to <code>par</code> or <code>legend</code>.</p>
+</td></tr>
+<tr valign="top"><td><code>colorby</code></td>
+<td>
+<p>a variable used to set colors and the legend, alternatively to <code>by</code>. If <code>by</code> is not missing,
+<code>colorby</code> will be reduced to only the unique combinations of <code>by</code> and <code>colorby</code>. For example, if
+<code>by</code> is a participant ID with multiple observations per participant, and <code>by</code> is a condition ID which is the
+same for all observations from a given participant, <code>colorby</code> would assign a single color to each participant
+based on their condition. If <code>by</code> is missing, <code>colorby</code> will only be applied if its levels are unique, in
+which case a color will be assigned to each level. The variable entered here is passed to <code>splot.color</code>,
+with <code>colors</code> as its <code>set</code> argument, and <code>by</code> as its <code>by</code> argument.</p>
+</td></tr>
+<tr valign="top"><td><code>color.lock</code></td>
+<td>
+<p>logical; if <code>FALSE</code>, colors will not be adjusted to offset lines from points or histogram bars.</p>
+</td></tr>
+<tr valign="top"><td><code>color.offset</code></td>
+<td>
+<p>how much points or histogram bars should be offset from the initial color used for lines. Default is
+1.1; values greater than 1 lighten, and less than 1 darken.</p>
+</td></tr>
+<tr valign="top"><td><code>opacity</code></td>
+<td>
+<p>a number between 0 and 1; sets the opacity of points if they are drawn, and lines or bars otherwise.</p>
 </td></tr>
 <tr valign="top"><td><code>x</code></td>
 <td>
@@ -186,29 +220,6 @@ pixels depending on <code>format</code>. Defaults to the dimensions of the plot 
 <td>
 <p>a string with the name of the file to be save (excluding the extension, as this is added depending on
 <code>format</code>).</p>
-</td></tr>
-<tr valign="top"><td><code>colors</code></td>
-<td>
-<p>sets a color theme or manually specifies colors. Default theme is <code>"pastel"</code>, with <code>"dark"</code> and
-<code>"bright"</code> as options; these are passed to <code>splot.color</code>. If set to <code>"grey"</code>, or if <code>by</code>
-has more than 9 levels, a grey scale is calculated using <code>grey</code>. See the <code>col</code> parameter
-in <code>par</code> for acceptable manual inputs. To set text and axis colors, <code>col</code> sets outside
-texts (title, sud, labx, laby, and note), <code>col.sub</code> or <code>col.main</code> sets the frame titles, and <code>col.axis</code>
-sets the axis text and line colors.</p>
-</td></tr>
-<tr valign="top"><td><code>colorby</code></td>
-<td>
-<p>a variable used to set colors and the legend, alternatively to <code>by</code>. If <code>by</code> is not missing,
-<code>colorby</code> will be reduced to only the unique combinations of <code>by</code> and <code>colorby</code>. For example, if
-<code>by</code> is a participant ID with multiple observations per participant, and <code>by</code> is a condition ID which is the
-same for all observations from a given participant, <code>colorby</code> would assign a single color to each participant
-based on their condition. If <code>by</code> is missing, <code>colorby</code> will only be applied if its levels are unique, in
-which case a color will be assigned to each level. The variable entered here is passed to <code>splot.color</code>,
-with <code>colors</code> as its <code>set</code> argument, and <code>by</code> as its <code>by</code> argument.</p>
-</td></tr>
-<tr valign="top"><td><code>opacity</code></td>
-<td>
-<p>a number between 0 and 1; sets the opacity of points if they are drawn, and lines or bars otherwise.</p>
 </td></tr>
 <tr valign="top"><td><code>myl</code></td>
 <td>
@@ -285,8 +296,8 @@ as the main title.</p>
 </td></tr>
 <tr valign="top"><td><code>labx, laby</code></td>
 <td>
-<p>logical or a character: if <code>FALSE</code>, the label on the x axis is turned off. If a character, this will be
-shown as the axis label.</p>
+<p>logical or a character: if <code>FALSE</code>, the label on the x axis is turned off. If a character, this
+will be shown as the axis label.</p>
 </td></tr>
 <tr valign="top"><td><code>lty</code></td>
 <td>
@@ -378,6 +389,11 @@ single number will make all panels of equal width. A vector of two numbers will 
 and the legend panel (e.g., <code>prat=c(3,1)</code> makes all plot panels a relative width of 3, and the legend frame a
 relative width of 1).</p>
 </td></tr>
+<tr valign="top"><td><code>check.height</code></td>
+<td>
+<p>logical; if <code>FALSE</code>, the height of the plot frame will not be checked before plotting is
+attempted. The check tries to avoid later errors,</p>
+</td></tr>
 <tr valign="top"><td><code>model</code></td>
 <td>
 <p>logical: if <code>TRUE</code>, the summary of an interaction model will be printed.</p>
@@ -392,7 +408,9 @@ use <code>quote</code> to include options that are to be evaluated within the fu
 </td></tr>
 <tr valign="top"><td><code>add</code></td>
 <td>
-<p>evaluated within the function. Useful for adding things like lines to a plot while the parameters are still
+<p>evaluated within the function, so you can refer to the objects that are returned, to variable names (those
+from an entered data frame or entered as arguments), or entered data by their position, preceded by '.' (e.g.,
+<code>mod =</code> <code>lm(.y~.x)</code>). Useful for adding things like lines to a plot while the parameters are still
 those set by the function (e.g., <code>add =</code> <code>abline(v =</code> <code>mean(x),</code> <code>xpd = FALSE)</code> for a vertical
 line at the mean of x).</p>
 </td></tr>
@@ -408,7 +426,7 @@ Each of these objects can also be pulled from within <code>add</code>:
 <table summary="Rd table">
 <tr>
  <td style="text-align: left;">
-  <code>data</code> </td><td style="text-align: left;"> a <code>data.frame</code> of processed, unsegmented data.</td>
+  <code>dat</code> </td><td style="text-align: left;"> a <code>data.frame</code> of processed, unsegmented data.</td>
 </tr>
 <tr>
  <td style="text-align: left;">
@@ -432,7 +450,11 @@ Each of these objects can also be pulled from within <code>add</code>:
 </tr>
 <tr>
  <td style="text-align: left;">
-  <code>model</code> </td><td style="text-align: left;"> an <code>lm</code> object if <code>model</code> is <code>TRUE</code>, and the model succeeded.
+  <code>lega</code> </td><td style="text-align: left;"> a <code>list</code> of arguments that were or would have been passed to <code>legend</code>.</td>
+</tr>
+<tr>
+ <td style="text-align: left;">
+  <code>fmod</code> </td><td style="text-align: left;"> an <code>lm</code> object if <code>model</code> is <code>TRUE</code>, and the model succeeded.
 </td>
 </tr>
 

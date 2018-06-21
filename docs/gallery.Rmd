@@ -20,9 +20,9 @@ on
 # load splot
 library('splot')
 
-# simulate some data
+# simulate some data, just for these examples
 n=1000
-data=data.frame(sapply(c('by','bet1','bet2'),function(c)sample(0:1,n,TRUE)))
+data=data.frame(by=rep(0:1,each=n/2),bet1=rep_len(0:1,n),bet2=sample(0:1,n,TRUE))
 data$x=with(data,
   rnorm(n)+by*-.4+by*bet1*-.3+by*bet2*.3+bet1*bet2*.9-.8+rnorm(n,0,by)
 )
@@ -31,6 +31,7 @@ data$y=with(data,
   +rnorm(n,5)+rnorm(n,-1,.1*x^2)
 )
 data$group=sample(c('a','b','c'),n,TRUE)
+data$id=rep(seq_len(n/2),2)
 
 attach(data)
 ```
@@ -107,6 +108,33 @@ splot(y~x+x^2+x^3)
 splot(y~x*by, cov=x^2+x^3)
 splot(y~x*by*bet1, cov=x^2+x^3)
 splot(y~x*by*bet1*bet2, cov=x^2+x^3, levels=list(bet1=c(2,1)))
+```
+
+***
+
+# Color assignment
+```{r, fig.height=4.5, fig.width=10, dev='CairoSVG'}
+# gradients can be applied with a numeric colorby
+splot(y, colorby=y)
+
+# levels of by are assigned different seed colors
+splot(y~x*by, colorby=y)
+
+# if x is categorical and there is no by overall or in colorby,
+# different seed colors are assigned to each class
+splot(y~x, colorby=group)
+
+# for bar plots, or line plots with more than one by level,
+# colors are assigned by averages of numeric colorbys,
+# or the most common class of non-numeric colorbys
+splot(y~x, colorby=group, type='bar')
+
+# if there are many levels of by, you may want to color in a gradient
+splot(y~by*id, lim=FALSE, colorby=y)
+
+# and maybe add groupings; method='related' or shuffle=TRUE
+# in colorby makes lines of the same class different shades
+splot(y~by*id, lim=FALSE, colorby=list(bet1, method='related'))
 ```
 
 ***

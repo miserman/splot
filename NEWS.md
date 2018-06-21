@@ -2,12 +2,15 @@
 
 ## Additions
 * place the legend interactively.
-* display the legend variable name as a title above the legend.
+* adjust color opacity, and assign colors in gradients.
 * split by specified values.
 * display predicted probability lines in scatter plots with 2-level ys.
 * allows for non-numeric y variables.
 
 ## Improvements
+* general improvements in automatic settings
+* more reliable connection between data and line colors, types, and widths.
+* provides more control over the legend and colorby.
 * improved reading of the y and su arguments.
 * improved bar plot y-axis labels.
 

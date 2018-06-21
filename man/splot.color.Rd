@@ -4,49 +4,85 @@
 \alias{splot.color}
 \title{splot colors}
 \usage{
-splot.color(set = "pastel", by = NULL, ns = 1, maxiter = 1000,
-  flat = TRUE)
+splot.color(x = NULL, by = NULL, seed = "pastel", brightness = 0,
+  luminance = 0, opacity = 1, extend = 0.7, lighten = FALSE,
+  shuffle = FALSE, flat = TRUE, method = "scale")
 }
 \arguments{
-\item{set}{the name of a set (matching \code{'bright'}, \code{'dark'}, \code{'pastel'}, or
-\code{'gray'} or \code{'grey'}), or a vector of color names or hex codes. See the details section.}
+\item{x}{dictates the number and shade of colors. If a single value, returns that many samples of the
+first \code{seed} entry. If a vector, returns a color for each entry. If numeric, a single seed color
+is sampled in order of the vector. If a character or factor, a separate seed color is assigned to
+each level, then sampled within levels. Values or vectors in a list are each assigned a seed color.}
 
-\item{by}{a factor-like variable; this will be used to set \code{ns} via \code{\link[base]{table}}.}
+\item{by}{a vector to group \code{x} by; each level is assigned a seed color.}
 
-\item{ns}{a single value, or vector of values specifying the number of colors to generate.}
+\item{seed}{a vector of color names or codes to adjust from, lining up with levels of \code{x} or
+\code{by}, or the name of a palette, partially matching \code{'bright'}, \code{'dark'},
+\code{'pastel'}, or \code{'grey'}.}
 
-\item{maxiter}{the maximum number of iterations allowed when colors are being randomly sampled.}
+\item{brightness}{adjusts the RGB values of the seed color.}
 
-\item{flat}{logical; if \code{FALSE}, if \code{by} is specified, a matrix is returned with two columns
-(group and color), and if \code{by} is missing, a list is returned with seed colors as names. Otherwise,
-a vector with all generated colors is returned, either in order of generation (if \code{by} is missing),
-or in the same order as \code{by}.}
+\item{luminance}{adjusts the white levels of the seed color.}
+
+\item{opacity}{sets the opacity of the seed color, between 0 and 1.}
+
+\item{extend}{if \code{method='scale'}, extends the range of the gradient beyond the sampled range,
+making for more similar colors (defaults is .5, with 0 sampling the full range). If
+\code{method='related'}, increases the amount any of the RGB values can be adjusted, making for
+potentially more different colors (default is 2).}
+
+\item{lighten}{logical; if \code{TRUE}, scaled colors are lightened instead of darkened. Only
+applicable if \code{method='scale'}.}
+
+\item{shuffle}{logical; if \code{TRUE}, scaled colors are shuffled. Only applicable if
+\code{method='scale'}.}
+
+\item{flat}{logical; if \code{FALSE} and \code{x} is a character, factor, or list, or \code{by} is not
+missing, a list is returned.}
+
+\item{method}{a character setting the sampling method: If \code{'related'} (\code{'^re|^ran|^o'}),
+RGB values are freely adjusted, resulting in similar colors. Otherwise, RGB values are adjusted
+together, resulting in a gradient.}
 }
 \description{
-Get a prespecified set of 9 colors, a greyscale, or a set of random, grouped colors.
+Get a prespecified set of 9 colors, or a set of graded or random, potentially grouped colors.
 }
 \details{
-If only \code{set} is specified, either a prespecified vector of color codes is returned (if
-\code{set} is a single string, and matches one of \code{'bright'}, \code{'dark'}, or \code{'pastel'}),
-or a version of the entered vector, with color names converted to hex codes (e.g.,
-\code{splot.color(c('red','green','blue'))} would return \code{c('#ff0000','#00ff00','#0000ff')}).
+If \code{x} and \code{by} are not specified (or are characters with a length of 1), only the seed
+palette is returned.
 
-If \code{set} matches \code{'gray'} or \code{'grey'}, a single vector of colors codes is returned,
-corresponding to either the length of \code{by} (if not missing) or the sum of \code{ns}.
+To expand on a palette, seeds are assigned to groups, and variants of that seed are assigned to values
+or levels within groups, or randomly or as a gradient if there are no values or level to assign to.
 
-Otherwise, if \code{by} or \code{ns} is not missing, a set of colors is sampled for each value of
-\code{ns} (where \code{ns=table(by)} if \code{by} is not missing). In this case, \code{set} determines the
-seed color for each sample (e.g., if \code{set[1]='red'}, \code{ns[1]} colors similar to \code{'red'}
-would be sampled).
+Seed colors are assigned to groups. If \code{x} is a character or factor and no \code{by} has been
+specified, groups are the unique levels of \code{x}. If \code{by} is specified and is a character or
+factor, or has fewer than 10 unique levels, groups are levels of \code{by}. If \code{x} is a list,
+groups are list entries.
+
+The number of variants for each seed color is determined either by a value (if the value has a length
+of 1; e.g., \code{x=10}), the vector's length (if \code{x} is numeric), or the count of the given level
+(if \code{x} is a factor or character vector).
 }
 \examples{
-x=rnorm(1000)
-y=rnorm(1000)
+# this shows gradients of each color in the default palette
+# a list entered as colorby is treated as arguments to splot.color
+# periods before the position name refer to internally assembled data
+# this shows gradients of each color in the default palette
+splot(
+  rep(splot.color(),each=100)~rep.int(seq.int(.01,1,.01),9),colorby=list(.x,.y),
+  lines=FALSE,mar=c(2,4,0,0),cex=c(points=3),leg=FALSE,pch=15,
+  title="'pastel' palette",labx='value of x',laby='seed color'
+)
 
-# get a quick feel for the range of colors
-plot(y~x,pch=20,cex=10,col=splot.color(ns=c(20,20)))
+# colors graded by value, entered in a list
+plot(1:30,numeric(30),pch=15,cex=10,col=splot.color(list(1:8,c(7:1,1:7),8:1)))
 
-# with more extreme seed colors, differences are subtler
-plot(y~x,pch=20,cex=10,col=splot.color(c('red','blue'),ns=c(20,20)))
+# comparing sampling methods:
+#   on top are 1000 similar colors, with different RGB ratios
+#   on bottom are 268 colors with the same RGB ratio at different levels
+splot(
+  c(rnorm(1000),rnorm(1000,10))~rnorm(2000),lines=FALSE,
+  colors=c(splot.color(1000),splot.color(1000,method='related'))
+)
 
 }

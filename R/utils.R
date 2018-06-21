@@ -1,109 +1,228 @@
 #' splot colors
 #'
-#' Get a prespecified set of 9 colors, a greyscale, or a set of random, grouped colors.
-#' @param set the name of a set (matching \code{'bright'}, \code{'dark'}, \code{'pastel'}, or
-#'   \code{'gray'} or \code{'grey'}), or a vector of color names or hex codes. See the details section.
-#' @param by a factor-like variable; this will be used to set \code{ns} via \code{\link[base]{table}}.
-#' @param ns a single value, or vector of values specifying the number of colors to generate.
-#' @param maxiter the maximum number of iterations allowed when colors are being randomly sampled.
-#' @param flat logical; if \code{FALSE}, if \code{by} is specified, a matrix is returned with two columns
-#'   (group and color), and if \code{by} is missing, a list is returned with seed colors as names. Otherwise,
-#'   a vector with all generated colors is returned, either in order of generation (if \code{by} is missing),
-#'   or in the same order as \code{by}.
+#' Get a prespecified set of 9 colors, or a set of graded or random, potentially grouped colors.
+#' @param x dictates the number and shade of colors. If a single value, returns that many samples of the
+#'   first \code{seed} entry. If a vector, returns a color for each entry. If numeric, a single seed color
+#'   is sampled in order of the vector. If a character or factor, a separate seed color is assigned to
+#'   each level, then sampled within levels. Values or vectors in a list are each assigned a seed color.
+#' @param by a vector to group \code{x} by; each level is assigned a seed color.
+#' @param seed a vector of color names or codes to adjust from, lining up with levels of \code{x} or
+#'   \code{by}, or the name of a palette, partially matching \code{'bright'}, \code{'dark'},
+#'   \code{'pastel'}, or \code{'grey'}.
+#' @param brightness adjusts the RGB values of the seed color.
+#' @param luminance adjusts the white levels of the seed color.
+#' @param opacity sets the opacity of the seed color, between 0 and 1.
+#' @param extend if \code{method='scale'}, extends the range of the gradient beyond the sampled range,
+#'   making for more similar colors (defaults is .5, with 0 sampling the full range). If
+#'   \code{method='related'}, increases the amount any of the RGB values can be adjusted, making for
+#'   potentially more different colors (default is 2).
+#' @param lighten logical; if \code{TRUE}, scaled colors are lightened instead of darkened. Only
+#'   applicable if \code{method='scale'}.
+#' @param shuffle logical; if \code{TRUE}, scaled colors are shuffled. Only applicable if
+#'   \code{method='scale'}.
+#' @param flat logical; if \code{FALSE} and \code{x} is a character, factor, or list, or \code{by} is not
+#'   missing, a list is returned.
+#' @param method a character setting the sampling method: If \code{'related'} (\code{'^re|^ran|^o'}),
+#'   RGB values are freely adjusted, resulting in similar colors. Otherwise, RGB values are adjusted
+#'   together, resulting in a gradient.
 #' @details
-#' If only \code{set} is specified, either a prespecified vector of color codes is returned (if
-#' \code{set} is a single string, and matches one of \code{'bright'}, \code{'dark'}, or \code{'pastel'}),
-#' or a version of the entered vector, with color names converted to hex codes (e.g.,
-#' \code{splot.color(c('red','green','blue'))} would return \code{c('#ff0000','#00ff00','#0000ff')}).
+#' If \code{x} and \code{by} are not specified (or are characters with a length of 1), only the seed
+#' palette is returned.
 #'
-#' If \code{set} matches \code{'gray'} or \code{'grey'}, a single vector of colors codes is returned,
-#' corresponding to either the length of \code{by} (if not missing) or the sum of \code{ns}.
+#' To expand on a palette, seeds are assigned to groups, and variants of that seed are assigned to values
+#' or levels within groups, or randomly or as a gradient if there are no values or level to assign to.
 #'
-#' Otherwise, if \code{by} or \code{ns} is not missing, a set of colors is sampled for each value of
-#' \code{ns} (where \code{ns=table(by)} if \code{by} is not missing). In this case, \code{set} determines the
-#' seed color for each sample (e.g., if \code{set[1]='red'}, \code{ns[1]} colors similar to \code{'red'}
-#' would be sampled).
+#' Seed colors are assigned to groups. If \code{x} is a character or factor and no \code{by} has been
+#' specified, groups are the unique levels of \code{x}. If \code{by} is specified and is a character or
+#' factor, or has fewer than 10 unique levels, groups are levels of \code{by}. If \code{x} is a list,
+#' groups are list entries.
+#'
+#' The number of variants for each seed color is determined either by a value (if the value has a length
+#' of 1; e.g., \code{x=10}), the vector's length (if \code{x} is numeric), or the count of the given level
+#' (if \code{x} is a factor or character vector).
+#'
 #' @examples
-#' x=rnorm(1000)
-#' y=rnorm(1000)
+#' # this shows gradients of each color in the default palette
+#' # a list entered as colorby is treated as arguments to splot.color
+#' # periods before the position name refer to internally assembled data
+#' # this shows gradients of each color in the default palette
+#' splot(
+#'   rep(splot.color(),each=100)~rep.int(seq.int(.01,1,.01),9),colorby=list(.x,.y),
+#'   lines=FALSE,mar=c(2,4,0,0),cex=c(points=3),leg=FALSE,pch=15,
+#'   title="'pastel' palette",labx='value of x',laby='seed color'
+#' )
 #'
-#' # get a quick feel for the range of colors
-#' plot(y~x,pch=20,cex=10,col=splot.color(ns=c(20,20)))
+#' # colors graded by value, entered in a list
+#' plot(1:30,numeric(30),pch=15,cex=10,col=splot.color(list(1:8,c(7:1,1:7),8:1)))
 #'
-#' # with more extreme seed colors, differences are subtler
-#' plot(y~x,pch=20,cex=10,col=splot.color(c('red','blue'),ns=c(20,20)))
+#' # comparing sampling methods:
+#' #   on top are 1000 similar colors, with different RGB ratios
+#' #   on bottom are 268 colors with the same RGB ratio at different levels
+#' splot(
+#'   c(rnorm(1000),rnorm(1000,10))~rnorm(2000),lines=FALSE,
+#'   colors=c(splot.color(1000),splot.color(1000,method='related'))
+#' )
 #'
 #' @export
-#' @importFrom grDevices col2rgb rgb colors
 
-splot.color=function(set='pastel',by=NULL,ns=1,maxiter=1000,flat=TRUE){
+splot.color=function(x=NULL,by=NULL,seed='pastel',brightness=0,luminance=0,opacity=1,
+  extend=.7,lighten=FALSE,shuffle=FALSE,flat=TRUE,method='scale'){
   sets=list(
     bright=c('#45ff00','#ba00ff','#000000','#ff0000','#fffd00','#003dff','#00f2f8','#999999','#ff891b'),
     dark=c('#1b8621','#681686','#2a2a2a','#7c0d0d','#b5bc00','#241c80','#1a7e8b','#666666','#b06622'),
     pastel=c('#82c473','#a378c0','#616161','#9f5c61','#d3d280','#6970b2','#78c4c2','#454744','#d98c82'),
-    grey=function(n) if(n<2) '#666666' else grey(.2:n/(n+n*if(n<10) .1 else .3))
+    grey=function(n) grey(.2:n/(n+n*if(n<10) .1 else .3))
   )
-  set=tolower(set)
-  cm=TRUE
-  if(length(set)==1 && grepl('^#|^bri|^dar|^pas|^grey|^gra',set,TRUE)){
-    set=match.arg(set,names(sets))
-    if(set=='grey') return(sets$grey(if(!missing(by)) length(by) else sum(ns))) else set=sets[[set]]
-    cm=FALSE
+  if(missing(seed) && is.character(x) && length(x)==1){
+    seed=x
+    x=NULL
   }
-  if(cm) if(any(ck<-!grepl('^#',set)) && (ck<-set[ck]%in%colors())){
-    set[ck]=apply(col2rgb(set[ck]),2,function(v)tolower(do.call(rgb,as.list(v/255))))
-    if(any(ck<-!grepl('^#',set))){
-      warning('not sure what ',paste(set[ck],collapse=' or '),' is supposed to be :L')
-      set=set[!ck]
-      if(length(set)==0) stop('no colors recognized in set')
-    }
+  if(missing(seed) && is.character(by) && length(by)==1){
+    seed=by
+    by=NULL
   }
-  if(!missing(by) || !missing(ns)){
-    if(!missing(by)) ns=table(by)
-    if(length(ns)==0) return(set)
-    set=rep_len(set,length(ns))
-    hdc=c(0:9,letters[1:6])
-    hdc=outer(hdc,hdc,paste0)
-    ccord=function(cc){
-      cc=strsplit(sub('^#','',cc),'')[[1]]
-      cc=paste0(cc[c(TRUE,FALSE)],cc[c(FALSE,TRUE)])
-      vapply(cc,function(c)which(hdc==c,TRUE),c(0,0))
-    }
-    ccode=function(m){
-      s=seq_len(16)
-      paste0('#',paste(apply(m,2,function(cc){
-        hdc[which.min(abs(s-cc[1])),which.min(abs(s-cc[2]))]
-      }),collapse=''))
-    }
-    csamp=function(code,n=1){
-      ocs=code
-      code=ccord(code)
-      if(any(ck<-code>14)) code[ck]=code[ck]-(code[ck]-14)
-      if(any(ck<-code<2)) code[ck]=code[ck]+(2-code[ck])
-      i=1
-      while(length(ocs)<=n && i<maxiter){
-        s=sample(1:6,3)
-        nc=code
-        nc[s]=nc[s]+sample(-2:2,3,TRUE)
-        nc=ccode(nc)
-        if(!nc%in%ocs) ocs=c(ocs,nc)
-        i=i+1
+  seed=tolower(seed)
+  ox=NULL
+  lvs=function(x) if(is.factor(x)) base::levels(x) else unique(x)
+  if(!is.null(ncol(x)) && ncol(x)>1){
+    if(is.null(by)) by=x[,2]
+    x=x[,1]
+  }else if(is.list(x) && length(x)==1) x=x[[1]]
+  if(!missing(by)){
+    ol=length(x)
+    if(is.null(x)){
+      x=by
+      by=NULL
+    }else if(ol!=length(by)){
+      if(is.numeric(by) && length(by)==1 && by<ol) by=rep_len(seq_len(by),ol) else{
+        by=NULL
+        warning('splot.color: by was dropped as it is not the same length as x')
       }
-      ocs
-    }
-    s=seq_along(set)
-    o=lapply(s,function(i) if(ns[i]==1) set[i] else csamp(set[i],ns[i]))
-    if(!missing(by)){
-      gs=names(o)=names(ns)
-      color=rep(NA,length(by))
-      for(g in gs) color[by==g]=rep_len(o[[g]],ns[g])
-      return(if(flat) color else cbind(group=as.character(by),color))
-    }else{
-      names(o)=set
-      return(if(flat) unlist(o,use.names=FALSE) else o)
     }
   }
-  set
+  if(!is.null(x) && (!(is.list(x) || is.numeric(x)) || (is.numeric(x) && !is.null(by)))){
+    if(is.null(by)){
+      ox=x
+      x=as.list(table(x))
+    }else{
+      if(is.numeric(by) && length(lvs(by))>9) warning('splot.color: only non-numeric bys are accepted') else{
+        ox=as.factor(by)
+        x=split(x,by)
+      }
+    }
+  }
+  ol=length(x)
+  if(ol==1 && is.list(x)){
+    x=x[[1]]
+    ol=length(x)
+    ox=NULL
+  }
+  ckd=!shuffle && ol!=1 && is.numeric(x) && any(duplicated(x))
+  if(ckd){
+    ox=x
+    x=lvs(x)
+    ol=length(x)
+    if(ol==1){
+      ckd=FALSE
+      x=length(ox)
+    }
+  }
+  n=if(ol==1) x else ol
+  if(length(seed)==1 && grepl('^bri|^dar|^pas|^gr[ae]y',seed)){
+    seed=match.arg(seed,names(sets))
+    seed=if(seed=='grey') if(n==1) '#666666' else if(ol==1)
+      return(sets$grey(n)) else sets$grey(n) else sets[[seed]]
+    if(is.null(x) || (ol==1 && n<2)) return(seed)
+  }
+  sc=if(grepl('^re|^ran|^o',method,TRUE)){
+    r=if(missing(extend)) 2 else max(.001,extend)
+    function(cc,n){
+      cc=adjustcolor(cc)
+      hdc=c(0:9,LETTERS[1:6])
+      hdc=outer(hdc,hdc,paste0)
+      ccord=function(cc){
+        cc=strsplit(cc,'')[[1]][2:7]
+        cc=paste0(cc[c(TRUE,FALSE)],cc[c(FALSE,TRUE)])
+        vapply(cc,function(c)which(hdc==c,TRUE),c(0,0))
+      }
+      ccode=function(m){
+        s=seq_len(16)
+        paste0('#',paste(apply(m,2,function(cc){
+          hdc[which.min(abs(s-cc[1])),which.min(abs(s-cc[2]))]
+        }),collapse=''))
+      }
+      csamp=function(code,n){
+        n=max(1,n-1)
+        ocs=NULL
+        code=ccord(code)
+        if(any(ck<-code>14)) code[ck]=code[ck]-(code[ck]-14)
+        if(any(ck<-code<2)) code[ck]=code[ck]+(2-code[ck])
+        i=1
+        while(length(ocs)<=n && i<9999){
+          s=sample(1:6,3)
+          nc=code
+          nc[s]=nc[s]+sample(-r:r,3,TRUE)
+          nc=ccode(nc)
+          if(!nc%in%ocs) ocs=c(ocs,nc)
+          i=i+1
+        }
+        if(any(opacity!=1,brightness!=0,luminance!=0)){
+          adj=1+brightness
+          ocs=adjustcolor(ocs,opacity,adj,adj,adj,c(rep(luminance,3),0))
+        }
+        if(length(ocs)!=n+1) ocs=rep_len(ocs,n+1)
+        ocs
+      }
+      csamp(cc,n)
+    }
+  }else function(cc,n){
+    r=max(n,n+n*extend)
+    s=vapply(seq_len(r),function(i){
+      adj=i/r+brightness
+      if(lighten) adj=adj+1
+      adjustcolor(cc,opacity,adj,adj,adj,c(rep(luminance,3),0))
+    },'')
+    (if(lighten) s else rev(s))[seq_len(n)]
+  }
+  if(!is.list(x)){
+    seed=sc(seed[1],n)
+    if(ckd){
+      tx=ox
+      for(i in seq_len(n)) ox[ox==x[i]]=seed[i]
+      x=tx
+      seed=ox
+    }else if(shuffle) seed=sample(seed) else if(length(x)!=1) seed=seed[order(order(x))]
+  }else{
+    if(length(seed)<n) seed=rep_len(seed,n)
+    seed=lapply(seq_len(n),function(g){
+      l=length(x[[g]])
+      if(l!=1 || as.integer(x[[g]])>0){
+        if(l!=1 && any(duplicated(x[[g]]))){
+          op=x[[g]]
+          ux=sort(lvs(op))
+          ul=length(ux)
+          if(ul==1) rep.int(seed[[g]],l) else{
+            cs=sc(seed[[g]],ul)
+            for(i in seq_len(ul)) op[op==ux[i]]=cs[i]
+            op
+          }
+        }else{
+          cs=sc(seed[[g]],if(l==1) x[[g]] else l)
+          if(shuffle) sample(cs) else if(l!=1) cs[order(order(x[[g]]))] else cs
+        }
+      }else seed[[g]]
+    })
+    names(seed)=if(!is.null(names(x))) names(x) else vapply(seed,'[[','',1)
+    if(flat) seed=if(!is.null(ox) && all(lvs(ox)%in%names(seed))){
+      by=as.character(ox)
+      for(g in lvs(ox)){
+        su=by==g
+        by[su]=rep_len(seed[[g]],sum(su))
+      }
+      by
+    }else unlist(seed)
+  }
+  seed
 }
 
 #' splot benchmarker
