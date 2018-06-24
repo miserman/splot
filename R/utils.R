@@ -9,8 +9,8 @@
 #' @param seed a vector of color names or codes to adjust from, lining up with levels of \code{x} or
 #'   \code{by}, or the name of a palette, partially matching \code{'bright'}, \code{'dark'},
 #'   \code{'pastel'}, or \code{'grey'}.
-#' @param brightness adjusts the RGB values of the seed color.
-#' @param luminance adjusts the white levels of the seed color.
+#' @param brightness adjusts the RGB values of the seed color, usually between -1 and 1.
+#' @param luminance adjusts the white levels of the seed color, usually between -1 and 1.
 #' @param opacity sets the opacity of the seed color, between 0 and 1.
 #' @param extend if \code{method='scale'}, extends the range of the gradient beyond the sampled range,
 #'   making for more similar colors (defaults is .5, with 0 sampling the full range). If

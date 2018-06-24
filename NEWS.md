@@ -1,4 +1,4 @@
-# splot 0.3.3
+# splot 0.4.0
 
 ## Additions
 * place the legend interactively.

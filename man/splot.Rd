@@ -25,8 +25,8 @@ splot(y, data = NULL, su = NULL, type = "", split = "median",
   options = NULL, add = NULL)
 }
 \arguments{
-\item{y}{A formula (see note), or the primary variable(s) to be shown on the y axis (unless \code{x} is not specified).
-When not a formula, this can be one or more variables as objects or names in \code{data}.}
+\item{y}{a formula (see note), or the primary variable(s) to be shown on the y axis (unless \code{x} is not specified).
+When not a formula, this can be one or more variables as objects, or names in \code{data}.}
 
 \item{data}{a \code{data.frame} to pull variables from. If variables aren't found in \code{data}, they will be looked
 for in the environment.}
@@ -47,7 +47,7 @@ splitting by value or segment, splitting will default to the median.}
 
 \item{levels}{a list with entries corresponding to variable names, used to rename and/or reorder factor levels. To
 reorder a factor, enter a vector of either numbers or existing level names in the new order (e.g.,
-\code{levels =}\code{list(var =} \code{c(3,2,1))}). To rename levels of a factor, enter a character vector the same
+\code{levels =} \code{list(var =} \code{c(3,2,1))}). To rename levels of a factor, enter a character vector the same
 length as the number of levels. To rename and reorder, enter a list, with names as the first entry, and order as the
 second entry (e.g., \code{levels =} \code{list(var =} \code{list(c('a','b','c'),} \code{c(3,2,1)))}). This happens
 after variables are split, so names and orders should correspond to the new split levels of split variables. For
@@ -55,11 +55,11 @@ example, if a continuous variable is median split, it now has two levels ('Under
 the levels reordering or renaming would apply to. Multiple variables entered as \code{y} can be renamed and sorted
 with an entry titled 'mv'.}
 
-\item{sort}{string: if \code{x} is a character or factor, specifies how it should be sorted in terms of the level's
+\item{sort}{string; if \code{x} is a character or factor, specifies how it should be sorted in terms of the level's
 \code{y} value. Unspecified or \code{NULL} won't do any additional sorting. Anything starting with 'd' or 't' will
 sort highest to lowest.}
 
-\item{error}{string: sets the type of error bars to show in bar or line plots, or turns them off. If \code{FALSE}, no
+\item{error}{string; sets the type of error bars to show in bar or line plots, or turns them off. If \code{FALSE}, no
 error bars will be shown. Otherwise, the default is \code{"standard error"} (\code{'^s'}), with \code{"confidence
 intervals"} (anything else) as an option.}
 
@@ -67,37 +67,42 @@ intervals"} (anything else) as an option.}
 
 \item{error.lwd}{line weight of error bars. Default is 2.}
 
-\item{lim}{numeric. Checked against the number of factor levels of each variable. Used to decide which variables should
+\item{lim}{numeric; checked against the number of factor levels of each variable. Used to decide which variables should
 be split, which colors to use, and when to turn off the legend. Default is \code{9}. If set over \code{20}, \code{lim}
 is treated as infinite (set to \code{Inf}).}
 
 \item{lines}{logical or a string specifying the type of lines to be drawn in scatter plots. By default (and whenever
-\code{cov} is not missing), a prediction line is fitted with \code{\link[stats]{lm}}. For (potentially) bendy lines,
-\code{'loess'} (matching \code{'^loe|^po|^cu'}) will use \code{\link[stats]{loess}}, and \code{'spline'}
-(\code{'^sm|^sp|^in'}) will use \code{\link[stats]{smooth.spline}}. If \code{y} is not numeric and has only 2 levels,
-\code{'probability'} (\code{'^pr|^log'}) will draw probabilities estimated by a logistic regression
-(\code{glm(y~x,binomial)}). \code{'connected'} (\code{'^e|^co|^d'}) will draw lines connecting all points, and
-\code{FALSE} will not draw any lines.}
+\code{cov} is not missing, or if \code{lines} matches \code{'^li|^lm|^st'}), a prediction line is fitted with
+\code{\link[stats]{lm}}. For (potentially) bendy lines, \code{'loess'} (matching \code{'^loe|^po|^cu'}) will use
+\code{\link[stats]{loess}}, and \code{'spline'} (\code{'^sm|^sp|^in'}) will use \code{\link[stats]{smooth.spline}}.
+If \code{y} is not numeric and has only 2 levels, \code{'probability'} (\code{'^pr|^log'}) will draw probabilities
+estimated by a logistic regression (\code{glm(y~x,binomial)}). \code{'connected'} (\code{'^e|^co|^d'}) will draw
+lines connecting all points, and \code{FALSE} will not draw any lines.}
 
 \item{colors}{sets a color theme or manually specifies colors. Default theme is \code{"pastel"}, with \code{"dark"} and
 \code{"bright"} as options; these are passed to \code{\link{splot.color}}. If set to \code{"grey"}, or if \code{by}
 has more than 9 levels, a grey scale is calculated using \code{\link[grDevices]{grey}}. See the \code{col} parameter
 in \code{\link[graphics]{par}} for acceptable manual inputs. To set text and axis colors, \code{col} sets outside
 texts (title, sud, labx, laby, and note), \code{col.sub} or \code{col.main} sets the frame titles, and \code{col.axis}
-sets the axis text and line colors.}
+sets the axis text and line colors. To set the color of error bars, use \code{error.color}. For histograms, a vector of
+two colors would apply to the density line and bars separately (e.g., for \code{color =} \code{c('red','green')}, the
+density line would be red and the histogram bars would be green). See the \code{color.lock} and \code{color.offset}
+arguments for more color controls.}
 
-\item{...}{passes additional arguments to \code{\link[graphics]{par}} or \code{\link[graphics]{legend}}.}
+\item{...}{passes additional arguments to \code{\link[graphics]{par}} or \code{\link[graphics]{legend}}. Arguments before
+this can be named partially; those after must by fully named.}
 
-\item{colorby}{a variable used to set colors and the legend, alternatively to \code{by}. If \code{by} is not missing,
-\code{colorby} will be reduced to only the unique combinations of \code{by} and \code{colorby}. For example, if
-\code{by} is a participant ID with multiple observations per participant, and \code{by} is a condition ID which is the
-same for all observations from a given participant, \code{colorby} would assign a single color to each participant
-based on their condition. If \code{by} is missing, \code{colorby} will only be applied if its levels are unique, in
-which case a color will be assigned to each level. The variable entered here is passed to \code{\link{splot.color}},
-with \code{colors} as its \code{set} argument, and \code{by} as its \code{by} argument.}
+\item{colorby}{a variable or list of arguments used to set colors and the legend, alternatively to \code{by}. If
+\code{by} is not missing, \code{colorby} will be reduced to only the unique combinations of \code{by} and \code{colorby}.
+For example, if \code{by} is a participant ID with multiple observations per participant, and \code{by} is a condition
+ID which is the same for all observations from a given participant, \code{colorby} would assign a single color to each
+participant based on their condition. A list will be treated as a call to \code{link{splot.color}}, so arguments can be
+entered positionally or by name. Data entered directly into splot can be accessed by position name preceded by a
+period. For example, \code{splot(rnorm(100),} \code{colorby=.y)} would draw a histogram, with bars colored by the value
+of \code{y} (\code{rnorm(100)} in this case).}
 
-\item{colorby.leg}{logical; if \code{FALSE}, a legend for colorby is never drawn. Otherwise, a legend for colorby will be
-drawn if there is no specified \code{by}, or for non-scatter plots (overwriting the usual legend).}
+\item{colorby.leg}{logical; if \code{FALSE}, a legend for \code{colorby} is never drawn. Otherwise, a legend for
+\code{colorby} will be drawn if there is no specified \code{by}, or for non-scatter plots (overwriting the usual legend).}
 
 \item{color.lock}{logical; if \code{FALSE}, colors will not be adjusted to offset lines from points or histogram bars.}
 
@@ -138,9 +143,9 @@ overlapping error bars.}
 Anything other than \code{'none'} will mean center each numeric \code{y} variable. Anything matching \code{'^t|z|sc'}
 will also scale.}
 
-\item{mv.as.x}{logical: if \code{TRUE}, variable names are displayed on the x axis, and \code{x} is treated as \code{by}.}
+\item{mv.as.x}{logical; if \code{TRUE}, variable names are displayed on the x axis, and \code{x} is treated as \code{by}.}
 
-\item{save}{logical: if \code{TRUE}, an image of the plot is saved to the current working directory.}
+\item{save}{logical; if \code{TRUE}, an image of the plot is saved to the current working directory.}
 
 \item{format}{the type of file to save plots as. default is \code{\link[grDevices]{cairo_pdf}}. See
 \code{\link[grDevices]{Devices}} for options.}
@@ -157,12 +162,12 @@ If not specified, this will be calculated from the data.}
 \item{mxl}{sets the range of the x axis (\code{xlim} of \code{\link[graphics]{plot}}). If not specified, this will be
 calculated from the data.}
 
-\item{autori}{logical: if \code{FALSE}, the origin of plotted bars will be set to 0. Otherwise, bars are adjusted such
+\item{autori}{logical; if \code{FALSE}, the origin of plotted bars will be set to 0. Otherwise, bars are adjusted such
 that they extend to the bottom of the y axis.}
 
-\item{xlas, ylas}{numeric: sets the orientation of the x- and y-axis labels. See \code{\link[graphics]{par}}.}
+\item{xlas, ylas}{numeric; sets the orientation of the x- and y-axis labels. See \code{\link[graphics]{par}}.}
 
-\item{xaxis, yaxis}{logical: if \code{FALSE}, the axis will not be drawn.}
+\item{xaxis, yaxis}{logical; if \code{FALSE}, the axis will not be drawn.}
 
 \item{bw}{sets the smoothing bandwidth when plotting densities. Default is \code{'nrd0'}. See
 \code{\link[stats]{density}}.}
@@ -202,48 +207,49 @@ will be shown as the axis label.}
 \item{lty}{logical or a vector: if \code{FALSE}, lines are always solid. If a vector, changes line type based on each
 value. Otherwise loops through available line types, see \code{\link[graphics]{par}}.}
 
-\item{lwd}{numeric: sets the weight of lines in line, density, and scatter plots. Default is 2. See
+\item{lwd}{numeric; sets the weight of lines in line, density, and scatter plots. Default is 2. See
 \code{\link[graphics]{par}}.}
 
 \item{sub}{affects the small title above each plot showing \code{between} levels; text replaces it, and \code{FALSE}
 turns it off.}
 
-\item{ndisp}{logical: if \code{FALSE}, n per level is no longer displayed in the subheadings.}
+\item{ndisp}{logical; if \code{FALSE}, n per level is no longer displayed in the subheadings.}
 
-\item{note}{logical: if \code{FALSE}, the note at the bottom about splits and/or lines or error bars is turned off.}
+\item{note}{logical; if \code{FALSE}, the note at the bottom about splits and/or lines or error bars is turned off.}
 
-\item{font}{named numeric vector: \code{c(title,sud,leg,note)}. Sets the font of the title, su display, legend, and note.
-In addition, \code{font.lab} sets the x and y label font, \code{font.sub} sets the font of the little title in each
-panel, \code{font.axis} sets the axis label font, and \code{font.main} sets the between level/n heading font; these
-are passed to \code{\link[graphics]{par}}. See the input section.}
+\item{font}{named numeric vector: \code{c(title,sud,leg,leg.title,note)}. Sets the font of the title, su display, legend
+levels and title, and note. In addition, \code{font.lab} sets the x and y label font, \code{font.sub} sets the font of
+the little title in each panel, \code{font.axis} sets the axis label font, and \code{font.main} sets the between level/n
+heading font; these are passed to \code{\link[graphics]{par}}. See the input section.}
 
-\item{cex}{named numeric vector: \code{c(title,sud,leg,note)}. Sets the font size of the title, su display, legend, and
-note. In addition, \code{cex.lab} sets the x and y label size, \code{cex.sub} sets the size of the little title in
-each panel, \code{cex.axis} sets the axis label size, and \code{cex.main} sets the between level/n heading size; these
-are passed to \code{\link[graphics]{par}}. See the input section.}
+\item{cex}{named numeric vector: \code{c(title,sud,leg,note,points)}. Sets the font size of the title, su display, legend,
+note, and points. In addition, \code{cex.lab} sets the x and y label size, \code{cex.sub} sets the size of the little
+title in each panel, \code{cex.axis} sets the axis label size, and \code{cex.main} sets the between level/n heading size;
+these are passed to \code{\link[graphics]{par}}. See the input section.}
 
 \item{sud}{affects the heading for subset and covariates/line adjustments (su display); text replaces it, and
 \code{FALSE} turns it off.}
 
-\item{labels}{logical: if \code{FALSE}, sets all settable text surrounding the plot to \code{FALSE} (just so you don't
+\item{labels}{logical; if \code{FALSE}, sets all settable text surrounding the plot to \code{FALSE} (just so you don't
 have to set all of them if you want a clean frame).}
 
 \item{labels.filter}{a regular expression string to be replaced in label texts with a blank space. Default is
 \code{'_'}, so underscores appearing in the text of labels are replace with blank spaces. Set to
 \code{FALSE} to prevent all filtering.}
 
-\item{labels.trim}{numeric or logical: the maximum length of label texts (in number of characters). Default is 20, with
+\item{labels.trim}{numeric or logical; the maximum length of label texts (in number of characters). Default is 20, with
 any longer labels being trimmed. Set to \code{FALSE} to prevent any trimming.}
 
-\item{points}{logical: if \code{FALSE}, the points in a scatter plot are no longer drawn.}
+\item{points}{logical; if \code{FALSE}, the points in a scatter plot are no longer drawn.}
 
-\item{points.first}{logical: if \code{FALSE}, points are plotted after lines are drawn in a scatter plot, placing lines
+\item{points.first}{logical; if \code{FALSE}, points are plotted after lines are drawn in a scatter plot, placing lines
 behind points. This does not apply to points or lines added in \code{add}, as that is always evaluated after the main
 points and lines are drawn.}
 
-\item{byx}{logical: if \code{TRUE} (default) and \code{by} is specified, regressions for bar or line plots compare
+\item{byx}{logical; if \code{TRUE} (default) and \code{by} is specified, regressions for bar or line plots compare
 levels of \code{by} for each level of \code{x}. This makes for more intuitive error bars when comparing levels of
-\code{by} within a level of \code{x}.}
+\code{by} within a level of \code{x}; otherwise, the model is comparing the difference between the first level of
+\code{x} and each of its other levels.}
 
 \item{drop}{named logical vector: \code{c(x,by,bet)}. Specifies how levels with no data should be treated. All are
 \code{TRUE} by default, meaning only levels with data will be presented, and the layout of \code{between} levels
@@ -254,13 +260,14 @@ corresponding panel will be blank. See the input section.}
 
 \item{prat}{panel ratio, referring to the ratio between plot frames and the legend frame when the legend is out. A
 single number will make all panels of equal width. A vector of two numbers will adjust the ratio between plot panels
-and the legend panel (e.g., \code{prat=c(3,1)} makes all plot panels a relative width of 3, and the legend frame a
-relative width of 1).}
+and the legend panel. For example, \code{prat=c(3,1)} makes all plot panels a relative width of 3, and the legend frame a
+relative width of 1.}
 
 \item{check.height}{logical; if \code{FALSE}, the height of the plot frame will not be checked before plotting is
-attempted. The check tries to avoid later errors,}
+attempted. The check tries to avoid later errors, but may prevent plotting when a plot is possible.}
 
-\item{model}{logical: if \code{TRUE}, the summary of an interaction model will be printed.}
+\item{model}{logical; if \code{TRUE}, the summary of an interaction model will be printed. This model won't always align
+with what is plotted since variables may be treated differently, particularly in the case of interactions.}
 
 \item{options}{a list with named arguments, useful for setting temporary defaults if you plan on using some of the same
 options for multiple plots (e.g., \code{opt =} \code{list(type = 'bar',} \code{colors = 'grey',}
@@ -307,10 +314,10 @@ variable, at all or at a level of \code{by} or \code{between}. Sometimes error b
 is only one observation at the given level), but lines are still drawn in these cases, so you may sometimes see levels
 without error bars even when error bars are turned on. Sometimes (particularly when \code{drop['x']} is \code{FALSE}),
 you might see floating error bars with no lines drawn to them, or what appear to be completely empty levels. This
-happens, when there is a missing level of \code{x} between two non-missing levels, potentially making an orphaned level
+happens when there is a missing level of \code{x} between two non-missing levels, potentially making an orphaned level
 (if a non-missing level is surrounded by missing levels). If there are no error bars for this orphaned level, by default
 nothing will be drawn to indicate it. If you set \code{line.type} to \code{'b'} (or any other type with points), a point
-will be drawn at such error-bar-less orphaned levels.
+will be drawn at such error-bar-less, orphaned levels.
 
 \strong{unexpected failures}
 
@@ -337,12 +344,13 @@ as levels), so anything entered as \code{by} is treated as \code{between[1]}, \c
 Named vector arguments like \code{font}, \code{cex}, and \code{drop} can be set with a single value, positionally, or
 with names. If a single value is entered (e.g., \code{drop=FALSE}), this will be applied to each level (i.e.,
 \code{c(x=FALSE,by=FALSE,bet=FALSE)}). If more than one value is entered, these will be treated positionally (e.g.,
-\code{cex=c(2,1.2)} would be read as \code{c(title=2,leg=1.2,note=.7)}). If values are named, only named values will be
-set, with other defaults retained (e.g., \code{cex=c(note=1.2)} would be read as \code{c(title=1.5,leg=1,note=1.2)}).
+\code{cex=c(2,1.2)} would be read as \code{c(title=2,sud=1.2,leg=.9,note=.7,points=1)}). If values are named, only
+named values will be set, with other defaults retained (e.g., \code{cex=c(note=1.2)} would be read as
+\code{c(title=1.5,sud=.9,leg=.9,note=1.2,points=1)}).
 }
 
 \examples{
-#simulating data
+# simulating data
 n=2000
 dat=data.frame(sapply(c('by','bet1','bet2'),function(c)sample(0:1,n,TRUE)))
 dat$x=with(dat,
@@ -353,34 +361,34 @@ dat$y=with(dat,
   +rnorm(n,5)+rnorm(n,-1,.1*x^2)
 )
 
-#looking at the distribution of y between bets split by by
+# looking at the distribution of y between bets split by by
 splot(y, by=by, between=c(bet1, bet2), data=dat)
 
-#looking at quantile splits of y in y by x
+# looking at quantile splits of y in y by x
 splot(y~x*y, dat, split='quantile')
 
-#looking at y by x between bets
+# looking at y by x between bets
 splot(y~x, dat, between=c(bet1, bet2))
 
-#sequentially adding levels of split
+# sequentially adding levels of split
 splot(y~x*by, dat)
 splot(y~x*by*bet1, dat)
 splot(y~x*by*bet1*bet2, dat)
 
-#same as the last but entered by name
+# same as the last but entered by name
 splot(y, x=x, by=by, between=c(bet1, bet2), data=dat)
 
-#zooming in on one of the windows
+# zooming in on one of the windows
 splot(y~x*by, dat, bet1==1&bet2==0)
 
-#comparing an adjusted lm prediction line with a loess line
-#this could also be entered as y ~ poly(x,3)
+# comparing an adjusted lm prediction line with a loess line
+# this could also be entered as y ~ poly(x,3)
 splot(y~x+x^2+x^3, dat, bet1==1&bet2==0&by==1, add={
   lines(x[order(x)], loess(y~x)$fitted[order(x)], lty=2)
   legend('topright', c('lm', 'loess'), lty=c(1, 2), lwd=c(2, 1), bty='n')
 })
 
-#looking at different versions of x added to y
+# looking at different versions of x added to y
 splot(cbind(
   Raw=y+x,
   Sine=y+sin(x),

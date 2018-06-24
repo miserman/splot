@@ -20,9 +20,9 @@ each level, then sampled within levels. Values or vectors in a list are each ass
 \code{by}, or the name of a palette, partially matching \code{'bright'}, \code{'dark'},
 \code{'pastel'}, or \code{'grey'}.}
 
-\item{brightness}{adjusts the RGB values of the seed color.}
+\item{brightness}{adjusts the RGB values of the seed color, usually between -1 and 1.}
 
-\item{luminance}{adjusts the white levels of the seed color.}
+\item{luminance}{adjusts the white levels of the seed color, usually between -1 and 1.}
 
 \item{opacity}{sets the opacity of the seed color, between 0 and 1.}
 
