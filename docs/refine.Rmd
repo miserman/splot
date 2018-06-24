@@ -115,7 +115,7 @@ While we're at it, we'll also pretty things up with better axis titles, and by r
 splot(
   cbind(i, we, you, shehe, they, ipron)~name, type='bar', mv.as.x=TRUE, mv.scale=TRUE,
   data=data[grep('Hit|Rod', data$name),], title='Pronoun Usage between Texts',
-  laby='Pronouns (z-scored)',labx='Category', colors='grey', lpos='topright', leg.title=FALSE
+  laby='Pronouns (z-scored)',labx='Category', colors='grey', leg.title=FALSE
 )
 ```
 

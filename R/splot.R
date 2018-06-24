@@ -57,9 +57,11 @@
 #'   based on their condition. If \code{by} is missing, \code{colorby} will only be applied if its levels are unique, in
 #'   which case a color will be assigned to each level. The variable entered here is passed to \code{\link{splot.color}},
 #'   with \code{colors} as its \code{set} argument, and \code{by} as its \code{by} argument.
+#' @param colorby.leg logical; if \code{FALSE}, a legend for colorby is never drawn. Otherwise, a legend for colorby will be
+#'   drawn if there is no specified \code{by}, or for non-scatter plots (overwriting the usual legend).
 #' @param color.lock logical; if \code{FALSE}, colors will not be adjusted to offset lines from points or histogram bars.
 #' @param color.offset how much points or histogram bars should be offset from the initial color used for lines. Default is
-#'  1.1; values greater than 1 lighten, and less than 1 darken.
+#'   1.1; values greater than 1 lighten, and less than 1 darken.
 #' @param opacity a number between 0 and 1; sets the opacity of points if they are drawn, and lines or bars otherwise.
 #' @param x secondary variable, to be shown in on the x axis. If not specified, \code{type} will be set to \code{'density'}.
 #'   If \code{x} is a factor or vector of characters, or has fewer than \code{lim} levels when treated as a factor,
@@ -300,16 +302,17 @@
 #' var binomial
 
 splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NULL,error='standard',error.color='#585858',
-  error.lwd=2,lim=9,lines=TRUE,colors='pastel',...,colorby=NULL,color.lock=FALSE,color.offset=1.1,opacity=1,x=NULL,by=NULL,
-  between=NULL,cov=NULL,line.type='l',mv.scale='none',mv.as.x=FALSE,save=FALSE,format=cairo_pdf,dims=dev.size(),
-  file.name='splot',myl=NULL,mxl=NULL,autori=TRUE,xlas=0,ylas=1,xaxis=TRUE,yaxis=TRUE,bw='nrd0',adj=2,breaks='scott',
-  leg='outside',lpos='auto',lvn=TRUE,leg.title=TRUE,leg.args=list(),title=TRUE,labx=TRUE,laby=TRUE,lty=TRUE,lwd=2,sub=TRUE,
-  ndisp=TRUE,note=TRUE,font=c(title=2,sud=1,leg=1,leg.title=2,note=3),cex=c(title=1.5,sud=.9,leg=.9,note=.7,points=1),
-  sud=TRUE,labels=TRUE,labels.filter='_',labels.trim=20,points=TRUE,points.first=TRUE,byx=TRUE,drop=c(x=TRUE,by=TRUE,
-  bet=TRUE),prat=c(1,1),check.height=TRUE,model=FALSE,options=NULL,add=NULL){
+  error.lwd=2,lim=9,lines=TRUE,colors='pastel',...,colorby=NULL,colorby.leg=TRUE,color.lock=FALSE,color.offset=1.1,
+  opacity=1,x=NULL,by=NULL,between=NULL,cov=NULL,line.type='l',mv.scale='none',mv.as.x=FALSE,save=FALSE,format=cairo_pdf,
+  dims=dev.size(),file.name='splot',myl=NULL,mxl=NULL,autori=TRUE,xlas=0,ylas=1,xaxis=TRUE,yaxis=TRUE,bw='nrd0',adj=2,
+  breaks='scott',leg='outside',lpos='auto',lvn=TRUE,leg.title=TRUE,leg.args=list(),title=TRUE,labx=TRUE,laby=TRUE,
+  lty=TRUE,lwd=2,sub=TRUE,ndisp=TRUE,note=TRUE,font=c(title=2,sud=1,leg=1,leg.title=2,note=3),cex=c(title=1.5,sud=.9,
+  leg=.9,note=.7,points=1),sud=TRUE,labels=TRUE,labels.filter='_',labels.trim=20,points=TRUE,points.first=TRUE,byx=TRUE,
+  drop=c(x=TRUE,by=TRUE,bet=TRUE),prat=c(1,1),check.height=TRUE,model=FALSE,options=NULL,add=NULL){
   #parsing input and preparing data
   if(check.height && dev.size()[2]<1.7)
-    stop('the plot window seems too short; increase the height of the plot window, or set check.height to FALSE',call.=FALSE)
+    stop('the plot window seems too short; increase the height of the plot window, or set check.height to FALSE',
+      call.=FALSE)
   if(!missing(options) && is.list(options) && length(options)!=0){
     a=as.list(match.call())[-1]
     options=tryCatch(options,error=function(e)NULL)
@@ -331,6 +334,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
     c=!missing(cov),
     co=missing(colors),
     cb=!missing(colorby),
+    cbleg=is.logical(colorby.leg) && colorby.leg,
     e=grepl('^s',error,TRUE),
     el=!(is.logical(error) && !error),
     sp=if(!is.character(split)) 4 else if(grepl('^mea|^av',split,TRUE)) 1 else if(grepl('^q',split,TRUE)) 2 else
@@ -503,6 +507,16 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
   }
   if(ck$su){
     dat=dat[su,,drop=FALSE]
+    dn=colnames(dat)
+    if('x'%in%dn && length(unique(dat$x))==1){
+      ck$t=2
+      dat$x=NULL
+      warning('after subsetting, x only had 1 level, so it was dropped')
+    }
+    if('by'%in%dn && length(unique(dat$by))==1){
+      txt$by=dat$by=NULL
+      warning('after subsetting, by only had 1 level, so it was dropped')
+    }
     if(ck$d) data=data[su,,drop=FALSE]
   }
   tsu=vapply(dat,is.numeric,TRUE)
@@ -567,7 +581,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
   if(!ck$cb && !'by'%in%dn) ck$leg=0
   if(lim>20 || (is.logical(lim) && !lim)){
     lim=Inf
-    if(ck$legm) ck$leg=0
+    if(ck$legm && !ck$cb) ck$leg=0
     if(missing(error)) ck$el=FALSE
   }
   if(ck$ltm && !ck$el) line.type='b'
@@ -774,7 +788,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
   }
   cl=length(seg$cols)
   seg$lcols=seg$cols
-  ck[c('cbn','cbb')]=FALSE
+  ck[c('cbn','cbb')]=tg=chl=FALSE
   if(ck$cb){
     sca=names(formals(splot.color))
     colorby=substitute(colorby)
@@ -797,7 +811,6 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
     if(ck$cbb && length(cba$by)==ck$orn) cba$by=cba$by[ck$omited$all]
     if(!'seed'%in%cn) cba$seed=seg$cols
     cn=names(cba)
-    tg=chl=FALSE
     ckn=cken=is.numeric(cba$x)
     if(ckn && length(unique(cba$x))<=length(seg$cols)){
       ckn=FALSE
@@ -810,6 +823,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
           cba$by=vapply(split(cba$by,dat$by),function(x)names(which.max(table(x))),'')
           if(length(cba$x)!=length(cba$by)){
             cba$by=NULL
+            ck$cbb=FALSE
             warning("colorby's by was dropped as it was not the same length as x after being aligned by",call.=FALSE)
           }
         }
@@ -819,20 +833,12 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
           cba$by=vapply(split(cba$by,dat$x),function(x)names(which.max(table(x))),'')
           if(length(cba$x)!=length(cba$by)){
             cba$by=NULL
+            ck$cbb=FALSE
             warning("colorby's by was dropped as it was not the same length as x after being aligned with the formula's x",
               call.=FALSE)
           }
         }
       }
-    }
-    if(!seg$by$e && !ck$cbb){
-      if(ck$t==3 || ck$b || (ck$t==2 && !seg$by$e)){
-        chl=TRUE
-        tg=ckn
-        ll=all(ck$t!=1 || (length(seg$x$l)>2 || seg$by$ll>2),length(unique(cba$x))>2)
-        if(missing(leg.title)) leg.title=ptxt$cbo
-        ptxt$leg=if(ckn) formatC(c(min(cba$x),if(ll) mean(cba$x),max(cba$x)),2,format='f') else lvs(cba$x)
-      }else ck$leg=0
     }
     if(ck$cbb){
       if(length(cba$by)==nr && length(cba$x)==seg$by$ll){
@@ -842,16 +848,27 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
           warning("colorby's by was dropped as its levels within levels of by are not unique",call.=FALSE)
         }
       }
-      if('by'%in%names(cba)){
-        chl=TRUE
-        if(missing(leg.title)){
-          leg.title=substitute(colorby)
-          leg.title=if(is.call(leg.title) && length(leg.title)>2) deparse(leg.title[[3]]) else deparse(leg.title)
-        }
+      if(ck$cbb){
         cba$by=as.factor(cba$by)
-        ptxt$leg=levels(cba$by)
+        if(ck$cbleg){
+          chl=TRUE
+          if(missing(leg.title)){
+            leg.title=substitute(colorby)
+            leg.title=if(is.call(leg.title) && length(leg.title)>2) deparse(leg.title[[3]]) else deparse(leg.title)
+          }
+          ptxt$leg=levels(cba$by)
+        }
       }
-    }else if(seg$by$e && !is.list(cba$x) && length(cba$x)==nr) cba$by=dat$by
+    }else{
+      if(ck$cbleg && (ck$t==1 || !seg$by$e)){
+        chl=TRUE
+        tg=ckn
+        ll=all(ck$t!=1 || (length(seg$x$l)>2 || seg$by$ll>2),length(unique(cba$x))>2)
+        if(missing(leg.title)) leg.title=ptxt$cbo
+        ptxt$leg=if(ckn) formatC(c(min(cba$x),if(ll) mean(cba$x),max(cba$x)),2,format='f') else lvs(cba$x)
+      }else if(!seg$by$e) ck$leg=0
+      if(seg$by$e && !is.list(cba$x) && length(cba$x)==nr) cba$by=dat$by
+    }
     if(ckn || is.list(cba$x) || length(cba)>3){
       sca=cn%in%sca
       if(any(!sca)) warning(paste0('unused colorby arguments: ',paste(cn[!sca],collapse=', ')),call.=FALSE)
@@ -865,14 +882,14 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
       for(g in seq_along(gs)) cba$x[cba$x==gs[g]]=seg$cols[g]
       seg$cols=cba$x
     }
-    if(seg$by$e || 'by'%in%names(cba)){
+    if(!chl && (seg$by$e || ck$cbb)){
       ck$cbn=TRUE
       ptxt$cbn=paste0('Colored by ',if(ckn || cken) 'value of ' else 'levels of ',ptxt$cbo,'. ')
       if(seg$by$e && !ck$cbb && length(seg$cols)==seg$by$ll) seg$lcols=seg$cols
     }
     if(chl){
       if(ck$legm && !ck$leg) ck$leg=1+seg$ll>1
-      if(ck$ltym && (!tg || seg$by$ll>6)){
+      if(ck$ltym && (!seg$by$e || seg$by$ll>6)){
         ck[c('lty','ltym')]=FALSE
         lty=1
       }
@@ -888,7 +905,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
   if(seg$by$e && !all(seg$by$l%in%names(seg$cols))){
     if(length(seg$cols)==seg$by$ll){
       names(seg$cols)=seg$by$l
-      if(!ck$cbb) seg$lcols=seg$cols
+      if(!ck$cbb && !chl) seg$lcols=seg$cols
     }else if(length(seg$lcols)==seg$by$ll) names(seg$lcols)=seg$by$l else if(length(ptxt$leg)==seg$by$ll){
       seg$lcols=rep_len(seg$lcols,seg$by$ll)
       names(seg$lcols)=seg$by$l
@@ -990,8 +1007,8 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
     lega$title=if(is.character(leg.title)) leg.title else ptxt$by
   l=length(lega$legend)
   seg$lwd=rep_len(if(is.numeric(lwd)) lwd else 2,seg$by$ll)
-  seg$lty=rep_len(if(!ck$ltym && !ck$lty) lty else if(ck$cbb && seg$by$ll==length(cba$by)) as.numeric(cba$by) else
-    if(ck$lty && lty) seq_len(6) else 1,seg$by$ll)
+  seg$lty=rep_len(if(!ck$ltym && !ck$lty) lty else if(ck$cbleg && ck$cbb && seg$by$ll==length(cba$by))
+    as.numeric(cba$by) else if(ck$lty && lty) seq_len(6) else 1,seg$by$ll)
   if(length(seg$cols)==length(seg$lcols)) names(seg$lcols)=names(seg$cols)
   if(seg$by$e || ck$cbb) names(seg$lwd)=names(seg$lty)=names(if(length(seg$lcols)==seg$by$ll) seg$lcols else seg$cols)
   lega$lwd=if(seg$by$ll==l) seg$lwd else rep_len(if(is.numeric(lwd)) lwd else 2,l)
@@ -1168,12 +1185,14 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
       dm=dim(m)
       ylim=if(missing(myl)) c(lb,max(re$m)+max(abs(re$m-re$pe))*if(ck$leg==2 && seg$by$ll>1) seg$by$ll+1 else 1) else myl
       if(ck$leg==2 && ck$lp){
-        lega$x=apply(m,2,function(r){na=!is.na(r);if(any(na)) max(r[na]) else -Inf})
-        stw=ncol(m)
-        oyl=if(stw%%2) 3 else 2
-        lega$x=c('topleft','top','topright')[if(oyl==2) -2 else 1:3][which.min(vapply(split(lega$x,rep(seq_len(oyl),
-          each=stw/oyl)[seq_len(stw)]),mean,0,na.rm=TRUE))]
-        if(is.na(lega$x)) lega$x='topright'
+        if(!seg$by$e && ncol(m)==2) lega$x='top' else{
+          lega$x=apply(m,2,function(r){na=!is.na(r);if(any(na)) max(r[na]) else -Inf})
+          stw=ncol(m)
+          oyl=if(stw%%2) 3 else 2
+          lega$x=c('topleft','top','topright')[if(oyl==2) -2 else 1:3][which.min(vapply(split(lega$x,rep(seq_len(oyl),
+            each=stw/oyl)[seq_len(stw)]),mean,0,na.rm=TRUE))]
+          if(is.na(lega$x)) lega$x='topright'
+        }
       }
       if(any(is.na(ylim))) next
       oyl=axTicks(2,axp=c(ylim[1],ylim[2],par('yaxp')[3]))
@@ -1259,7 +1278,6 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
         for(l in if(all(rn%in%names(seg$cols))) rn else seq_along(m))
           graphics::lines(m[[l]],col=seg$cols[l],lwd=seg$lwd[l],lty=seg$lty[l])
         if(ck$ileg) lega$legend=rn
-        if(ck$lp && ck$leg==2) lega$x=ifelse(median(dx)<mean(range(dx)),'topleft','topright')
       }else{
         col=if(length(seg$lcols)>2) '#555555' else seg$lcols[1]
         if(ck$leg){
@@ -1279,8 +1297,8 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
           ylab=NA,xlab=NA,axes=FALSE,col=if(length(seg$cols)==2) seg$cols[2] else seg$cols)
         if(!is.logical(lines) || lines) graphics::lines(m[[1]],col=col,lwd=lwd,xpd=if('xpd'%in%names(pdo))
           pdo$xpd else FALSE)
-        if(ck$lp && ck$leg==2) lega$x=ifelse(median(dx)<mean(range(dx)),'topleft','topright')
       }
+      if(ck$lp && ck$leg==2) lega$x=if(mean(dx)>mean(range(dx))) 'topleft' else 'topright'
       if(xaxis) axis(1,las=xlas,cex=par('cex.axis'),fg=par('col.axis'))
       if(yaxis) axis(2,las=ylas,cex=par('cex.axis'),fg=par('col.axis'))
     }else{
@@ -1351,6 +1369,11 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
       if(ck$lpm){
         message('click to place the legend')
         lega[c('x','y')]=locator(1)
+        if(is.null(lega$x)){
+          warning('placing the legend with locator(1) failed')
+          lega$y=NULL
+          lega$x=if(seg$ll>1) 'topright' else 'right'
+        }
       }
       tf=par('font')
       par(font=font['leg.title'])
@@ -1372,6 +1395,11 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
       if(ck$lpm){
         message('click to place the legend')
         lega[c('x','y')]=locator(1)
+        if(is.null(lega$x)){
+          warning('placing the legend with locator(1) failed')
+          lega$y=NULL
+          lega$x=if(seg$ll>1) 'topright' else 'right'
+        }
       }
       tf=par('font')
       par(font=font['leg.title'])

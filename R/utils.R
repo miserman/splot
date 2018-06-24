@@ -26,11 +26,11 @@
 #'   RGB values are freely adjusted, resulting in similar colors. Otherwise, RGB values are adjusted
 #'   together, resulting in a gradient.
 #' @details
-#' If \code{x} and \code{by} are not specified (or are characters with a length of 1), only the seed
-#' palette is returned.
+#' If \code{x} and \code{by} are not specified (or are characters with a length of 1, in which case they
+#' are treated as \code{seed}), only the seed palette is returned.
 #'
-#' To expand on a palette, seeds are assigned to groups, and variants of that seed are assigned to values
-#' or levels within groups, or randomly or as a gradient if there are no values or level to assign to.
+#' To expand on a palette, seed colors are assigned to groups, and variants of each seed are assigned to
+#' values or levels within groups, or randomly or as a gradient if there are no values or level to assign to.
 #'
 #' Seed colors are assigned to groups. If \code{x} is a character or factor and no \code{by} has been
 #' specified, groups are the unique levels of \code{x}. If \code{by} is specified and is a character or
@@ -42,10 +42,19 @@
 #' (if \code{x} is a factor or character vector).
 #'
 #' @examples
+#' # including no arguments or just a palette name will only return the palette as a character vector
+#' pastel_palette = splot.color()
+#' dark_palette = splot.color('dark')
+#'
+#' # entering a number for x will generate that many variants of the first seed color
+#' red_scale = splot.color(10, 'red')
+#'
+#' # entering a list of values as x will return that many variants of the associated seed
+#' red_and_green_scales = splot.color(list(10,10), seed=c('red','green'))
+#'
 #' # this shows gradients of each color in the default palette
 #' # a list entered as colorby is treated as arguments to splot.color
-#' # periods before the position name refer to internally assembled data
-#' # this shows gradients of each color in the default palette
+#' # periods before the position name refer to the internally assembled data
 #' splot(
 #'   rep(splot.color(),each=100)~rep.int(seq.int(.01,1,.01),9),colorby=list(.x,.y),
 #'   lines=FALSE,mar=c(2,4,0,0),cex=c(points=3),leg=FALSE,pch=15,
@@ -88,7 +97,7 @@ splot.color=function(x=NULL,by=NULL,seed='pastel',brightness=0,luminance=0,opaci
     if(is.null(by)) by=x[,2]
     x=x[,1]
   }else if(is.list(x) && length(x)==1) x=x[[1]]
-  if(!missing(by)){
+  if(!is.null(by)){
     ol=length(x)
     if(is.null(x)){
       x=by

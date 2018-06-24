@@ -19,21 +19,22 @@
 splot(y, data = NULL, su = NULL, type = "", split = "median",
   levels = list(), sort = NULL, error = "standard",
   error.color = "#585858", error.lwd = 2, lim = 9, lines = TRUE,
-  colors = "pastel", ..., colorby = NULL, color.lock = FALSE,
-  color.offset = 1.1, opacity = 1, x = NULL, by = NULL,
-  between = NULL, cov = NULL, line.type = "l", mv.scale = "none",
-  mv.as.x = FALSE, save = FALSE, format = cairo_pdf, dims = dev.size(),
-  file.name = "splot", myl = NULL, mxl = NULL, autori = TRUE,
-  xlas = 0, ylas = 1, xaxis = TRUE, yaxis = TRUE, bw = "nrd0",
-  adj = 2, breaks = "scott", leg = "outside", lpos = "auto",
-  lvn = TRUE, leg.title = TRUE, leg.args = list(), title = TRUE,
-  labx = TRUE, laby = TRUE, lty = TRUE, lwd = 2, sub = TRUE,
-  ndisp = TRUE, note = TRUE, font = c(title = 2, sud = 1, leg = 1,
-  leg.title = 2, note = 3), cex = c(title = 1.5, sud = 0.9, leg = 0.9, note =
-  0.7, points = 1), sud = TRUE, labels = TRUE, labels.filter = "_",
-  labels.trim = 20, points = TRUE, points.first = TRUE, byx = TRUE,
-  drop = c(x = TRUE, by = TRUE, bet = TRUE), prat = c(1, 1),
-  check.height = TRUE, model = FALSE, options = NULL, add = NULL)
+  colors = "pastel", ..., colorby = NULL, colorby.leg = TRUE,
+  color.lock = FALSE, color.offset = 1.1, opacity = 1, x = NULL,
+  by = NULL, between = NULL, cov = NULL, line.type = "l",
+  mv.scale = "none", mv.as.x = FALSE, save = FALSE, format = cairo_pdf,
+  dims = dev.size(), file.name = "splot", myl = NULL, mxl = NULL,
+  autori = TRUE, xlas = 0, ylas = 1, xaxis = TRUE, yaxis = TRUE,
+  bw = "nrd0", adj = 2, breaks = "scott", leg = "outside",
+  lpos = "auto", lvn = TRUE, leg.title = TRUE, leg.args = list(),
+  title = TRUE, labx = TRUE, laby = TRUE, lty = TRUE, lwd = 2,
+  sub = TRUE, ndisp = TRUE, note = TRUE, font = c(title = 2, sud = 1,
+  leg = 1, leg.title = 2, note = 3), cex = c(title = 1.5, sud = 0.9, leg =
+  0.9, note = 0.7, points = 1), sud = TRUE, labels = TRUE,
+  labels.filter = "_", labels.trim = 20, points = TRUE,
+  points.first = TRUE, byx = TRUE, drop = c(x = TRUE, by = TRUE, bet =
+  TRUE), prat = c(1, 1), check.height = TRUE, model = FALSE,
+  options = NULL, add = NULL)
 </pre>
 
 
@@ -140,6 +141,11 @@ same for all observations from a given participant, <code>colorby</code> would a
 based on their condition. If <code>by</code> is missing, <code>colorby</code> will only be applied if its levels are unique, in
 which case a color will be assigned to each level. The variable entered here is passed to <code>splot.color</code>,
 with <code>colors</code> as its <code>set</code> argument, and <code>by</code> as its <code>by</code> argument.</p>
+</td></tr>
+<tr valign="top"><td><code>colorby.leg</code></td>
+<td>
+<p>logical; if <code>FALSE</code>, a legend for colorby is never drawn. Otherwise, a legend for colorby will be
+drawn if there is no specified <code>by</code>, or for non-scatter plots (overwriting the usual legend).</p>
 </td></tr>
 <tr valign="top"><td><code>color.lock</code></td>
 <td>
