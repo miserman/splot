@@ -115,12 +115,13 @@ code{font-family:monospace}
 <h1>legend</h1>
 <div class='idoc'><table>
 <tr><td>leg</td><td>Hide the legend with <code>FALSE</code>. Move the legend outside of the plot panels with a string matching <code>'outside'</code>, or inside the plot panels with any other string (e.g., <code>'inside'</code>). If The legend is outside and there are empty plot panels, the legend will be placed in the empty frame; in this case, a number will specify which panel the legend is placed in.</td></tr>
-<tr><td>lpos</td><td>Set the position of the legend with a keyword (e.g., <code>'topleft'</code> or <code>'center'</code>). If not specified, this is done automatically.</td></tr>
+<tr><td>lpos</td><td>Set the position of the legend with a keyword (e.g., <code>'topleft'</code> or <code>'center'</code>), or place it with a click with <code>'place'</code>. If not specified, this is done automatically.</td></tr>
+<tr><td>leg.title</td><td>Turn off the title above the legend with <code>FALSE</code>, or enter a custom title in quotes.</td></tr>
 <tr><td>prat</td><td>When the legend is outside (as here), this will adjust the ratio between the plot panels and the legend (e.g., <code>prat=c(2,1)</code>, where the first value applies to each plot panels, and the second to the legend).</td></tr>
 <tr><td>font</td><td>Change the font, e.g., <code>font=c(leg=3)</code>.</td></tr>
 <tr><td>cex</td><td>Change the font size, e.g., <code>cex=c(leg=3)</code>.</td></tr>
 <tr><td>drop</td><td><code>drop['by']</code> can affect which labels appear in the legend; e.g., <code>drop=c(by=FALSE)</code> will show labels for all levels of <code>by</code>, even if some have no data.</td></tr>
-<tr><td>ncol</td><td>Specify the number of columns in the legend.</td></tr>
+<tr><td>leg.args</td><td>A list passing additional arguments to legend (see ?legend).</td></tr>
 </table></div>
 </div>
 
