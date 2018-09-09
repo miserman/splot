@@ -10,19 +10,19 @@ splot(y, data = NULL, su = NULL, type = "", split = "median",
   colors = "pastel", ..., colorby = NULL, colorby.leg = TRUE,
   color.lock = FALSE, color.offset = 1.1, opacity = 1, x = NULL,
   by = NULL, between = NULL, cov = NULL, line.type = "l",
-  mv.scale = "none", mv.as.x = FALSE, save = FALSE, format = cairo_pdf,
-  dims = dev.size(), file.name = "splot", myl = NULL, mxl = NULL,
-  autori = TRUE, xlas = 0, ylas = 1, xaxis = TRUE, yaxis = TRUE,
-  bw = "nrd0", adj = 2, breaks = "scott", leg = "outside",
-  lpos = "auto", lvn = TRUE, leg.title = TRUE, leg.args = list(),
-  title = TRUE, labx = TRUE, laby = TRUE, lty = TRUE, lwd = 2,
-  sub = TRUE, ndisp = TRUE, note = TRUE, font = c(title = 2, sud = 1,
-  leg = 1, leg.title = 2, note = 3), cex = c(title = 1.5, sud = 0.9, leg =
-  0.9, note = 0.7, points = 1), sud = TRUE, labels = TRUE,
-  labels.filter = "_", labels.trim = 20, points = TRUE,
-  points.first = TRUE, byx = TRUE, drop = c(x = TRUE, by = TRUE, bet =
-  TRUE), prat = c(1, 1), check.height = TRUE, model = FALSE,
-  options = NULL, add = NULL)
+  mv.scale = "none", mv.as.x = FALSE, save = FALSE,
+  format = cairo_pdf, dims = dev.size(), file.name = "splot",
+  myl = NULL, mxl = NULL, autori = TRUE, xlas = 0, ylas = 1,
+  xaxis = TRUE, yaxis = TRUE, bw = "nrd0", adj = 2,
+  breaks = "scott", leg = "outside", lpos = "auto", lvn = TRUE,
+  leg.title = TRUE, leg.args = list(), title = TRUE, labx = TRUE,
+  laby = TRUE, lty = TRUE, lwd = 2, sub = TRUE, ndisp = TRUE,
+  note = TRUE, font = c(title = 2, sud = 1, leg = 1, leg.title = 2,
+  note = 3), cex = c(title = 1.5, sud = 0.9, leg = 0.9, note = 0.7,
+  points = 1), sud = TRUE, labels = TRUE, labels.filter = "_",
+  labels.trim = 20, points = TRUE, points.first = TRUE, byx = TRUE,
+  drop = c(x = TRUE, by = TRUE, bet = TRUE), prat = c(1, 1),
+  check.height = TRUE, model = FALSE, options = NULL, add = NULL)
 }
 \arguments{
 \item{y}{a formula (see note), or the primary variable(s) to be shown on the y axis (unless \code{x} is not specified).
@@ -55,9 +55,9 @@ example, if a continuous variable is median split, it now has two levels ('Under
 the levels reordering or renaming would apply to. Multiple variables entered as \code{y} can be renamed and sorted
 with an entry titled 'mv'.}
 
-\item{sort}{string; if \code{x} is a character or factor, specifies how it should be sorted in terms of the level's
-\code{y} value. Unspecified or \code{NULL} won't do any additional sorting. Anything starting with 'd' or 't' will
-sort highest to lowest.}
+\item{sort}{specified the order of character or factor \code{x} levels. By default, character or factor \code{x} levels
+are sorted alphabetically. \code{FALSE} will prevent this (preserving entered order). \code{TRUE} or \code{'d'} will
+sort by levels of \code{y} in decreasing order, and anything else will sort in increasing order.}
 
 \item{error}{string; sets the type of error bars to show in bar or line plots, or turns them off. If \code{FALSE}, no
 error bars will be shown. Otherwise, the default is \code{"standard error"} (\code{'^s'}), with \code{"confidence

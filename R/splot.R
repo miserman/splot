@@ -25,9 +25,9 @@
 #'   example, if a continuous variable is median split, it now has two levels ('Under Median' and 'Over Median'), which are
 #'   the levels reordering or renaming would apply to. Multiple variables entered as \code{y} can be renamed and sorted
 #'   with an entry titled 'mv'.
-#' @param sort string; if \code{x} is a character or factor, specifies how it should be sorted in terms of the level's
-#'   \code{y} value. Unspecified or \code{NULL} won't do any additional sorting. Anything starting with 'd' or 't' will
-#'   sort highest to lowest.
+#' @param sort specified the order of character or factor \code{x} levels. By default, character or factor \code{x} levels
+#'   are sorted alphabetically. \code{FALSE} will prevent this (preserving entered order). \code{TRUE} or \code{'d'} will
+#'   sort by levels of \code{y} in decreasing order, and anything else will sort in increasing order.
 #' @param error string; sets the type of error bars to show in bar or line plots, or turns them off. If \code{FALSE}, no
 #'   error bars will be shown. Otherwise, the default is \code{"standard error"} (\code{'^s'}), with \code{"confidence
 #'   intervals"} (anything else) as an option.
@@ -885,7 +885,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
     }
     if(ckn || is.list(cba$x) || length(cba)>3){
       sca=cn%in%sca
-      if(any(!sca)) warning(paste0('unused colorby arguments: ',paste(cn[!sca],collapse=', ')),call.=FALSE)
+      if(any(!sca)) warning(paste0('unused colorby arguments: ',paste(cn[!sca], collapse=', ')), call.=FALSE)
       seg$cols=do.call(splot.color,cba[sca])
     }else{
       gs=lvs(cba$x)
@@ -1098,8 +1098,8 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
   if(!'horiz'%in%names(pdo) && !'ncol'%in%names(leg.args)) lega$ncol=1
   if(length(pdo)!=0){
     if(any(cpdo<-(npdo%in%names(formals(legend)) & !npdo%in%names(leg.args)))) lega[npdo[cpdo]]=pdo[cpdo]
-    if(any(!cpdo)) warning('unused argument',if(sum(!cpdo)==1) ': ' else 's: ' ,
-      paste(names(pdo)[!cpdo],collapse=','),call.=FALSE)
+    if(any(!cpdo)) warning('unused argument', if(sum(!cpdo) == 1) ': ' else 's: ' ,
+      paste(names(pdo)[!cpdo], collapse=', '), call.=FALSE)
   }
   par(op)
   on.exit(par(dop))
@@ -1123,14 +1123,20 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
     ) else ''
     if(!is.null(sort) && ck$t!=2 && class(if(seg$by$e) cdat[[i]][[1]][,'x'] else cdat[[i]][,'x']) %in%
         c('factor','character')){
-      sdir=grepl('^d|^t',as.character(sort),TRUE)
-      td=if(seg$by$e) do.call(rbind,cdat[[i]]) else cdat[[i]]
-      cdat[[i]]=do.call(rbind,lapply(names(sort(vapply(split(td[,'y'],as.character(td[,'x'])),mean,0,na.rm=TRUE),sdir)),
-        function(l) td[td[,'x']==l,,drop=FALSE]
-      ))
-      seg$x$l=ptxt$l.x=unique(cdat[[i]][,'x'])
-      cdat[[i]][,'x']=factor(cdat[[i]][,'x'],seg$x$l)
-      if(seg$by$e) cdat[[i]]=split(cdat[[i]],as.character(cdat[[i]][,'by']))
+      if(grepl('^[Ff]', as.character(sort))){
+        seg$x$l = ptxt$l.x = unique(cdat[[i]][, 'x'])
+        cdat[[i]][, 'x'] = factor(cdat[[i]][, 'x'], seg$x$l)
+        if(seg$by$e) cdat[[i]] = split(cdat[[i]], as.character(cdat[[i]][, 'by']))
+      }else{
+        sdir = grepl('^[DdTt]',as.character(sort))
+        td=if(seg$by$e) do.call(rbind,cdat[[i]]) else cdat[[i]]
+        cdat[[i]]=do.call(rbind,lapply(names(sort(vapply(split(td[,'y'],as.character(td[,'x'])),mean,0,na.rm=TRUE),sdir)),
+          function(l) td[td[,'x']==l,,drop=FALSE]
+        ))
+        seg$x$l=ptxt$l.x=unique(cdat[[i]][,'x'])
+        cdat[[i]][,'x']=factor(cdat[[i]][,'x'],seg$x$l)
+        if(seg$by$e) cdat[[i]]=split(cdat[[i]],as.character(cdat[[i]][,'by']))
+      }
     }
     if(ck$t==1){
       #bar and line
