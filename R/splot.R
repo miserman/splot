@@ -1123,20 +1123,17 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
     ) else ''
     if(!is.null(sort) && ck$t!=2 && class(if(seg$by$e) cdat[[i]][[1]][,'x'] else cdat[[i]][,'x']) %in%
         c('factor','character')){
-      if(grepl('^[Ff]', as.character(sort))){
-        seg$x$l = ptxt$l.x = unique(cdat[[i]][, 'x'])
-        cdat[[i]][, 'x'] = factor(cdat[[i]][, 'x'], seg$x$l)
-        if(seg$by$e) cdat[[i]] = split(cdat[[i]], as.character(cdat[[i]][, 'by']))
-      }else{
-        sdir = grepl('^[DdTt]',as.character(sort))
-        td=if(seg$by$e) do.call(rbind,cdat[[i]]) else cdat[[i]]
-        cdat[[i]]=do.call(rbind,lapply(names(sort(vapply(split(td[,'y'],as.character(td[,'x'])),mean,0,na.rm=TRUE),sdir)),
-          function(l) td[td[,'x']==l,,drop=FALSE]
-        ))
-        seg$x$l=ptxt$l.x=unique(cdat[[i]][,'x'])
-        cdat[[i]][,'x']=factor(cdat[[i]][,'x'],seg$x$l)
-        if(seg$by$e) cdat[[i]]=split(cdat[[i]],as.character(cdat[[i]][,'by']))
-      }
+      nsl = grepl('^[Ff]', as.character(sort))
+      sdir = grepl('^[DdTt]',as.character(sort))
+      td=if(seg$by$e) do.call(rbind,cdat[[i]]) else cdat[[i]]
+      cdat[[i]]=do.call(rbind,lapply(names(if(nsl){
+          vapply(split(td[, 'y'],as.character(td[, 'x'])), mean, 0, na.rm = TRUE)
+        }else sort(vapply(split(td[, 'y'], as.character(td[, 'x'])), mean, 0, na.rm = TRUE), sdir)),
+        function(l) td[td[, 'x'] == l,, drop = FALSE]
+      ))
+      seg$x$l=ptxt$l.x=unique(cdat[[i]][,'x'])
+      cdat[[i]][,'x']=factor(cdat[[i]][,'x'],seg$x$l)
+      if(seg$by$e) cdat[[i]]=split(cdat[[i]],as.character(cdat[[i]][,'by']))
     }
     if(ck$t==1){
       #bar and line
