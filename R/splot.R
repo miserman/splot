@@ -1126,9 +1126,8 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
       nsl = grepl('^[Ff]', as.character(sort))
       sdir = grepl('^[DdTt]',as.character(sort))
       td=if(seg$by$e) do.call(rbind,cdat[[i]]) else cdat[[i]]
-      cdat[[i]]=do.call(rbind,lapply(names(if(nsl){
-          vapply(split(td[, 'y'],as.character(td[, 'x'])), mean, 0, na.rm = TRUE)
-        }else sort(vapply(split(td[, 'y'], as.character(td[, 'x'])), mean, 0, na.rm = TRUE), sdir)),
+      cdat[[i]] = do.call(rbind, lapply(if(nsl) as.character(td[, 'x']) else
+        names(sort(vapply(split(td[, 'y'], as.character(td[, 'x'])), mean, 0, na.rm = TRUE), sdir)),
         function(l) td[td[, 'x'] == l,, drop = FALSE]
       ))
       seg$x$l=ptxt$l.x=unique(cdat[[i]][,'x'])
