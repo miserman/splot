@@ -1,3 +1,11 @@
+# splot 0.4.1
+
+## Improvements
+* enables more sorting options
+
+## Bug fixes
+* avoids name length error given multiple ys and a by
+
 # splot 0.4.0
 
 ## Additions
