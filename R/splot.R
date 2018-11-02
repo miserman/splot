@@ -560,8 +560,11 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
         txt$bet=txt$bet[1:2]
         dat=dat[-grep('bet',colnames(dat))[2]]
       }
-      dat$bet.1=as.character(dat$by)
-      if(length(txt$bet)>1) dat$bet.2=as.character(dat$bet)
+      if(length(txt$bet)>1){
+        dat$bet.1=as.character(dat$by)
+        dat$bet.2=as.character(dat$bet)
+        dat$bet=NULL
+      }else dat$bet=as.character(dat$by)
     }
     dn=grep('^y\\.',dn)
     ck$mvn=colnames(dat)[dn]

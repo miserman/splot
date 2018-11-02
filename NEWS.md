@@ -4,7 +4,7 @@
 * enables more sorting options
 
 ## Bug fixes
-* avoids name length error given multiple ys and a by
+* corrects bet reassignment given multiple ys
 
 # splot 0.4.0
 

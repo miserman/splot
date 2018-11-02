@@ -29,15 +29,51 @@ entered position.}
 Time one or more expressions over several iteration, then plot the distributions of their times.
 }
 \examples{
-# compare a few equivalent ways of looping through a vector
-# though you'd probably need to increase the number of runs
-# for a consistent determination
+# increase the number of runs for more stable estimates
 
+# compare ways of looping through a vector
 splot.bench(
   sapply(1:100,'*',10),
   mapply('*',1:100,10),
   vapply(1:100,'*',0,10),
   unlist(lapply(1:100,'*',10)),
-  {a=numeric(100); for(i in 1:100) a[i]=i*10; a}
+  {a=numeric(100); for(i in 1:100) a[i]=i*10; a},
+  runs = 20, runsize = 200
+)
+
+# compare ways of setting all but the maximum value of each row in a matrix to 0
+mat = matrix(c(rep(1, 4), rep(0, 8)), 4, 3)
+splot.bench(
+  t(vapply(seq_len(4), function(r){
+    mat[r, mat[r,] < max(mat[r,])] = 0
+    mat[r,]
+  }, numeric(ncol(mat)))),
+  do.call(rbind, lapply(seq_len(4), function(r){
+    mat[r, mat[r,] < max(mat[r,])] = 0
+    mat[r,]
+  })),
+  do.call(rbind, lapply(seq_len(4), function(r){
+    nr = mat[r,]
+    nr[nr < max(nr)] = 0
+    nr
+  })),
+  {nm = mat; for(r in seq_len(4)){
+    nr = nm[r,]
+    nm[r, nr < max(nr)] = 0
+  }; nm},
+  {nm = mat; for(r in seq_len(4)) nm[r, nm[r,] < max(nm[r,])] = 0; nm},
+  {nm = matrix(0, dim(mat)[1], dim(mat)[2]); for(r in seq_len(4)){
+    m = which.max(mat[r,])
+    nm[r, m] = mat[r, m]
+  }; nm},
+  {ck = do.call(rbind, lapply(seq_len(4), function(r){
+    nr = mat[r,]
+    nr < max(nr)
+  })); nm = mat; nm[ck] = 0; nm},
+  t(apply(mat, 1, function(r){
+    r[r < max(r)] = 0
+    r
+  })),
+  runs = 50, runsize = 200
 )
 }
