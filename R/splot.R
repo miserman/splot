@@ -1328,7 +1328,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
       td=if(cl) do.call(rbind,cdat[[i]]) else cdat[[i]]
       cx=td[,'x']
       cy=td[,'y']
-      xch=if(is.numeric(cx)) cx else as.numeric(factor(cx))
+      xch=if(is.numeric(cx) || is.logical(cx)) cx else as.numeric(factor(cx))
       a2a=list(cex=par('cex.axis'),fg=par('col.axis'))
       if(length(ptxt$l.x)!=0){
         a2a$tick=FALSE
