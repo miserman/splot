@@ -124,7 +124,7 @@ splot(
 
 Now that we have some formatted figures, we might want to use them in other things.
 
-When it comes to rendering, two factors make for the nicest looking figures: anti-aliasing (making lines less pixelated) and scalability (they won't become pixelated with zoomed in on; a feature of vector-based formats like pdf, svg, and emf). Using vector-based formats means you can preserve the scale of a plot without losing quality; that is, if you want larger text and more compact elements, you can adjust your plot window and rerender the plot until the proportions look right. Even if the window is very small, you can blow the vector based image up to any size.
+When it comes to rendering, two factors make for the nicest looking figures: anti-aliasing (making lines less pixelated) and scalability (they won't become pixelated when zoomed in on; a feature of vector-based formats like pdf, svg, and emf). Using vector-based formats means you can preserve the scale of a plot without losing quality; that is, if you want larger text and more compact elements, you can adjust your plot window and rerender the plot until the proportions look right. Even if the window is very small, you can blow the vector based image up to any size.
 
 The default format when saving from within splot (`save=TRUE`) is pdf (using `cairo_pdf`). If you're using RStudio, you can save the same quality of pdf from the Export dropdown.
 

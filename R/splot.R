@@ -1200,10 +1200,12 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
         s[na]=m[na]
         s[!mna]
       })
-      ck$el=all(round(re$m-re$ne,8)!=0)
-      lb=min(re$m)-if(!ck$el) round((max(re$m)-min(re$m))/10) else max(abs(re$m-re$ne))*1.2
-      dm=dim(m)
-      ylim=if(missing(myl)) c(lb,max(re$m)+max(abs(re$m-re$pe))*if(ck$leg==2 && seg$by$ll>1) seg$by$ll+1 else 1) else myl
+      if(ck$el) ck$el = all(round(re$m - re$ne, 8) != 0)
+      lb = min(re$m) - if(!ck$el) round((max(re$m) - min(re$m)) / 10) else max(abs(re$m - re$ne)) * 1.2
+      if(ck$b && !ck$el) lb = lb * 1.1
+      dm = dim(m)
+      ylim = if(missing(myl)) c(lb, max(re$m) + if(ck$el) max(abs(re$m-re$pe)) * if(ck$leg == 2 && seg$by$ll > 1)
+        seg$by$ll + 1 else 1 else 0) else myl
       if(ck$leg==2 && ck$lp){
         if(!seg$by$e && ncol(m)==2) lega$x='top' else{
           lega$x=apply(m,2,function(r){na=!is.na(r);if(any(na)) max(r[na]) else -Inf})
@@ -1245,7 +1247,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
           pe=pe+a
           ayl=oyl+a
           aj=lapply(re,function(r)r+a)
-          ylim=if(missing(myl)) c(
+          ylim = if(missing(myl)) if(!ck$el) ylim + a else c(
             min(aj$m)-max(abs(aj$m-aj$ne))*1.2,
             max(aj$m)+max(abs(aj$m-aj$pe))*if(ck$leg==2 && seg$by$ll>1) seg$by$ll+.7 else 1.2
           ) else myl+a

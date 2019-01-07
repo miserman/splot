@@ -331,6 +331,8 @@ splot.bench=function(...,runs=20,runsize=200,cleanup=FALSE,print.names=FALSE,opt
     dimnames=list(c('total time (seconds)','mean time per run'),icn)),4))
   if(!print.names) if(!missing(print.names) || es>5 || any(nchar(names(e))>50))
     colnames(seconds)=icn
-  title=paste('timing of',runs,'runs of',runsize,'calls each')
-  splot(seconds,title=title,labels.filter=FALSE,labels.trim=FALSE,options=options)
+  if(nrow(seconds)){
+    title=paste('timing of',runs,'runs of',runsize,'calls each')
+    splot(seconds,title=title,labels.filter=FALSE,labels.trim=FALSE,options=options)
+  }else invisible(list(data = seconds, ))
 }

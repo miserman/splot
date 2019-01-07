@@ -4,6 +4,8 @@
 * enables more sorting options
 
 ## Bug fixes
+* correctly does not display error bars when error is set to FALSE
+* corrects the x-axis range of scatter plots when x is logical
 * corrects bet reassignment given multiple ys
 
 # splot 0.4.0
