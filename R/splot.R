@@ -1202,7 +1202,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
       })
       if(ck$el) ck$el = all(round(re$m - re$ne, 8) != 0)
       lb = min(re$m) - if(!ck$el) round((max(re$m) - min(re$m)) / 10) else max(abs(re$m - re$ne)) * 1.2
-      if(ck$b && !ck$el) lb = lb * 1.1
+      if(ck$b && !ck$el) lb = lb - (max(re$m) - min(re$m)) * .1
       dm = dim(m)
       ylim = if(missing(myl)) c(lb, max(re$m) + if(ck$el) max(abs(re$m-re$pe)) * if(ck$leg == 2 && seg$by$ll > 1)
         seg$by$ll + 1 else 1 else 0) else myl

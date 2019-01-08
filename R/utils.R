@@ -300,7 +300,9 @@ splot.color=function(x=NULL,by=NULL,seed='pastel',brightness=0,luminance=0,opaci
 
 splot.bench=function(...,runs=20,runsize=200,cleanup=FALSE,print.names=FALSE,options=list()){
   e=sapply(as.character(substitute(list(...)))[-1],function(t)parse(text=t))
+  e = e[!duplicated(names(e))]
   es=length(e)
+  if(!es) stop('no expressions found', call. = FALSE)
   ne=names(e)
   seconds=matrix(NA,runs,es,dimnames=list(c(),ne))
   rs=seq_len(runsize)
@@ -331,8 +333,11 @@ splot.bench=function(...,runs=20,runsize=200,cleanup=FALSE,print.names=FALSE,opt
     dimnames=list(c('total time (seconds)','mean time per run'),icn)),4))
   if(!print.names) if(!missing(print.names) || es>5 || any(nchar(names(e))>50))
     colnames(seconds)=icn
-  if(nrow(seconds)){
-    title=paste('timing of',runs,'runs of',runsize,'calls each')
-    splot(seconds,title=title,labels.filter=FALSE,labels.trim=FALSE,options=options)
-  }else invisible(list(data = seconds, ))
+  if(es == 1 && runs == 1) return(NULL)
+  title=paste('timing of',runs,'runs of',runsize,'calls each')
+  if(nrow(seconds) == 1){
+    options$x = colnames(seconds)
+    seconds = seconds[1,]
+  }
+  splot(seconds,title=title,labels.filter=FALSE,labels.trim=FALSE,options=options)
 }
