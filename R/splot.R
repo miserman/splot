@@ -586,9 +586,14 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
     if(missing(leg.title) && !mv.as.x) ck$legt=FALSE
     if(!missing(levels) && 'mv'%in%names(levels)) names(levels)[names(levels)=='mv']=txt[[if(mv.as.x)'x'else'by']]
     dn=colnames(dat)
-    if(!missing(mv.scale) && mv.scale!='none'){
-      tv=if(mv.as.x) dat$x else dat$by
-      for(g in levels(as.factor(tv))) dat[tv==g,1]=scale(dat[tv==g,1],scale=grepl('^t|z|sc',mv.scale,TRUE))
+    if(!missing(mv.scale) && mv.scale != 'none'){
+      tv = if(mv.as.x) dat$x else dat$by
+      for(g in levels(as.factor(tv))){
+        svar = tv == g
+        cvar = scale(dat[svar, 1], scale = grepl('^t|z|sc', mv.scale, TRUE))
+        if(any(is.na(cvar))) cvar = dat[svar, 1] - mean(dat[svar, 1], na.rm = TRUE)
+        dat[svar, 1] = cvar
+      }
     }
     nr=nrow(dat)
   }
@@ -625,7 +630,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
       factor(ifelse(x<=v[1],0,ifelse(x>=v[2],2,1)),labels=c('-1 SD','Mean','+1 SD'))
     }else if(s==2){
       txt$split<<-'quantile'
-      v=quantile(x)
+      v=quantile(x, na.rm = TRUE)
       factor(ifelse(x<=v[2],0,ifelse(x>=v[4],2,1)),labels=c('2nd Quantile','Median','4th Quantile'))
     }else if(s==4 && is.double(split) && (length(split)!=1 || all(c(sum(split>x),sum(split<x))>1))){
       txt$split<<-paste(split,collapse=', ')
@@ -1341,15 +1346,18 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
           par(mai=c(min(c(par('fin')[2]/2,max(strwidth(ptxt$l.x,'i'))))+.1,par('mai')[-1]))
         }
       }
-      plot(NA,xlim=if(missing(mxl)) range(xch,na.rm=TRUE) else mxl,ylim=if(missing(myl))
-        c(min(cy),max(cy)+max(cy)*ifelse(ck$leg==1 && seg$by$ll<lim,seg$by$ll/20,0)) else myl,
-        main=if(ck$sub) ptxt$sub else NA,ylab=NA,xlab=NA,axes=FALSE)
+      plot(
+        NA, xlim = if(missing(mxl)) range(xch,na.rm=TRUE) else mxl,
+        ylim = if(missing(myl)) c(min(cy, na.rm = TRUE), max(cy, na.rm = TRUE) + max(cy, na.rm = TRUE) *
+            if(ck$leg == 1 && seg$by$ll < lim) seg$by$ll / 20 else 0) else myl,
+        main = if(ck$sub) ptxt$sub else NA, ylab = NA, xlab = NA, axes = FALSE
+      )
       if(yaxis) do.call(axis,c(list(2,las=ylas),c(a2a[c('cex','fg')],
         if('yax'%in%names(txt))list(at=seq_along(txt$yax),labels=txt$yax,tick=FALSE))))
       if(xaxis) do.call(axis,c(list(1,las=xlas),a2a))
       if(ck$leg>1){
-        up=xch[cy>=quantile(cy)[4]]
-        mr=quantile(xch)
+        up = xch[cy >= quantile(cy, na.rm = TRUE)[4]]
+        mr = quantile(xch, na.rm = TRUE)
         if(ck$lp) lega$x=if(sum(up<mr[2])>sum(up>mr[4])) 'topright' else 'topleft'
         if(ck$ileg) lega$legend=rn
       }
