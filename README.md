@@ -24,11 +24,11 @@ and data at levels of one or two `between` variable are shown in separate plot f
 ## installation
 Download R from [r-project.org](https://www.r-project.org/).
 
-Release ([version 0.4.0](https://CRAN.R-project.org/package=splot))
+Release ([version 0.4.1](https://CRAN.R-project.org/package=splot))
 ```R
 install.packages('splot')
 ```
-Development (version 0.4.1)
+Development (version 0.4.2)
 ```R
 install.packages('devtools')
 devtools::install_github('miserman/splot')
