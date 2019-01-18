@@ -777,7 +777,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
     vs=c('y','x','by','bet','cov','l.x','l.f1','l.f2','l.by')
     ptxt=lapply(vs,function(n){
       n=as.character(ptxt[[n]])
-      if(length(n)!=0 && n!='NULL' && n!=''){
+      if(length(n) != 0 && all(n != 'NULL' & n != '')){
         if(is.character(labels.filter)) n=gsub(labels.filter,' ',n,perl=TRUE)
         if(is.numeric(labels.trim)) if(any(ln<-nchar(n)>(labels.trim+3))) n[ln]=sub('$','...',strtrim(n[ln],labels.trim))
       }

@@ -40,7 +40,7 @@ applicable if \code{method='scale'}.}
 \item{flat}{logical; if \code{FALSE} and \code{x} is a character, factor, or list, or \code{by} is not
 missing, a list is returned.}
 
-\item{method}{a character setting the sampling method: If \code{'related'} (\code{'^re|^ran|^o'}),
+\item{method}{a character setting the sampling method: If \code{'related'} (\code{'^rel|^ran|^o'}),
 RGB values are freely adjusted, resulting in similar colors. If \code{'none'} (\code{'^no|^f|^bin'}),
 Seed colors are simply repeated in each level (sampling is off). Otherwise, RGB values are adjusted
 together, resulting in a gradient.}

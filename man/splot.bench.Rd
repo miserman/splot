@@ -42,6 +42,7 @@ splot.bench(
 )
 
 # compare ways of setting all but the maximum value of each row in a matrix to 0
+\dontrun{
 mat = matrix(c(rep(1, 4), rep(0, 8)), 4, 3)
 splot.bench(
   t(vapply(seq_len(4), function(r){
@@ -76,4 +77,5 @@ splot.bench(
   })),
   runs = 50, runsize = 200
 )
+}
 }
