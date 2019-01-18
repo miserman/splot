@@ -22,8 +22,9 @@
 #'   \code{method='scale'}.
 #' @param flat logical; if \code{FALSE} and \code{x} is a character, factor, or list, or \code{by} is not
 #'   missing, a list is returned.
-#' @param method a character setting the sampling method: If \code{'related'} (\code{'^re|^ran|^o'}),
-#'   RGB values are freely adjusted, resulting in similar colors. Otherwise, RGB values are adjusted
+#' @param method a character setting the sampling method: If \code{'related'} (\code{'^rel|^ran|^o'}),
+#'   RGB values are freely adjusted, resulting in similar colors. If \code{'none'} (\code{'^no|^f|^bin'}),
+#'   Seed colors are simply repeated in each level (sampling is off). Otherwise, RGB values are adjusted
 #'   together, resulting in a gradient.
 #' @details
 #' If \code{x} and \code{by} are not specified (or are characters with a length of 1, in which case they
@@ -143,7 +144,7 @@ splot.color=function(x=NULL,by=NULL,seed='pastel',brightness=0,luminance=0,opaci
       return(sets$grey(n)) else sets$grey(n) else sets[[seed]]
     if(is.null(x) || (ol==1 && n<2)) return(seed)
   }
-  sc=if(grepl('^re|^ran|^o',method,TRUE)){
+  sc=if(grepl('^rel|^ran|^o',method,TRUE)){
     r=if(missing(extend)) 2 else max(.001,extend)
     function(cc,n){
       cc=adjustcolor(cc)
@@ -184,6 +185,8 @@ splot.color=function(x=NULL,by=NULL,seed='pastel',brightness=0,luminance=0,opaci
       }
       csamp(cc,n)
     }
+  }else if(grepl('^no|^f|^bin',method,TRUE)) function(cc, n){
+    rep(cc, n)
   }else function(cc,n){
     r=max(n,n+n*extend)
     s=vapply(seq_len(r),function(i){

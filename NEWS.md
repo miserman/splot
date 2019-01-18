@@ -1,6 +1,7 @@
 # splot 0.4.1
 
 ## Improvements
+* allows splot.color sampling to be turned off
 * allows splot.bench to handle single runs
 * enables more sorting options
 

@@ -41,7 +41,8 @@ applicable if \code{method='scale'}.}
 missing, a list is returned.}
 
 \item{method}{a character setting the sampling method: If \code{'related'} (\code{'^re|^ran|^o'}),
-RGB values are freely adjusted, resulting in similar colors. Otherwise, RGB values are adjusted
+RGB values are freely adjusted, resulting in similar colors. If \code{'none'} (\code{'^no|^f|^bin'}),
+Seed colors are simply repeated in each level (sampling is off). Otherwise, RGB values are adjusted
 together, resulting in a gradient.}
 }
 \description{
