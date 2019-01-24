@@ -618,31 +618,29 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
     dat$by=gsub(' ','0',base::format(dat$by,justify='right'),fixed=TRUE)
   odat=dat
   #splitting and parsing variables
-  splt=function(x,s){
-    if(s==1){
-      txt$split<<-'mean'
-      factor(ifelse(x<=mean(x),0,1),labels=c('Below Average','Above Average'))
-    }else if(s==3){
-      txt$split<<-'standard deviation'
-      m=mean(x)
-      s=sd(x)
-      v=c(m-s,m+s)
-      factor(ifelse(x<=v[1],0,ifelse(x>=v[2],2,1)),labels=c('-1 SD','Mean','+1 SD'))
-    }else if(s==2){
-      txt$split<<-'quantile'
-      v=quantile(x, na.rm = TRUE)
-      factor(ifelse(x<=v[2],0,ifelse(x>=v[4],2,1)),labels=c('2nd Quantile','Median','4th Quantile'))
-    }else if(s==4 && is.double(split) && (length(split)!=1 || all(c(sum(split>x),sum(split<x))>1))){
-      txt$split<<-paste(split,collapse=', ')
-      cut(x,c(-Inf,split,Inf),paste0('<=',c(split,'Inf')),ordered_result=TRUE)
-    }else if(s==4 && is.numeric(split) && split>1){
-      n=length(x)
-      split=min(n,round(split))
-      txt$split<<-paste0('segments (',split,')')
-      factor(paste('seg',rep(seq_len(split),each=round(n/split+.5))[order(order(x))]))
+  splt=function(x, s){
+    if(s == 1){
+      txt$split <<- 'mean'
+      factor(x > mean(x) * 1, labels = c('Below Average', 'Above Average'))
+    }else if(s == 3){
+      txt$split <<- 'standard deviation'
+      m = mean(x)
+      s = sd(x)
+      cut(x, c(-Inf, m - s, m + s, Inf), labels = c('-1 SD', 'Mean', '+1 SD'))
+    }else if(s == 2){
+      txt$split <<- 'quantile'
+      cut(x, c(-Inf, quantile(x)[c(2, 4)], Inf), labels = c('2nd Quantile', 'Median', '4th Quantile'))
+    }else if(s == 4 && is.double(split) && (length(split) != 1 || all(c(sum(split > x), sum(split < x)) > 1))){
+      txt$split <<- paste(split, collapse = ', ')
+      cut(x, c(-Inf, split, Inf), paste0('<=', c(split, 'Inf')), ordered_result = TRUE)
+    }else if(s == 4 && is.numeric(split) && split > 1){
+      n = length(x)
+      split = min(n, round(split))
+      txt$split <<- paste0('segments (', split, ')')
+      factor(paste('seg', rep(seq_len(split), each = round(n / split + .49))[order(order(x))]))
     }else{
-      txt$split<<-'median'
-      factor(ifelse(x<=median(x),0,1),labels=c('Under Median','Over Median'))
+      txt$split <<- 'median'
+      factor(x > median(x) * 1, labels = c('Under Median', 'Over Median'))
     }
   }
   seg=list(

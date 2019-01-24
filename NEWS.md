@@ -1,14 +1,19 @@
+# splot 0.4.2
+
+## Bug fixes
+* avoids error when a level of split is empty.
+
 # splot 0.4.1
 
 ## Improvements
-* allows splot.color sampling to be turned off
-* allows splot.bench to handle single runs
-* enables more sorting options
+* allows splot.color sampling to be turned off.
+* allows splot.bench to handle single runs.
+* enables more sorting options.
 
 ## Bug fixes
-* correctly does not display error bars when error is set to FALSE
-* corrects the x-axis range of scatter plots when x is logical
-* corrects bet reassignment given multiple ys
+* correctly does not display error bars when error is set to FALSE.
+* corrects the x-axis range of scatter plots when x is logical.
+* corrects bet reassignment given multiple ys.
 
 # splot 0.4.0
 
@@ -20,7 +25,7 @@
 * allows for non-numeric y variables.
 
 ## Improvements
-* general improvements in automatic settings
+* general improvements in automatic settings.
 * more reliable connection between data and line colors, types, and widths.
 * provides more control over the legend and colorby.
 * improved reading of the y and su arguments.
@@ -48,7 +53,7 @@
 
 ## Bug fixes
 * corrected y-axis labeling for bar plots when autori is true.
-* custom notes now overwrite all other note elements,
+* custom notes now overwrite all other note elements.
 * specified x levels are now appropriately applied when mv.as.x is true.
 * standardized lty behavior across types, and prevented it from causing errors.
 * fixed an issue with longer vectors entered directly as arguments.
