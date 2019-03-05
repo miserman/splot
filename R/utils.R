@@ -234,6 +234,7 @@ splot.color=function(x=NULL,by=NULL,seed='pastel',brightness=0,luminance=0,opaci
       by
     }else unlist(seed)
   }
+  if(opacity == 1) seed = sub('FF$', '', seed)
   seed
 }
 

@@ -36,28 +36,32 @@ a:link,a:visited{text-decoration:none}
 </div>
 <a href="https://github.com/miserman/splot" class="foot">repository</a>
 <script type="text/javascript">
-var windowFrame=document.getElementById("window")
-var menuItems=document.getElementById("menu").getElementsByTagName("a")
-var menuLength=menuItems.length
-setup()
+var windowFrame=document.getElementById('window'), menuItems=document.getElementById('menu').getElementsByTagName('a'),
+  menuLength=menuItems.length, spp = /\s/g, tags = {}
 function setup(r){
-	for(var i=menuLength;i--;) menuItems[i].className=""
-	if("object"===typeof(r)){
-		r.className="sel"
-		windowFrame.src=r.href
+  var i, tag
+	for(i = menuLength; i--;){
+	  tags[menuItems[i].innerText] = '#' + menuItems[i].innerText.toLowerCase().replace(spp, '_')
+	  menuItems[i].className = ''
+	}
+	if('object' === typeof r){
+		r.className = 'sel'
+		windowFrame.src = r.href
 		window.location.replace
-		  ? window.location.replace("#"+r.innerHTML.toLowerCase().replace(/ /g,'_'))
-		  : window.history.replaceState(void 0,void 0,"#"+r.innerHTML.toLowerCase().replace(/ /g,'_'))
+		  ? window.location.replace(tags[r.innerText])
+		  : window.history.replaceState(void 0, void 0, tags[r.innerText])
 		return
 	}
-	var tag=window.location.hash
-	if(tag==="") menuItems[0].className="sel"
-	else for(i=menuLength;i--;) if(tag.match(menuItems[i].innerHTML.toLowerCase().replace(/ /g,'_'))){
-	  menuItems[i].className="sel"
-	  windowFrame.src=menuItems[i].href
+	tag = window.location.hash
+	if(tag === "") menuItems[0].className = 'sel'
+	else for(i = menuLength; i--;) if(tag === tags[menuItems[i].innerText]){
+	  menuItems[i].className = 'sel'
+	  windowFrame.src = menuItems[i].href
 	  return
 	}
 }
+window.onhashchange = function(){window.location.reload()}
+setup()
 </script>
 </body>
 </html>
