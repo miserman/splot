@@ -1,6 +1,12 @@
 # splot 0.4.2
 
+## Improvements
+* better handles colorby x aggregation.
+* splot.color returns shorter color codes when opacity is 1.
+
 ## Bug fixes
+* preserves color assignments when colorby has multiple arguments,
+  and some levels of by are empty.
 * avoids error when a level of split is empty.
 
 # splot 0.4.1
