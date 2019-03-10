@@ -937,7 +937,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
     }else if(length(seg$lcols)==seg$by$ll) names(seg$lcols)=seg$by$l else if(length(ptxt$leg)==seg$by$ll){
       seg$lcols=rep_len(seg$lcols,seg$by$ll)
       names(seg$lcols)=seg$by$l
-    }else if(length(seg$cols) == nr) seg$lcols = split(seg$cols, dat$by)
+    }
   }
   if(ck$opacity && (ck$t!=3 || !points)) if(is.list(seg$cols)) lapply(seg$cols,adjustcolor,opacity) else
     seg$cols[]=adjustcolor(seg$cols,opacity)
@@ -1275,7 +1275,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
         plot(NA,ylim=ylim,xlim=if(missing(mxl)) c(1-stw[1]/3,dm[2]+stw[length(stw)]/3) else mxl,ylab=NA,xlab=NA,
           main=if(ck$sub) ptxt$sub else NA,axes=FALSE)
         for(a in if(all(rn%in%names(seg$cols))) rn else seq_len(dm[1]))
-          graphics::lines(m[a,],col=seg$cols[a],lty=seg$lty[a],lwd=seg$lwd[a],type=line.type)
+          graphics::lines(m[a,],col=seg$cols[[a]],lty=seg$lty[[a]],lwd=seg$lwd[[a]],type=line.type)
       }
       if(ck$ileg) lega$legend=rn
       if(xaxis) axis(1,apply(p,2,mean),colnames(m),FALSE,las=xlas,cex=par('cex.axis'),fg=par('col.axis'))
@@ -1310,7 +1310,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
         plot(NA,xlim=if(missing(mxl)) c(min(dx),max(dx)) else mxl,ylim=if(missing(myl)) c(0,max(c(dy))*1.2) else myl,
           main=if(ck$sub) ptxt$sub else NA,ylab=NA,xlab=NA,axes=FALSE,xpd=if('xpd'%in%names(pdo)) pdo$xpd else FALSE)
         for(l in if(all(rn%in%names(seg$cols))) rn else seq_along(m))
-          graphics::lines(m[[l]],col=seg$cols[l],lwd=seg$lwd[l],lty=seg$lty[l])
+          graphics::lines(m[[l]],col=seg$cols[[l]],lwd=seg$lwd[[l]],lty=seg$lty[[l]])
         if(ck$ileg) lega$legend=rn
       }else{
         col=if(length(seg$lcols)>2) '#555555' else seg$lcols[1]
@@ -1371,7 +1371,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
       padj=if(color.lock || ck$cb || (missing(color.offset) && !ck$ltck)) 1 else color.offset
       ckcn=all(rn%in%names(seg$cols))
       ckln=all(rn%in%names(seg$lcols))
-      if(!ckcn && !ckln) seg$lcols[]='#555555'
+      if(!ckln) if(ckcn) seg$lcols = seg$cols else seg$lcols[]='#555555'
       lwd=rep_len(if(is.numeric(lwd)) lwd else 2,dl)
       for(l in if(ckcn) rn else seq_len(dl)){
         td=if(cl) cdat[[i]][[l]] else cdat[[i]]
@@ -1396,7 +1396,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
           },error=function(e){warning('error estimating line: ',e$message,call.=FALSE);NULL})
           if(!is.null(fit)){
             if(lt=='sm') {xo=fit$x; fit=fit$y} else {or=order(x); xo=x[or]; fit=fit[or]}
-            graphics::lines(xo,fit,col=seg$lcols[l],lty=seg$lty[l],lwd=seg$lwd[l])
+            graphics::lines(xo,fit,col=seg$lcols[[l]],lty=seg$lty[[l]],lwd=seg$lwd[[l]])
           }
         }
         if(points && !points.first) points(x,y,col=col,cex=cex['points'])
