@@ -745,7 +745,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
     }else drop['by']=FALSE
   }else seg$n=vapply(cdat,nrow,0)
   if(seg$by$e && drop['by']){
-    seg$by$l=apply(seg$n,1,function(c)any(c>1))
+    seg$by$l = vapply(as.character(seg$by$l), function(r) any((if(seg$by$ll == 1) seg$n else seg$n[r,]) > 1), TRUE)
     if(!any(seg$by$l)){
       if(ck$t==2) stop('no level of by has more than 1 observation')
       warning('no level of by has more than 1 observation so it was treated as colorby',call.=FALSE)
