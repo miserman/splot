@@ -1,10 +1,17 @@
 # splot 0.4.2
 
+## Additions
+* assign colors in the scale of numeric values with splot.color's
+  grade argument.
+
 ## Improvements
+* more broadly retains character and factor level orders.
+* more broadly accounts for missing values.
 * better handles colorby x aggregation.
 * splot.color returns shorter color codes when opacity is 1.
 
 ## Bug fixes
+* corrects some colorby x and by assignments.
 * preserves color assignments when colorby has multiple arguments,
   and some levels of by are empty.
 * avoids error when a level of split is empty.

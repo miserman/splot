@@ -142,7 +142,7 @@ One potentially interesting rating was of relative socioeconomic status (`relati
 #make a new variable to look at Study and Topic without Style.
 Study_and_Topic = paste0('S', Study, ' ', Topic)
 
-splot(relativeSes~Study_and_Topic*Style, type='bar')
+splot(relativeSes~Study_and_Topic*as.factor(Style), type='bar')
 ```
 
 A difference between styles doesn't appear in each topic, but when it does, the incongruent style is rated as lower in status than the congruent style (considering relational to be a feminine topic, and life course to be a masculine topic).

@@ -18,7 +18,8 @@
 <pre>
 splot.color(x = NULL, by = NULL, seed = "pastel", brightness = 0,
   luminance = 0, opacity = 1, extend = 0.7, lighten = FALSE,
-  shuffle = FALSE, flat = TRUE, method = "scale")
+  shuffle = FALSE, flat = TRUE, method = "scale", grade = FALSE,
+  decreasing = TRUE, nas = "#000000")
 </pre>
 
 
@@ -82,6 +83,19 @@ missing, a list is returned.</p>
 RGB values are freely adjusted, resulting in similar colors. If <code>'none'</code> (<code>'^no|^f|^bin'</code>),
 Seed colors are simply repeated in each level (sampling is off). Otherwise, RGB values are adjusted
 together, resulting in a gradient.</p>
+</td></tr>
+<tr valign="top"><td><code>grade</code></td>
+<td>
+<p>logical; if <code>TRUE</code>, seeds are adjusted on the scale of numeric <code>x</code>s.
+Otherwise, seeds are adjusted in even steps along numeric <code>x</code>s.</p>
+</td></tr>
+<tr valign="top"><td><code>decreasing</code></td>
+<td>
+<p>logical; if <code>FALSE</code>, assigns colors to numeric <code>x</code>s in increasing order.</p>
+</td></tr>
+<tr valign="top"><td><code>nas</code></td>
+<td>
+<p>value to replace missing values with.</p>
 </td></tr>
 </table>
 

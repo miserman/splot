@@ -26,6 +26,10 @@
 #'   RGB values are freely adjusted, resulting in similar colors. If \code{'none'} (\code{'^no|^f|^bin'}),
 #'   Seed colors are simply repeated in each level (sampling is off). Otherwise, RGB values are adjusted
 #'   together, resulting in a gradient.
+#' @param grade logical; if \code{TRUE}, seeds are adjusted on the scale of numeric \code{x}s.
+#'   Otherwise, seeds are adjusted in even steps along numeric \code{x}s.
+#' @param decreasing logical; if \code{FALSE}, assigns colors to numeric \code{x}s in increasing order.
+#' @param nas value to replace missing values with.
 #' @details
 #' If \code{x} and \code{by} are not specified (or are characters with a length of 1, in which case they
 #' are treated as \code{seed}), only the seed palette is returned.
@@ -75,8 +79,8 @@
 #'
 #' @export
 
-splot.color=function(x=NULL,by=NULL,seed='pastel',brightness=0,luminance=0,opacity=1,
-  extend=.7,lighten=FALSE,shuffle=FALSE,flat=TRUE,method='scale'){
+splot.color=function(x=NULL,by=NULL,seed='pastel',brightness=0,luminance=0,opacity=1,extend=.7,
+  lighten=FALSE,shuffle=FALSE,flat=TRUE,method='scale',grade=FALSE,decreasing=TRUE,nas='#000000'){
   sets=list(
     bright=c('#45ff00','#ba00ff','#000000','#ff0000','#fffd00','#003dff','#00f2f8','#999999','#ff891b'),
     dark=c('#1b8621','#681686','#2a2a2a','#7c0d0d','#b5bc00','#241c80','#1a7e8b','#666666','#b06622'),
@@ -113,11 +117,11 @@ splot.color=function(x=NULL,by=NULL,seed='pastel',brightness=0,luminance=0,opaci
   if(!is.null(x) && (!(is.list(x) || is.numeric(x)) || (is.numeric(x) && !is.null(by)))){
     if(is.null(by)){
       ox=x
-      x=as.list(table(x))
+      x=as.list(table(x))[lvs(ox)]
     }else{
       if(is.numeric(by) && length(lvs(by))>9) warning('splot.color: only non-numeric bys are accepted') else{
-        ox=as.factor(by)
-        x=split(x,by)
+        ox = if(is.factor(by)) by else as.character(by)
+        x = split(x, by)[lvs(ox)]
       }
     }
   }
@@ -147,6 +151,7 @@ splot.color=function(x=NULL,by=NULL,seed='pastel',brightness=0,luminance=0,opaci
   sc=if(grepl('^rel|^ran|^o',method,TRUE)){
     r=if(missing(extend)) 2 else max(.001,extend)
     function(cc,n){
+      if(length(n) != 1) n = length(n)
       cc=adjustcolor(cc)
       hdc=c(0:9,LETTERS[1:6])
       hdc=outer(hdc,hdc,paste0)
@@ -186,21 +191,29 @@ splot.color=function(x=NULL,by=NULL,seed='pastel',brightness=0,luminance=0,opaci
       csamp(cc,n)
     }
   }else if(grepl('^no|^f|^bin',method,TRUE)) function(cc, n){
+    if(length(n) != 1) n = length(n)
     rep(cc, n)
-  }else function(cc,n){
-    r=max(n,n+n*extend)
-    s=vapply(seq_len(r),function(i){
-      adj=i/r+brightness
-      if(lighten) adj=adj+1
-      adjustcolor(cc,opacity,adj,adj,adj,c(rep(luminance,3),0))
-    },'')
-    (if(lighten) s else rev(s))[seq_len(n)]
+  }else function(cc, n){
+    s = if(length(n) != 1){
+      s = sort(n - mean(n, na.rm = TRUE), decreasing)
+      s = s + abs(min(s, na.rm = TRUE))
+      n = length(s)
+      s / max(s, na.rm = TRUE) * (n - 1) + 1
+    }else sort(seq_len(n), decreasing)
+    r = max(n, n + n * extend)
+    if(!lighten) s = s + r - max(s, na.rm = TRUE)
+    vapply(s, function(i){
+      adj = i / r + brightness
+      if(lighten) adj = adj + 1
+      adjustcolor(cc, opacity, adj, adj, adj, c(rep(luminance, 3), 0))
+    }, '')
   }
   if(!is.list(x)){
-    seed=sc(seed[1],n)
+    if(length(seed) < n) seed = sc(seed[1], if(grade) x else n)
     if(ckd){
       tx=ox
-      for(i in seq_len(n)) ox[ox==x[i]]=seed[i]
+      oxf = is.finite(ox)
+      for(i in seq_len(n)) ox[oxf & ox == x[i]] = seed[i]
       x=tx
       seed=ox
     }else if(shuffle) seed=sample(seed) else if(length(x)!=1) seed=seed[order(order(x))]
@@ -209,31 +222,22 @@ splot.color=function(x=NULL,by=NULL,seed='pastel',brightness=0,luminance=0,opaci
     seed=lapply(seq_len(n),function(g){
       l=length(x[[g]])
       if(l!=1 || as.integer(x[[g]])>0){
-        if(l!=1 && any(duplicated(x[[g]]))){
-          op=x[[g]]
-          ux=sort(lvs(op))
-          ul=length(ux)
-          if(ul==1) rep.int(seed[[g]],l) else{
-            cs=sc(seed[[g]],ul)
-            for(i in seq_len(ul)) op[op==ux[i]]=cs[i]
-            op
-          }
-        }else{
-          cs=sc(seed[[g]],if(l==1) x[[g]] else l)
-          if(shuffle) sample(cs) else if(l!=1) cs[order(order(x[[g]]))] else cs
-        }
+        cs=sc(seed[[g]],if(l==1 || (is.numeric(x[[g]]) && grade)) x[[g]] else l)
+        if(shuffle) sample(cs) else if(l!=1) cs[order(order(x[[g]]))] else cs
       }else seed[[g]]
     })
     names(seed)=if(!is.null(names(x))) names(x) else vapply(seed,'[[','',1)
     if(flat) seed=if(!is.null(ox) && all(lvs(ox)%in%names(seed))){
       by=as.character(ox)
       for(g in lvs(ox)){
-        su=by==g
-        by[su]=rep_len(seed[[g]],sum(su))
+        su = !is.na(by) & !is.nan(by) & by == g
+        ssu = sum(su)
+        if(is.finite(ssu) && ssu) by[su] = rep_len(seed[[g]], ssu)
       }
       by
     }else unlist(seed)
   }
+  seed[is.na(seed) | is.nan(seed) | seed %in% c('NA', 'NaN', 'Inf', '-Inf')] = nas
   if(opacity == 1) seed = sub('FF$', '', seed)
   seed
 }

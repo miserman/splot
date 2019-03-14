@@ -467,7 +467,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
   lvs=function(x,s=FALSE) if(is.factor(x)) base::levels(x) else if(s) sort(unique(x)) else unique(x)
   if(missing(x) && ncol(dat)==1 && !is.numeric(dat$y)){
     ckv=c(ckv,3)
-    y=table(dat$y)
+    y=table(dat$y)[lvs(dat$y)]
     dat$x=dat$y
     dat$y=numeric(nr)
     for(l in lvs(dat$x)){
@@ -561,10 +561,10 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
         dat=dat[-grep('bet',colnames(dat))[2]]
       }
       if(length(txt$bet)>1){
-        dat$bet.1=as.character(dat$by)
-        dat$bet.2=as.character(dat$bet)
+        dat$bet.1 = if(is.factor(dat$by)) dat$by else as.character(dat$by)
+        dat$bet.2 = if(is.factor(dat$bet)) dat$bet else as.character(dat$bet)
         dat$bet=NULL
-      }else dat$bet=as.character(dat$by)
+      }else dat$bet = if(is.factor(dat$by)) dat$by else as.character(dat$by)
     }
     dn=grep('^y\\.',dn)
     ck$mvn=colnames(dat)[dn]
@@ -610,7 +610,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
   if(ck$ltm && !ck$el) line.type='b'
   if(ck$ltym && is.logical(lines) && !lines){ck$lty=FALSE; lty=1}
   if(!is.numeric(dat$y)){
-    dat$y=as.factor(as.character(dat$y))
+    dat$y=as.factor(dat$y)
     txt$yax=levels(dat$y)
     dat$y=as.numeric(dat$y)
   }
@@ -621,26 +621,28 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
   splt=function(x, s){
     if(s == 1){
       txt$split <<- 'mean'
-      factor(x > mean(x) * 1, labels = c('Below Average', 'Above Average'))
+      factor(x >= mean(x, na.rm = TRUE) * 1, labels = c('Below Average', 'Above Average'))
     }else if(s == 3){
       txt$split <<- 'standard deviation'
-      m = mean(x)
-      s = sd(x)
+      m = mean(x, na.rm = TRUE)
+      s = sd(x, TRUE)
       cut(x, c(-Inf, m - s, m + s, Inf), labels = c('-1 SD', 'Mean', '+1 SD'))
     }else if(s == 2){
       txt$split <<- 'quantile'
-      cut(x, c(-Inf, quantile(x)[c(2, 4)], Inf), labels = c('2nd Quantile', 'Median', '4th Quantile'))
-    }else if(s == 4 && is.double(split) && (length(split) != 1 || all(c(sum(split > x), sum(split < x)) > 1))){
+      cut(x, c(-Inf, quantile(x, na.rm = TRUE)[c(2, 4)], Inf),
+        labels = c('2nd Quantile', 'Median', '4th Quantile'))
+    }else if(s == 4 && is.double(split) && (length(split) != 1 || all(c(sum(split >= x, na.rm = TRUE),
+      sum(split <= x, na.rm = TRUE)) > 1))){
       txt$split <<- paste(split, collapse = ', ')
       cut(x, c(-Inf, split, Inf), paste0('<=', c(split, 'Inf')), ordered_result = TRUE)
     }else if(s == 4 && is.numeric(split) && split > 1){
       n = length(x)
-      split = min(n, round(split))
+      split = min(n, round(split), na.rm = TRUE)
       txt$split <<- paste0('segments (', split, ')')
       factor(paste('seg', rep(seq_len(split), each = round(n / split + .49))[order(order(x))]))
     }else{
       txt$split <<- 'median'
-      factor(x > median(x) * 1, labels = c('Under Median', 'Over Median'))
+      factor(x >= median(x, TRUE) * 1, labels = c('Under Median', 'Over Median'))
     }
   }
   seg=list(
@@ -679,7 +681,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
       if(seg[[e]]$ll>lim && !(is.character(dat[,i]) || is.factor(dat[,i]))){
         dat[,i]=splt(dat[,i],ck$sp)
         seg[[e]]$s=TRUE
-        seg[[e]]$l=levels(dat[,i])
+        seg[[e]]$l=lvs(dat[,i])
         seg[[e]]$ll=length(seg[[e]]$l)
       }
     }
@@ -735,7 +737,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
   dsf=list(c1=if(seg$f1$e) dat[,seg$f1$i] else '',sep=rep.int('^^',nr),c2=if(seg$f2$e) dat[,seg$f2$i] else '')
   cdat=split(dat,dsf)
   if(seg$by$e){
-    cdat=lapply(cdat,function(s)if(length(unique(s$by))>1) split(s,s$by) else{
+    cdat=lapply(cdat,function(s)if(length(unique(s$by))>1) split(s,s$by)[as.character(lvs(s$by))] else{
       s=lapply(seg$by$l,function(l) if(sum(s$by==l)) s else NULL)
       names(s)=seg$by$l
       s
@@ -753,7 +755,10 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
       seg$by$e=FALSE
       seg$by$l=''
       seg$by$ll=1
-      if(ck$cb) colorby['x']=dat$by else colorby=dat$by
+      if(ck$cb){
+        colorby = substitute(colorby)
+        colorby[[2]] = dat$by
+      }else colorby=dat$by
       ck$cb=TRUE
       dat=dat[,-seg$by$i]
       cdat=split(dat,dsf)
@@ -831,19 +836,25 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
     }
     if(length(cba$x)==ck$orn) cba$x=cba$x[ck$omited$all]
     if(ck$cbb && length(cba$by)==ck$orn) cba$by=cba$by[ck$omited$all]
-    if(!'seed'%in%cn) cba$seed=seg$cols
+    if(seg$by$e || !'seed' %in% cn){
+      cba$seed = seg$cols
+      if('seed' %in% cn)
+        warning("colorby's seed is ignored because by is specified -- use colors to set seeds", call. = FALSE)
+    }
     cn=names(cba)
     ckn=cken=is.numeric(cba$x)
     if(ckn && length(unique(cba$x))<=length(seg$cols)){
       ckn=FALSE
-      cba$x=as.character(cba$x)
+      cba$x=as.factor(cba$x)
     }
-    if(ck$t!=3 && length(cba$x)==nr){
+    if(ck$t != 3 && length(cba$x) == nr){
+      seg$cbxls = lvs(cba$x)
       if(seg$by$e){
-        cba$x=vapply(split(cba$x,dat$by),function(x) if(ckn) mean(x, na.rm = TRUE) else
-          names(which.max(table(x))),if(ckn) 0 else '')
+        cba$x = vapply(split(cba$x, dat$by), function(x) if(ckn) mean(x, na.rm = TRUE) else
+          names(which.max(table(x))), if(ckn) 0 else '')
+        if(!ckn) cba$x = factor(cba$x, seg$cbxls)
         if(ck$cbb && length(cba$by)==nr){
-          cba$by=vapply(split(cba$by,dat$by),function(x)names(which.max(table(x))),'')
+          cba$by = factor(vapply(split(cba$by, dat$by), function(x) names(which.max(table(x))), ''), lvs(cba$by))
           if(length(cba$x)!=length(cba$by)){
             cba$by=NULL
             ck$cbb=FALSE
@@ -851,10 +862,11 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
           }
         }
       }else if(ck$b){
-        cba$x=vapply(split(cba$x,dat$x),function(x) if(ckn) mean(x, na.rm = TRUE) else
-          names(which.max(table(x))),if(ckn) 0 else '')
+        cba$x = vapply(split(cba$x, dat$x), function(x) if(ckn) mean(x, na.rm = TRUE) else
+          names(which.max(table(x))), if(ckn) 0 else '')
+        if(!ckn) cba$x = factor(cba$x, seg$cbxls)
         if(ck$cbb && length(cba$by)==nr){
-          cba$by=vapply(split(cba$by,dat$x),function(x)names(which.max(table(x))),'')
+          cba$by = factor(vapply(split(cba$by, dat$x), function(x) names(which.max(table(x))), ''), lvs(cba$by))
           if(length(cba$x)!=length(cba$by)){
             cba$by=NULL
             ck$cbb=FALSE
@@ -862,10 +874,6 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
               call.=FALSE)
           }
         }
-      }
-      if(ckn && any(cbaxsu <- !is.finite(cba$x))){
-        cba$x = cba$x[!cbaxsu]
-        cba$by = cba$by[!cbaxsu]
       }
     }
     if(ck$cbb){
@@ -877,14 +885,14 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
         }
       }
       if(ck$cbb){
-        cba$by=as.factor(cba$by)
+        if(!is.factor(cba$by)) cba$by = as.character(cba$by)
         if(ck$cbleg){
           chl=TRUE
           if(missing(leg.title)){
             leg.title=substitute(colorby)
             leg.title=if(is.call(leg.title) && length(leg.title)>2) deparse(leg.title[[3]]) else deparse(leg.title)
           }
-          ptxt$leg=levels(cba$by)
+          ptxt$leg = lvs(cba$by)
         }
       }
     }else{
@@ -892,10 +900,11 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
         chl=TRUE
         tg=ckn
         ll=all(ck$t!=1 || (length(seg$x$l)>2 || seg$by$ll>2),length(unique(cba$x))>2)
-        if(missing(leg.title)) leg.title=ptxt$cbo
+        if(missing(leg.title) && length(ptxt$cbo) == 1) leg.title=ptxt$cbo
         ptxt$leg=if(ckn) formatC(c(min(cba$x),if(ll) mean(cba$x),max(cba$x)),2,format='f') else lvs(cba$x)
       }else if(!seg$by$e) ck$leg=0
-      if(seg$by$e && !is.list(cba$x) && length(cba$x)==nr) cba$by=dat$by
+      if(seg$by$e && seg$by$ll < lim && !is.list(cba$x) && length(cba$x)==nr) cba$by=dat$by
+      if(seg$by$e && seg$by$ll == 1 && !'by' %in% cn) eg$lcols = seg$cols = seg$cols[1]
     }
     if(ckn || is.list(cba$x) || length(cba)>3){
       sca=cn%in%sca
@@ -908,13 +917,16 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
       lc=length(seg$cols)
       if(lc<ll || cken) seg$cols=seg$lcols=if(cken || !seg$by$e || lc==1)
         splot.color(ll,seed=seg$cols) else rep_len(seg$cols,ll)
-      for(g in seq_along(gs)) cba$x[cba$x==gs[g]]=seg$cols[g]
-      seg$cols=cba$x
+      cba$seed = seg$cols
+      seg$cols = rep('#000000', length(cba$x))
+      cbaxf = !is.na(cba$x) & !is.nan(cba$x)
+      for(g in seq_along(gs)) seg$cols[cbaxf & cba$x == gs[g]] = cba$seed[g]
+      if(!is.null(names(cba$x))) names(seg$cols) = names(cba$x)
     }
     if(!chl && (seg$by$e || ck$cbb)){
       ck$cbn=TRUE
       ptxt$cbn=paste0('Colored by ',if(ckn || cken) 'value of ' else 'levels of ',ptxt$cbo,'. ')
-      if(seg$by$e && !ck$cbb && length(seg$cols)==seg$by$ll) seg$lcols=seg$cols
+      if(seg$by$e && !ck$cbb && (length(seg$cols) == seg$by$ll || length(seg$lcols) < seg$by$ll)) seg$lcols = seg$cols
     }
     if(chl){
       if(ck$legm && !ck$leg) ck$leg=1+seg$ll>1
@@ -936,8 +948,10 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
       names(seg$cols)=seg$by$l
       if(!ck$cbb && !chl) seg$lcols=seg$cols
     }else if(length(seg$lcols)==seg$by$ll) names(seg$lcols)=seg$by$l else if(length(ptxt$leg)==seg$by$ll){
-      seg$lcols=rep_len(seg$lcols,seg$by$ll)
-      names(seg$lcols)=seg$by$l
+      if(length(seg$lcols) == nr) seg$lcols = split(seg$lcols, dat$by) else{
+        seg$lcols = rep_len(seg$lcols, seg$by$ll)
+        names(seg$lcols) = seg$by$l
+      }
     }
   }
   if(ck$opacity && (ck$t!=3 || !points)) if(is.list(seg$cols)) lapply(seg$cols,adjustcolor,opacity) else
@@ -954,7 +968,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
   if(ck$t==2 && seg$by$ll>1 && !all(seg$by$l%in%names(seg$cols))){
     seg$cols=if(length(seg$lcols)==seg$by$ll) seg$lcols else if(length(seg$cols)==1)
       splot.color(seg$by$ll,seed=seg$cols) else rep_len(seg$cols,seg$by$ll)
-    if(is.null(names(seg$cols))) names(seg$cols)=seg$by$ll
+    if(is.null(names(seg$cols))) names(seg$cols)=seg$by$l
   }
   #figuring out parts of the plot
   ylab=if(ck$ly) ptxt$y else ''
@@ -1033,7 +1047,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
   ck$legcol=FALSE
   if(lpos=='auto') 'topright'
   lega=list(x=lpos,col=seg$lcols,cex=cex['leg'],text.font=font['leg'],bty='n',x.intersp=.5,xjust=.5,legend=ptxt$leg)
-  if(ck$legt && (is.character(leg.title) || length(ptxt$by)))
+  if(ck$legt && (is.character(leg.title) && length(leg.title) == 1 || length(ptxt$by) == 1))
     lega$title=if(is.character(leg.title)) leg.title else ptxt$by
   l=length(lega$legend)
   seg$lwd=rep_len(if(is.numeric(lwd)) lwd else 2,seg$by$ll)
@@ -1143,26 +1157,26 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
       nsl = grepl('^[Ff]', as.character(sort))
       sdir = grepl('^[DdTt]',as.character(sort))
       td=if(seg$by$e) do.call(rbind,cdat[[i]]) else cdat[[i]]
-      cdat[[i]] = do.call(rbind, lapply(if(nsl) as.character(td[, 'x']) else
-        names(sort(vapply(split(td[, 'y'], as.character(td[, 'x'])), mean, 0, na.rm = TRUE), sdir)),
+      td[, 'x'] = as.character(td[, 'x'])
+      cdat[[i]] = do.call(rbind, lapply(if(nsl) lvs(td[, 'x']) else
+        names(sort(vapply(split(td[, 'y'], td[, 'x']), mean, 0, na.rm = TRUE), sdir)),
         function(l) td[td[, 'x'] == l,, drop = FALSE]
       ))
-      seg$x$l=ptxt$l.x=unique(cdat[[i]][,'x'])
+      seg$x$l=ptxt$l.x=lvs(cdat[[i]][,'x'])
       cdat[[i]][,'x']=factor(cdat[[i]][,'x'],seg$x$l)
-      if(seg$by$e) cdat[[i]]=split(cdat[[i]],as.character(cdat[[i]][,'by']))
+      if(seg$by$e) cdat[[i]]=split(cdat[[i]],cdat[[i]][,'by'])
     }
     if(ck$t==1){
       #bar and line
       flipped=FALSE
-      if(missing(byx) && ck$mv && any(vapply(cdat[[i]],function(d)any(vapply(split(d$y,as.character(d$x)),
-        function(dl) if(length(dl)==1) 0 else var(dl),0)==0),TRUE)))
-        byx=FALSE
+      if(missing(byx) && ck$mv && any(vapply(cdat[[i]],function(d)any(vapply(split(d$y,d$x),
+        function(dl) if(length(dl)==1) 0 else var(dl),0)==0),TRUE))) byx=FALSE
       if(byx && lim<Inf && seg$by$e && (is.list(cdat[[i]]) && length(cdat[[i]])>1)){
         flipped=TRUE
         cdat[[i]]=do.call(rbind,cdat[[i]])
         cdat[[i]][c('x','by')]=cdat[[i]][c('by','x')]
-        cdat[[i]]$x=as.factor(cdat[[i]]$x)
-        cdat[[i]]=split(cdat[[i]],cdat[[i]]$by)
+        if(is.numeric(cdat[[i]]$x)) cdat[[i]]$x = as.character(cdat[[i]]$x)
+        cdat[[i]]=split(cdat[[i]],cdat[[i]]$by)[lvs(cdat[[i]]$by)]
       }
       dl=if(cl<-class(cdat[[1]])=='list') length(cdat[[i]]) else 1
       mot=paste0('y~0+',paste(names(if(cl) cdat[[i]][[1]] else cdat[[i]])[c(2,cvar)],collapse='+'))
@@ -1176,10 +1190,11 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
         if(is.null(td)) next
         if(nrow(td)>1 && length(unique(td$x))>1){
           mo=lm(mot,data=td)
-          su=which(cn%in%sub('x','',names(mo$coef)))
-          sus=seq_along(su)
-          m[ri,su]=mo$coef[sus]
-          if(nrow(td)>2){
+          ccn = sub('^x', '', names(mo$coef))
+          sus = which(ccn %in% cn)
+          su = ccn[sus]
+          m[ri, su] = mo$coef[sus]
+          if(nrow(td) > 2 && anyDuplicated(td$x)){
             if(ck$e){
               e=suppressWarnings(summary(update(mo,~.-0))$coef[sus,2])
               e=e[c(2,seq_along(e)[-1])]
@@ -1193,7 +1208,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
           }
         }else{
           if(nrow(td)==0) next
-          mo=lapply(split(td,td['x']),function(s)if(nrow(s)==0) NA else mean(s[!is.na(s[,'y']),'y']))
+          mo=lapply(split(td,td['x']),function(s)if(nrow(s)==0) NA else mean(s[is.finite(s[,'y']),'y']))
           m[ri,]=unlist(mo[colnames(m)])
         }
       }

@@ -57,7 +57,7 @@ This project was mostly interested in the Rodger text---how it relates to the Hi
 
 To do this, we'll first have to set up line types and colors outside of splot:
 ```{r}
-ns=levels(factor(data$name))
+ns=unique(data$name)
 nl=length(ns)
 disp=data.frame(name=ns, lty=rep_len(1:9,nl))
 disp$col=ifelse(grepl('Hit|Rod', disp$name), '#880101', '#aaaaaa')
@@ -75,7 +75,7 @@ In the first `legend` call, the constants are position (set in the first argumen
 splot(anger~index*name, points=FALSE, lines='loess', myl=c(0,2.2), colors=disp$col, lty=disp$lty, add={
     mnc=names(sort(colMeans(sapply(cdat$`.^^.`, '[[', 'y'))[-grep('Hit|Rod', names(cdat$`.^^.`))], TRUE)[1:2])
     legend('topleft', sort(mnc), lty=disp[disp$name%in%mnc, 2], col=disp[disp$name%in%mnc, 3], lwd=2, bty='n')
-    legend('topright', c('Adolf Hitler', 'Elliot Rodger'), lty=1:2, col=disp$col[1], lwd=2, bty='n')
+    legend('topright', c('Adolf Hitler', 'Elliot Rodger'), lty=1:2, col=disp$col[grep('Hit|Rod', disp$name)], lwd=2, bty='n')
 })
 ```
 
@@ -90,7 +90,7 @@ opt = list(
   add = quote({
     mnc=names(sort(colMeans(sapply(cdat$`.^^.`, '[[', 'y'))[-grep('Hit|Rod', names(cdat$`.^^.`))], TRUE)[1:2])
     legend('topleft', sort(mnc), lty=disp[disp$name%in%mnc, 2], col=disp[disp$name%in%mnc, 3], lwd=2, bty='n')
-    legend('topright', c('Adolf Hitler', 'Elliot Rodger'), lty=1:2, col=disp$col[1], lwd=2, bty='n')
+    legend('topright', c('Adolf Hitler', 'Elliot Rodger'), lty=1:2, col=disp$col[grep('Hit|Rod', disp$name)], lwd=2, bty='n')
   })
 )
 ```

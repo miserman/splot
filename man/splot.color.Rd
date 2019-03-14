@@ -6,7 +6,8 @@
 \usage{
 splot.color(x = NULL, by = NULL, seed = "pastel", brightness = 0,
   luminance = 0, opacity = 1, extend = 0.7, lighten = FALSE,
-  shuffle = FALSE, flat = TRUE, method = "scale")
+  shuffle = FALSE, flat = TRUE, method = "scale", grade = FALSE,
+  decreasing = TRUE, nas = "#000000")
 }
 \arguments{
 \item{x}{dictates the number and shade of colors. If a single value, returns that many samples of the
@@ -44,6 +45,13 @@ missing, a list is returned.}
 RGB values are freely adjusted, resulting in similar colors. If \code{'none'} (\code{'^no|^f|^bin'}),
 Seed colors are simply repeated in each level (sampling is off). Otherwise, RGB values are adjusted
 together, resulting in a gradient.}
+
+\item{grade}{logical; if \code{TRUE}, seeds are adjusted on the scale of numeric \code{x}s.
+Otherwise, seeds are adjusted in even steps along numeric \code{x}s.}
+
+\item{decreasing}{logical; if \code{FALSE}, assigns colors to numeric \code{x}s in increasing order.}
+
+\item{nas}{value to replace missing values with.}
 }
 \description{
 Get a prespecified set of 9 colors, or a set of graded or random, potentially grouped colors.
