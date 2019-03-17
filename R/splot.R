@@ -303,7 +303,7 @@
 #' )~x, dat, myl=c(-10,15), lines='loess', laby='y + versions of x')
 #'
 #' @export
-#' @importFrom grDevices grey dev.copy dev.size dev.off cairo_pdf adjustcolor
+#' @importFrom grDevices grey dev.copy dev.size dev.off cairo_pdf adjustcolor colors
 #' @importFrom graphics axis axTicks hist legend lines text mtext plot barplot par points arrows strwidth layout plot.new
 #' locator strheight
 #' @importFrom stats density median quantile sd lm glm confint update loess smooth.spline formula as.formula predict

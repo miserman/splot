@@ -87,9 +87,9 @@ splot.color=function(x=NULL,by=NULL,seed='pastel',brightness=0,luminance=0,opaci
     pastel=c('#82c473','#a378c0','#616161','#9f5c61','#d3d280','#6970b2','#78c4c2','#454744','#d98c82'),
     grey=function(n) grey(.2:n/(n+n*if(n<10) .1 else .3))
   )
-  if(missing(seed) && is.character(x) && length(x)==1){
-    seed=x
-    x=NULL
+  if(missing(seed) && is.character(x) && (length(x) == 1 || all(tolower(x) %in% colors()))){
+    seed = x
+    x = numeric(length(seed)) + 1
   }
   if(missing(seed) && is.character(by) && length(by)==1){
     seed=by
@@ -209,7 +209,7 @@ splot.color=function(x=NULL,by=NULL,seed='pastel',brightness=0,luminance=0,opaci
     }, '')
   }
   if(!is.list(x)){
-    if(length(seed) < n) seed = sc(seed[1], if(grade) x else n)
+    seed = sc(seed[1], if(grade) x else n)
     if(ckd){
       tx=ox
       oxf = is.finite(ox)
