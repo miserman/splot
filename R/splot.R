@@ -463,17 +463,25 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
   dat=data.frame(y=tdc(txt$y))
   if(ncol(dat)==1) names(dat)='y'
   nr=nrow(dat)
-  ckv=c(1,2,7)
   lvs=function(x,s=FALSE) if(is.factor(x)) base::levels(x) else if(s) sort(unique(x)) else unique(x)
-  if(missing(x) && ncol(dat)==1 && !is.numeric(dat$y)){
-    ckv=c(ckv,3)
-    y=table(dat$y)[lvs(dat$y)]
-    dat$x=dat$y
-    dat$y=numeric(nr)
-    for(l in lvs(dat$x)){
-      tsu=dat$x==l
-      dat$y[tsu]=sum(tsu)
-    }
+  for(n in names(txt)[-c(1, 2, 7)]){
+    l=length(txt[[n]])
+    if(l==0) next
+    if(l==nr){
+      dat[,n]=txt[[n]]
+      txt[[n]]=n
+    }else if(l==1) dat[,n]=tdc(txt[[n]],nr) else for(i in seq_along(txt[[n]])) dat[,paste0(n,'.',i)]=tdc(txt[[n]][[i]],nr)
+  }
+  if(length(txt$y)==nr) txt$y='y'
+  if(missing(x) && !is.null(dat$y) && !is.numeric(dat$y)){
+    cn = colnames(dat)
+    dat$x = dat$y
+    dat$y = numeric(nr)
+    dat = do.call(rbind, c(lapply(split(dat[, c('y', 'x', cn[-1])], dat[, c('x', grep('^by|^bet', cn, value = TRUE))]),
+      function(d){
+      d[, 1] = nrow(d)
+      d
+    }), make.row.names = FALSE))
     if(ck$t!=2) txt[c('y','x')]=c('count',txt$y)
     ck$el=FALSE
     if(missing(type)){
@@ -483,15 +491,6 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
     }
     if(missing(autori)) autori=FALSE
   }
-  for(n in names(txt)[-ckv]){
-    l=length(txt[[n]])
-    if(l==0) next
-    if(l==nr){
-      dat[,n]=txt[[n]]
-      txt[[n]]=n
-    }else if(l==1) dat[,n]=tdc(txt[[n]],nr) else for(i in seq_along(txt[[n]])) dat[,paste0(n,'.',i)]=tdc(txt[[n]][[i]],nr)
-  }
-  if(length(txt$y)==nr) txt$y='y'
   if(NCOL(dat$x)>1){
     ck$c=TRUE
     txt$cov=c(txt$x,txt$cov)
@@ -610,9 +609,9 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
   if(ck$ltm && !ck$el) line.type='b'
   if(ck$ltym && is.logical(lines) && !lines){ck$lty=FALSE; lty=1}
   if(!is.numeric(dat$y)){
-    dat$y=as.factor(dat$y)
-    txt$yax=levels(dat$y)
-    dat$y=as.numeric(dat$y)
+    txt$yax = lvs(dat$y)
+    if(!is.factor(dat$y)) dat$y = factor(dat$y, lvs(dat$y))
+    dat$y = as.numeric(dat$y)
   }
   if('by'%in%dn && is.character(dat$by) && all(!grepl('[^0-9]',dat$by)))
     dat$by=gsub(' ','0',base::format(dat$by,justify='right'),fixed=TRUE)
@@ -705,13 +704,20 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
     }
   },error=function(e)warning(paste('summary model failed:',e$message),call.=FALSE))
   if(!missing(levels)) tryCatch({
-    lc=c('x','by','f1','f2')
-    ns=c(txt$x,txt$by,txt$bet,lc)
+    lc=c('y','x','by','f1','f2')
+    ns=c(txt$y,txt$x,txt$by,txt$bet,lc)
     lc=c(lc[seq_len(length(ns)-length(lc))],lc)
     for(n in names(levels)){
       if(any(cns<-ns%in%n)){
-        sl=seg[[lc[cns<-which(cns)[1]]]]
-        vfac=lvs(dat[,sl$i])
+        sl = lc[cns<-which(cns)[1]]
+        if(sl == 'y'){
+          sl = list(i = 1)
+          vfac = txt$yax
+          dat$y = factor(dat$y, labels = vfac)
+        }else{
+          sl = seg[[sl]]
+          vfac = lvs(dat[,sl$i])
+        }
         vl=length(vfac)
         ln=levels[[n]]
         lo=NULL
@@ -731,6 +737,10 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
           dat[,sl$i]=do.call(factor,vl)
           if('l'%in%names(sl)) seg[[lc[cns]]]$l=levels(dat[,sl$i])
         }else warning(n,' has ',vl,' levels but you provided ',length(ln),call.=FALSE)
+        if(sl$i == 1){
+          txt$yax = lvs(dat$y)
+          dat$y = as.numeric(dat$y)
+        }
       }
     }
   },error=function(e)warning('setting levels failed: ',e$message,call.=FALSE))
@@ -1387,7 +1397,8 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
       padj=if(color.lock || ck$cb || (missing(color.offset) && !ck$ltck)) 1 else color.offset
       ckcn=all(rn%in%names(seg$cols))
       ckln=all(rn%in%names(seg$lcols))
-      if(!ckln) if(ckcn) seg$lcols = seg$cols else seg$lcols[]='#555555'
+      if(!ckln) if(ckcn) seg$lcols = seg$cols else seg$lcols[] = if(opacity != 1)
+        adjustcolor('#555555', opacity) else '#555555'
       lwd=rep_len(if(is.numeric(lwd)) lwd else 2,dl)
       for(l in if(ckcn) rn else seq_len(dl)){
         td=if(cl) cdat[[i]][[l]] else cdat[[i]]

@@ -5,12 +5,14 @@
   grade argument.
 
 ## Improvements
+* allows renaming and reordering of character or factor y levels.
 * more broadly retains character and factor level orders.
 * more broadly accounts for missing values.
 * better handles colorby x aggregation.
 * splot.color returns shorter color codes when opacity is 1.
 
 ## Bug fixes
+* calculates frequencies of y levels within by and between splits.
 * corrects some colorby x and by assignments.
 * preserves color assignments when colorby has multiple arguments,
   and some levels of by are empty.

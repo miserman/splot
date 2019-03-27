@@ -237,8 +237,8 @@ splot.color=function(x=NULL,by=NULL,seed='pastel',brightness=0,luminance=0,opaci
       by
     }else unlist(seed)
   }
-  seed[is.na(seed) | is.nan(seed) | seed %in% c('NA', 'NaN', 'Inf', '-Inf')] = nas
-  if(opacity == 1) seed = sub('FF$', '', seed)
+  if(!is.list(seed)) seed[is.na(seed) | is.nan(seed) | seed %in% c('NA', 'NaN', 'Inf', '-Inf')] = nas
+  if(opacity == 1) seed = if(is.list(seed)) lapply(seed, function(s) sub('FF$', '', s)) else sub('FF$', '', seed)
   seed
 }
 
