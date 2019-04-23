@@ -6,6 +6,7 @@ output:
     toc_depth: 4
     toc_float: true
     css: intro.css
+    self_contained: true
 vignette: >
   %\VignetteIndexEntry{Exploring Data with splot}
   %\VignetteEngine{knitr::rmarkdown}
@@ -60,7 +61,7 @@ library('splot')
 Most functions will output some form of data (in `+`'s case, the output is a single numeric value). This means that functions can be entered as arguments to other function. For example, `sum(sum(1, 1), 2)` is another call to the `sum` function, with the output of `sum(1, 1)` as the first argument, and `2` as the second argument.
 
 ### Data representations
-In what follows, the colorful boxes contain commands which could be entered into an R console. The box beneath each colorful box is the expected output.
+In what follows, the initial boxes (starting with a `>`) contain commands which could be entered into an R console. The box beneath each initial box (marked by `##`) is the expected output.
 
 #### Matrices
 Matrices store sets of data. For example, take a look at the Motor Trend dataset, which is include in base R:
@@ -70,6 +71,8 @@ mtcars
 
 In the `mtcars` matrix, each row represents a particular car, and each column represents a feature of that car (a variable). You can use the `?` function (`?mtcars`) to access documentation.
 
+Note: In base R, there are purely numerical matrices (as made with the `matrix` function) and matrices with mixed data types (such as numerical and character or factor columns; as made by the `data.frame` function). These are both matrix representations, but they have some different methods (functions that interact with them). `mtcars` is a `data.frame` object (which you can see with the `class` function; `class(mtcars)`), but the methods used in these examples (such as the `[` function) will also work with standard `matrix` objects.
+
 #### Matrices as arguments
 Some functions accept entire matrices as arguments. For example, the `colnames` function will output a matrix's column names:
 ```{r}
@@ -77,16 +80,18 @@ colnames(mtcars)
 ```
 
 #### Vectors as arguments
-Other functions only accept values or vectors (single columns or rows) as arguments. You can use the `[` function to select single columns or rows by name or index. `[`'s first argument selects rows, and its second argument selects columns. For example, you can select the `mpg` variable like this (note that variable names are case sensitive):
+Other functions only accept values or vectors (single columns or rows, or created independently with the `c` function) as arguments. You can use the `[` function to select single columns or rows by name or index. `[`'s first argument selects rows, and its second argument selects columns. For example, you can select the `mpg` variable like this (note that variable names are case sensitive):
 ```{r}
-mtcars[,'mpg']
+mtcars[, 'mpg']
 ```
-Fun note: The `[` function can also be called by the `(` function: `'['(mtcars,,'mpg')`.
+Fun note: The `[` function can also be called by the `(` function: `'['(mtcars,, 'mpg')`.
 
 Since the `[` function outputs a vector, you can enter it as an argument to another function, such as the `sum` function:
 ```{r}
-sum(mtcars[,'mpg'])
+sum(mtcars[, 'mpg'])
 ```
+
+The `sum` function will handle multiple vectors or single values entered as individual arguments (`sum(c(1, 2, 3))` is the same as `sum(1, 2, 3)`), but other functions expect a vector as the first argument. For instance `mean(c(1, 2, 3))` gives the average of 1, 2, and 3, whereas `mean(1, 2, 3)` would be the same as `mean(1)`, giving the average of 1. Check a function's documentation to see what it expects---`sum`'s first argument is `...` meaning it will collapse additional arguments (those without names matching other arguments) into the first argument, whereas `mean`'s first argument is `x`.
 
 # Visualizing data with splot
 The `splot` function generates all sorts of plots. Its first argument is for variable names, and its second argument is for the dataset containing those variables. See the documentation for more information about the `splot` function (enter `?splot` in an R console, or <a href='https://miserman.github.io/splot/#main_function' target='_blank'>view online</a>).
@@ -99,7 +104,7 @@ splot(mpg, mtcars)
 Here, the bars depict the frequency of the value-range they cover (which is the histogram part), and the line is the estimated theoretical distribution of the variable (if more cars were sampled from the same source, they would theoretically resemble this distribution; e.g., most cars would go between 15 and 20 miles per gallon).
 
 ### Relationship between two variables
-The first argument in the `splot` function can be entered as a formula, which is a way to specify relationships between variables. The first part of a formula is the tilde (`~`), which separates a y variable (before the tilde; on the vertical axis of a plot) from an x variable (after the tilde; on the horizontal axis of a plot).
+The first argument in the `splot` function can be entered as a formula, which is a way to specify relationships between variables. The first part of a formula is the tilde (`~`), which separates a `y` variable (before the tilde; on the vertical axis of a plot) from an `x` variable (after the tilde; on the horizontal axis of a plot).
 
 For example, we can look at the relationship between the `mpg` and `wt` variables like this:
 ```{r, fig.height=4.5, fig.width=10, dev='CairoSVG'}
@@ -111,57 +116,57 @@ The line is from a linear regression, which is attempting to predict y given x. 
 
 Something we might do to improve this prediction (model fit) is to consider other variables. Weight seems to be closely related to MPG (going by the last plot), but maybe MPG depends on something else as well, such as the car's style of transmission (automatic versus manual). To look at this, we can add a splitting variable to the formula with an asterisk (`*`).
 
-Splitting variables break the data up into groups based on their value. For example, this will separate cars that have an automatic transmission (0; green in the plot) from those that have a manual transmission (1; purple in the plot), and estimate a line for each group.
+Splitting variables break the data up into groups based on their value. For example, this will separate cars that have an automatic transmission (0; purple in the plot) from those that have a manual transmission (1; green in the plot), and estimate a line for each group.
 ```{r, fig.height=4.5, fig.width=10, dev='CairoSVG'}
 splot(mpg ~ wt * am, mtcars)
 ```
-From this, it seems (in this sample of cars at least) that the negative relationship between weight and MPG is stronger among cars with a manual transmission; transmission appears to moderate the relationship between weight and MPG. That is, the purple line has a steeper slope than the green line.
+From this, it seems (in this sample of cars at least) that the negative relationship between weight and MPG is stronger among cars with a manual transmission; transmission appears to moderate the relationship between weight and MPG. That is, the green line has a steeper slope than the purple line.
 
 Another way we can improve model fit is by allowing our prediction lines to bend. A particularly clear case where this seems to help is in modeling the relationship between weight and displacement:
 ```{r, fig.height=4.5, fig.width=10, dev='CairoSVG'}
-splot(wt ~ disp + disp^2 + disp^3, mtcars)
+splot(wt ~ disp + disp ^ 2 + disp ^ 3, mtcars)
 ```
-The `^` function raises the preceding vector by the following value, so `disp^2` is the squared `disp` variable, and `disp^3` is the cubed `disp` variable. Each of these transformations of x increases the prediction line's ability to bend.
+The `^` function raises the preceding vector by the following value, so `disp ^ 2` is the squared `disp` variable, and `disp ^ 3` is the cubed `disp` variable. Each of these transformations of `x` increases the prediction line's ability to bend.
 
 Maybe the relationship between displacement and weight is actually curvy like this, but we might suspect there are just different types of cars represented here. For example, it kind of looks like there are clusters in the data, one under 200, and one between 200 and 400. We can visualize this by splitting displacement by itself at those points:
 ```{r, fig.height=4.5, fig.width=10, dev='CairoSVG'}
-splot(wt ~ disp * disp, mtcars, split=c(200,400))
+splot(wt ~ disp * disp, mtcars, split = c(200, 400))
 ```
-This cleans up the data nicely, but if we wanted to say these clusters actually represent different types of cars, it would be more convincing if we could find another variable that defines groups like these...
+This cleans up the data nicely, but if we wanted to say these clusters actually represent different types of cars, it would be more convincing if we could find another variable that defines groups like these.
 
 ### Categorical variables
 We started by looking at the `mpg` variable by itself, but since this dataset has named entries (unlike sets with less meaningful rows like participant IDs), it might be informative to visualize the MPG of each entry:
 ```{r, fig.height=4.5, fig.width=10, dev='CairoSVG'}
-splot(mpg ~ rownames(mtcars), mtcars, type='bar', sort=TRUE)
+splot(mpg ~ rownames(mtcars), mtcars, type = 'bar', sort = TRUE)
 ```
-Here, the additional arguments are changing aspects of the display from the way they would show up by default: The `type` argument sets the look of the data (bars rather than lines or points), and the `sort` argument changes the way the x variable is ordered (by y's value rather than alphabetically).
+Here, the additional arguments are changing aspects of the display from the way they would show up by default: The `type` argument sets the look of the data (bars rather than lines or points), and the `sort` argument changes the way the `x` variable is ordered (by `y`'s value rather than alphabetically).
 
 The `splot` function has many more arguments which mostly affect the way each element of the figure is displayed. For example, in this figure, you might want to adjust the range of the y axis (with the `myl` argument), and maybe make the labels more informative (with the `laby` and `labx` arguments):
 ```{r, fig.height=4.5, fig.width=10, dev='CairoSVG'}
 splot(
-  mpg ~ rownames(mtcars), mtcars, type='bar', sort=TRUE,
-  myl=c(10,35), laby='Miles Per Gallon', labx='Car'
+  mpg ~ rownames(mtcars), mtcars, type = 'bar', sort = TRUE,
+  myl = c(10, 35), laby = 'Miles Per Gallon', labx = 'Car'
 )
 ```
 
 To explore the data more broadly we might look at a few variables as once. These can be entered as a matrix in the y position:
 ```{r, fig.height=4.5, fig.width=10, dev='CairoSVG'}
-splot(mtcars[,c('cyl','carb','gear')]~mpg, mtcars, mv.as.x=TRUE)
+splot(mtcars[, c('cyl', 'carb', 'gear')] ~ mpg, mtcars, mv.as.x = TRUE)
 ```
-The `mv.as.x` argument is saying the columns of y should be displayed as levels on the x axis (the "mv" stands for "multiple variables"). Otherwise, they would be displayed as levels of a by variable, with MPG on the x axis.
+The `mv.as.x` argument is saying the columns of `y` should be displayed as levels on the x axis ("mv" stands for "multiple variables"). Otherwise, they would be displayed as levels of a by variable, with MPG on the x axis.
 
 This type of plot is more commonly displayed as a bar plot, because lines are sometimes taken to imply that there's some movement between levels (as in the same participants experiencing different conditions; within-person experimental designs).
 
 Another way to interpret lines, however, is as regression lines. This is particularly clear if we look at the raw data by representing this line plot as a scatter plot:
 ```{r, fig.height=4.5, fig.width=10, dev='CairoSVG'}
 splot(
-  mtcars[,c('cyl','carb','gear')]~mpg, mtcars,
-  mv.as.x=TRUE, type='scatter', xlas=1, lpos='topright'
+  mtcars[, c('cyl', 'carb', 'gear')] ~ mpg, mtcars,
+  mv.as.x = TRUE, type = 'scatter', xlas = 1, lpos = 'topright'
 )
 ```
-The `xlas` argument sets the orientation of the x-axis labels (since they default to vertical for scatter plots), and the `lpos` argument sets the position of the legend.
+The `xlas` argument sets the orientation of the x axis labels (since they default to vertical for scatter plots), and the `lpos` argument sets the position of the legend.
 
-This representation isn't very informative in terms of the data (as there is a lot of overlap at each level of each variable), but these lines are actually prediction lines from regressions. The line plot depicts each part of the regression: Where each line crosses an x-axis label is the mean of the data represented by the line within that level; the error bars show the standard errors around those means (which correspond to the p-value of the associated t-test; if they cross, the difference is non-significant); and the slope of the line between levels corresponds to the associated beta weight. In this sense, a line plot can be somewhat more informative than a bar plot.
+This representation isn't very informative in terms of the data (as there is a lot of overlap at each level of each variable), but these lines are actually prediction lines from regressions. The line plot depicts each part of the regression: Where each line crosses an x axis label is the mean of the data represented by the line within that level; the error bars show the standard errors around those means (which correspond to the p-value of the associated t test; if they cross, the difference is non-significant); and the slope of the line between levels corresponds to the associated beta weight. In this sense, a line plot can be somewhat more informative than a bar plot.
 
 ***
 
