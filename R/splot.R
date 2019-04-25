@@ -1410,9 +1410,9 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
         if(points && points.first) points(x,y,col=col,cex=cex['points'])
         if(ck$ltck){
           lt=if(ck$ltco=='pr' && length(unique(y))!=2) 'li' else ck$ltco
-          fit=tryCatch({
+          fit = if(lt == 'e') y else tryCatch({
             if(ck$c) lm(y~x+as.matrix(td[,cvar,drop=FALSE]))$fitted else
-              if(lt=='e') y else if(lt=='pr'){
+              if(lt=='pr'){
                 yr=range(y)
                 y=factor(y,labels=c(0,1))
                 fit=predict(glm(y~x,binomial))
@@ -1422,8 +1422,15 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
               }else predict(switch(lt,li=lm,lo=loess,sm=smooth.spline)(y~x))
           },error=function(e){warning('error estimating line: ',e$message,call.=FALSE);NULL})
           if(!is.null(fit)){
-            if(lt=='sm') {xo=fit$x; fit=fit$y} else {or=order(x); xo=x[or]; fit=fit[or]}
-            graphics::lines(xo,fit,col=seg$lcols[[l]],lty=seg$lty[[l]],lwd=seg$lwd[[l]])
+            if(lt == 'e') xo = x else if(lt == 'sm'){
+              xo = fit$x
+              fit = fit$y
+            }else{
+              or = order(x)
+              xo = x[or]
+              fit = fit[or]
+            }
+            graphics::lines(xo, fit, col = seg$lcols[[l]], lty = seg$lty[[l]], lwd = seg$lwd[[l]])
           }
         }
         if(points && !points.first) points(x,y,col=col,cex=cex['points'])
