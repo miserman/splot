@@ -192,6 +192,10 @@ splot.color=function(x=NULL,by=NULL,seed='pastel',brightness=0,luminance=0,opaci
     }
   }else if(grepl('^no|^f|^bin',method,TRUE)) function(cc, n){
     if(length(n) != 1) n = length(n)
+    if(any(opacity!=1,brightness!=0,luminance!=0)){
+      adj=1+brightness
+      cc=adjustcolor(cc,opacity,adj,adj,adj,c(rep(luminance,3),0))
+    }
     rep(cc, n)
   }else function(cc, n){
     s = if(length(n) != 1){
