@@ -90,7 +90,7 @@ splot(cbind(x, y), data)
 splot(group, data, colorby = x)
 
 # when x is categorical, the mean of y is shown at each level,
-# with error bars showing standard deviation by default
+# with error bars showing standard error by default
 splot(y ~ group, data)
 
 # lines are the default, but any line plot can also be represented with bars
@@ -144,7 +144,7 @@ splot(y ~ x, data, lines = 'loess')
 # or adjust the linear model with transformations of x
 splot(y ~ x + x^2 + x^3, data)
 
-# when splitting variables (by and/or between) are included,
+# when splitting variables are included (by and/or between),
 # the model is fit to each subset
 splot(y ~ x * by * bet1 * bet2 + x^2 + x^3, data)
 ```

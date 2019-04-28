@@ -844,7 +844,11 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
     cn=names(cba)
     ck$cbb='by'%in%cn
     if(ck$cbb){
-      if(is.numeric(cba$by)) cba$by=if(length(unique(cba$by))<=lim) as.character(cba$by) else splt(cba$by,ck$sp)
+      if(is.numeric(cba$by)) cba$by=if(length(unique(cba$by))<=lim) as.character(cba$by) else{
+        ptxt$cbos = if(missing(leg.title)) colorby else leg.title
+        ptxt$cbos = if(is.call(ptxt$cbos) && length(ptxt$cbos) > 2) deparse(ptxt$cbos[[3]]) else deparse(ptxt$cbos)
+        splt(cba$by, ck$sp)
+      }
       lby=length(unique(cba$by))
       if(!color.lock && cl<lby) seg$cols=splot.color(as.list(rep.int(round(lby/cl+.49),cl)),seed=seg$cols)
     }
@@ -1000,10 +1004,14 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
     },TRUE))) ck[c('el','er')]=FALSE
     if(any(ck$cbn,ck$spm,ck$er)){
       if(ck$spm){
-        tv=c(if(seg$x$s) ptxt$x else '',if(seg$by$s) ptxt$by else '',if(seg$f1$s) ptxt$bet[1] else '',
-          if(seg$f2$s) ptxt$bet[2] else '')
-        tv=tv[tv!='']
-        tv=gsub(', (?=[a-z0-9]+$)',ifelse(length(tv)>2,', & ',' & '),paste(tv,collapse=', '),TRUE,TRUE)
+        tv = c(
+          if(seg$x$s) ptxt$x,
+          if(seg$by$s) ptxt$by,
+          if(seg$f1$s) ptxt$bet[1],
+          if(seg$f2$s) ptxt$bet[2],
+          if('cbos' %in% names(ptxt)) ptxt$cbos
+        )
+        tv = sub(', (?=[A-z0-9]+$)', if(length(tv) > 2) ', & ' else ' & ', paste(tv, collapse = ', '), perl = TRUE)
       }
       note=paste0(
         if(ck$spm) paste0(tv,' split by ',txt$split,'. '),

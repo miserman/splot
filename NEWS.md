@@ -1,3 +1,8 @@
+# splot 0.4.3
+
+## Bug fixes
+* includes colorby variable name in split note when split.
+
 # splot 0.4.2
 
 ## Additions
