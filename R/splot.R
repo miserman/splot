@@ -67,7 +67,8 @@
 #' @param color.lock logical; if \code{FALSE}, colors will not be adjusted to offset lines from points or histogram bars.
 #' @param color.offset how much points or histogram bars should be offset from the initial color used for lines. Default is
 #'   1.1; values greater than 1 lighten, and less than 1 darken.
-#' @param opacity a number between 0 and 1; sets the opacity of points if they are drawn, and lines or bars otherwise.
+#' @param opacity a number between 0 and 1; sets the opacity of points, lines, and bars. Semi-opaque lines will sometimes
+#'   not be displayed in the plot window, but will show up when the plot is written to a file.
 #' @param x secondary variable, to be shown in on the x axis. If not specified, \code{type} will be set to \code{'density'}.
 #'   If \code{x} is a factor or vector of characters, or has fewer than \code{lim} levels when treated as a factor,
 #'   \code{type} will be set to \code{'line'} unless specified.
@@ -683,6 +684,8 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
         seg[[e]]$l=lvs(dat[,i])
         seg[[e]]$ll=length(seg[[e]]$l)
       }
+      if(!is.factor(dat[, i])) dat[, i] = if(is.character(dat[, i]))
+        factor(dat[, i], lvs(dat[, i])) else as.factor(dat[, i])
     }
   }
   if(seg$by$l[1]=='') seg$by$l='NA'
@@ -836,6 +839,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
       names(cba)=names(formals(splot.color))[seq_along(cba)] else
       if(any(names(cba)=='')){tn=names(cba)=='';names(cba)[tn]=sca[seq_len(sum(tn))]}
     if(!is.null(ncol(cba$x)) && ncol(cba$x)>1){if(!'by'%in%names(cba)) cba$by=cba$x[,2];cba$x=cba$x[,1]}
+    if(seg$by$e && seg$by$ll > lim && !'by' %in% names(cba)) cba$by = cba$x
     cba$flat=TRUE
     cn=names(cba)
     ck$cbb='by'%in%cn
@@ -900,7 +904,8 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
           chl=TRUE
           if(missing(leg.title)){
             leg.title=substitute(colorby)
-            leg.title=if(is.call(leg.title) && length(leg.title)>2) deparse(leg.title[[3]]) else deparse(leg.title)
+            leg.title=if(is.call(leg.title) && length(leg.title)>2)
+              deparse(leg.title[[if(cn[2] == 'by') 3 else 2]]) else deparse(leg.title)
           }
           ptxt$leg = lvs(cba$by)
         }

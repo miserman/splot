@@ -1,6 +1,11 @@
 ---
 title: "Gallery"
-output: rmarkdown::html_document
+output:
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    self_contained: true
 vignette: >
   %\VignetteIndexEntry{Exploring Data with splot}
   %\VignetteEngine{knitr::rmarkdown}

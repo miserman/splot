@@ -1,6 +1,11 @@
 ---
 title: "Preparing a Particular Result with splot"
-output: rmarkdown::html_vignette
+output:
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    self_contained: true
 vignette: >
   %\VignetteIndexEntry{Preparing a Particular Result with splot}
   %\VignetteEngine{knitr::rmarkdown}
@@ -29,7 +34,7 @@ attach(data)
 ```
 
 ***
-# Comparison of Anger Word Usage between all Autobiographies
+# Anger Word Usage
 Texts are split into 100 segments each (the `index` variable), and are identified by author (the `name` variable).
 
 To look at a particular category across segments of text, we can just plot the category against `index`, with `name` in the `by` position:
@@ -101,7 +106,7 @@ splot(death~index*name, myl=c(0,1.35), options=opt)
 ```
 
 ***
-#Comparison of Pronoun Usage
+# Comparison of Pronoun Usage
 
 We might want to look at a few variables at the same time. In this dataset, the difference in pronoun use between the Rodger and Hitler text is interesting, so we'll look at personal pronouns (`i, we, you, shehe, they`) and impersonal pronouns (`ipron`) all together:
 ```{r, fig.height=5, fig.width=10, dev='CairoSVG'}
@@ -120,7 +125,7 @@ splot(
 ```
 
 ***
-#Saving Figures
+# Saving Figures
 
 Now that we have some formatted figures, we might want to use them in other things.
 

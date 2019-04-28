@@ -109,7 +109,8 @@ of \code{y} (\code{rnorm(100)} in this case).}
 \item{color.offset}{how much points or histogram bars should be offset from the initial color used for lines. Default is
 1.1; values greater than 1 lighten, and less than 1 darken.}
 
-\item{opacity}{a number between 0 and 1; sets the opacity of points if they are drawn, and lines or bars otherwise.}
+\item{opacity}{a number between 0 and 1; sets the opacity of points, lines, and bars. Semi-opaque lines will sometimes
+not be displayed in the plot window, but will show up when the plot is written to a file.}
 
 \item{x}{secondary variable, to be shown in on the x axis. If not specified, \code{type} will be set to \code{'density'}.
 If \code{x} is a factor or vector of characters, or has fewer than \code{lim} levels when treated as a factor,

@@ -116,11 +116,11 @@ The line is from a linear regression, which is attempting to predict y given x. 
 
 Something we might do to improve this prediction (model fit) is to consider other variables. Weight seems to be closely related to MPG (going by the last plot), but maybe MPG depends on something else as well, such as the car's style of transmission (automatic versus manual). To look at this, we can add a splitting variable to the formula with an asterisk (`*`).
 
-Splitting variables break the data up into groups based on their value. For example, this will separate cars that have an automatic transmission (0; purple in the plot) from those that have a manual transmission (1; green in the plot), and estimate a line for each group.
+Splitting variables break the data up into groups based on their value. For example, this will separate cars that have an automatic transmission (0; green in the plot) from those that have a manual transmission (1; purple in the plot), and estimate a line for each group.
 ```{r, fig.height=4.5, fig.width=10, dev='CairoSVG'}
 splot(mpg ~ wt * am, mtcars)
 ```
-From this, it seems (in this sample of cars at least) that the negative relationship between weight and MPG is stronger among cars with a manual transmission; transmission appears to moderate the relationship between weight and MPG. That is, the green line has a steeper slope than the purple line.
+From this, it seems (in this sample of cars at least) that the negative relationship between weight and MPG is stronger among cars with a manual transmission; transmission appears to moderate the relationship between weight and MPG. That is, the purple line has a steeper slope than the green line.
 
 Another way we can improve model fit is by allowing our prediction lines to bend. A particularly clear case where this seems to help is in modeling the relationship between weight and displacement:
 ```{r, fig.height=4.5, fig.width=10, dev='CairoSVG'}

@@ -120,7 +120,7 @@ splot.color=function(x=NULL,by=NULL,seed='pastel',brightness=0,luminance=0,opaci
       x=as.list(table(x))[lvs(ox)]
     }else{
       if(is.numeric(by) && length(lvs(by))>9) warning('splot.color: only non-numeric bys are accepted') else{
-        ox = if(is.factor(by)) by else as.character(by)
+        ox = if(is.factor(by) || is.character(by)) by else as.factor(by)
         x = split(x, by)[lvs(ox)]
       }
     }
