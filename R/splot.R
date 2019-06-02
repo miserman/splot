@@ -646,12 +646,12 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
     }
   }
   seg=list(
-    x=list(s=FALSE,i=2),
+    x=list(e=!missing(x),s=FALSE,i=2),
     f1=list(e=FALSE,s=FALSE,l='',ll=1),
     f2=list(e=FALSE,s=FALSE,l='',ll=1),
     by=list(e=FALSE,s=FALSE,l='',ll=1)
   )
-  if(!missing(x) && ck$t!=2) if((ck$t==1 || is.character(dat$x) || is.factor(dat$x)
+  if(seg$x$e && ck$t!=2) if((ck$t==1 || is.character(dat$x) || is.factor(dat$x)
     || (missing(type) && length(unique(dat$x))<lim))){
     dat$x=if(!is.character(dat$x) && !is.factor(dat$x) && length(unique(dat$x))>lim){
       seg$x$s=TRUE
@@ -747,7 +747,9 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
       }
     }
   },error=function(e)warning('setting levels failed: ',e$message,call.=FALSE))
-  dsf=list(c1=if(seg$f1$e) dat[,seg$f1$i] else '',sep=rep.int('^^',nr),c2=if(seg$f2$e) dat[,seg$f2$i] else '')
+  dsf = list(c1 = '', sep = rep.int('^^', nr), c2 = '')
+  if(seg$f1$e) dsf$c1 = dat[, seg$f1$i]
+  if(seg$f2$e) dsf$c2 = dat[, seg$f2$i]
   cdat=split(dat,dsf)
   if(seg$by$e){
     cdat=lapply(cdat,function(s)if(length(unique(s$by))>1) split(s,s$by)[as.character(lvs(s$by))] else{
@@ -960,7 +962,8 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
     }else ptxt$leg=if(!is.null(names(seg$cols))) names(seg$cols) else seg$by$l
   }else{
     if(!color.lock && cl<seg$by$ll) seg$cols=splot.color(as.list(rep.int(round(seg$by$ll/cl+.49),cl)),seed=seg$cols)
-    if(ck$t!=2 && !any(length(seg$cols)==c(nr,seg$by$ll)) && (!ck$b || seg$by$e)) seg$cols=rep_len(seg$cols,seg$by$ll)
+    if(ck$t != 2 && !any(length(seg$cols) == c(nr, seg$by$ll)) && (!ck$b || seg$by$e))
+      seg$cols = rep_len(seg$cols, seg$by$ll)
   }
   if(seg$by$e && !all(seg$by$l%in%names(seg$cols))){
     if(length(seg$cols)==seg$by$ll){
@@ -1192,8 +1195,8 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
     if(ck$t==1){
       #bar and line
       flipped=FALSE
-      if(missing(byx) && ck$mv && any(vapply(cdat[[i]],function(d)any(vapply(split(d$y,d$x),
-        function(dl) if(length(dl)==1) 0 else var(dl),0)==0),TRUE))) byx=FALSE
+      if(missing(byx) && ck$mv && any(vapply(cdat[[i]], function(d) any(vapply(split(d$y, as.character(d$x)),
+        function(dl) if(length(dl) == 1) 0 else var(dl), 0) == 0), TRUE))) byx = FALSE
       if(byx && lim<Inf && seg$by$e && (is.list(cdat[[i]]) && length(cdat[[i]])>1)){
         flipped=TRUE
         cdat[[i]]=do.call(rbind,cdat[[i]])
