@@ -97,7 +97,7 @@ splot.color=function(x=NULL,by=NULL,seed='pastel',brightness=0,luminance=0,opaci
   }
   seed=tolower(seed)
   ox=NULL
-  lvs=function(x) if(is.factor(x)) base::levels(x) else unique(x)
+  lvs=function(x) if(is.factor(x)) base::levels(x) else unique(na.omit(x))
   if(!is.null(ncol(x)) && ncol(x)>1){
     if(is.null(by)) by=x[,2]
     x=x[,1]
@@ -120,8 +120,8 @@ splot.color=function(x=NULL,by=NULL,seed='pastel',brightness=0,luminance=0,opaci
       x=as.list(table(x))[lvs(ox)]
     }else{
       if(is.numeric(by) && length(lvs(by))>9) warning('splot.color: only non-numeric bys are accepted') else{
-        ox = if(is.factor(by) || is.character(by)) by else as.factor(by)
-        x = split(x, by)[lvs(ox)]
+        ox = by = factor(by, lvs(by))
+        x = split(x, by)
       }
     }
   }
@@ -131,7 +131,7 @@ splot.color=function(x=NULL,by=NULL,seed='pastel',brightness=0,luminance=0,opaci
     ol=length(x)
     ox=NULL
   }
-  ckd=!shuffle && ol!=1 && is.numeric(x) && any(duplicated(x))
+  ckd=!shuffle && ol!=1 && is.numeric(x) && anyDuplicated(x)
   if(ckd){
     ox=x
     x=lvs(x)

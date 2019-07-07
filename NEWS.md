@@ -1,6 +1,11 @@
 # splot 0.4.3
 
+## Improvements
+* avoids an error when colorby's by has missing values.
+
 ## Bug fixes
+* correctly assigns colorby colors to scatter plot lines in each
+  between panel.
 * includes colorby variable name in split note when split.
 
 # splot 0.4.2
