@@ -393,7 +393,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
   dn=if(ck$d) names(data) else ''
   if(any(grepl('~',c(substitute(y),if(paste(deparse(substitute(y)),collapse='')%in%ls(envir=globalenv())) y),fixed=TRUE))){
     f=as.character(as.formula(y))[-1]
-    y=f[1]
+    y = as.formula(y)[[2]]
     bl=function(x){
       cs=strsplit(x,'')[[1]]
       rs=lapply(c('(',')','[',']'),grep,cs,fixed=TRUE)
@@ -441,7 +441,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
   txt[c('bet','cov')]=lapply(c('bet','cov'),function(l){
     paste(if(!ck$ff[[l]] && length(txt[[l]])>1) txt[[l]][-1] else txt[[l]])
   })
-  txt=lapply(txt,function(e)if(is.call(e)) deparse(e) else e)
+  txt=lapply(txt,function(e)if(is.call(e)) paste(deparse(e), collapse = '\n') else e)
   if(length(txt$bet)>2) txt$bet=txt$bet[1:2]
   tdc=function(x,l=NULL){
     if(!is.call(x)) if((is.null(l) && length(x)!=1) || (!is.null(l) && length(x)==l)) return(x)
@@ -461,7 +461,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
   }
   if(!missing(data) && !class(data)%in%c('matrix','data.frame'))
     data=if(is.character(data)) eval(parse(text=data)) else eval(data,globalenv())
-  dat=data.frame(y=tdc(txt$y))
+  dat = data.frame(y = tdc(txt$y), check.names = FALSE)
   if(ncol(dat)==1) names(dat)='y'
   nr=nrow(dat)
   lvs=function(x,s=FALSE) if(is.factor(x)) base::levels(x) else if(s) sort(unique(na.omit(x))) else unique(na.omit(x))
@@ -547,9 +547,12 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
   nr=nrow(dat)
   if(sum(grepl('^y',dn))>1){
     #setting up multiple y variables
-    if(!ck$d){
-      tcn=if(is.null(names(tcn<-tdc(txt$y)))) colnames(tcn) else names(tcn)
-      if(!is.null(tcn) && length(tcn)==ncol(dat)) colnames(dat)=tcn
+    dn=grep('^y\\.',dn)
+    ck$mvn=colnames(dat)[dn]
+    if(any(tcn <- grepl('(V\\d+$|c\\(|y\\.(\\d+$|.*\\.))', ck$mvn))){
+      ncn = substitute(y)
+      if(length(ncn) > 1 && length(ncn <- as.character(ncn[-1])) == length(dn))
+        ck$mvn[tcn] = paste0('y.', ncn[tcn])
     }
     ck$mv=TRUE
     if(ck$mlvn) lvn=FALSE
@@ -566,11 +569,10 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
         dat$bet=NULL
       }else dat$bet = if(is.factor(dat$by)) dat$by else as.character(dat$by)
     }
-    dn=grep('^y\\.',dn)
-    ck$mvn=colnames(dat)[dn]
     td=dat
     if(any(ckn<-duplicated(ck$mvn))) ck$mvn[ckn]=paste0(ck$mvn[ckn],'_',seq_len(sum(ckn)))
     by=sub('^y\\.','',ck$mvn)
+    if(any(by == '')) by[by == ''] = seq_len(sum(by == ''))
     by=factor(rep(by,each=nr),levels=by)
     dat=data.frame(y=unlist(dat[,dn],use.names=FALSE))
     if(ncol(td)>length(dn)) dat=cbind(dat,do.call(rbind,lapply(seq_along(dn),function(i)td[,-dn,drop=FALSE])))
@@ -752,7 +754,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
   if(seg$f2$e) dsf$c2 = dat[, seg$f2$i]
   cdat=split(dat,dsf)
   if(seg$by$e){
-    cdat=lapply(cdat,function(s)if(length(unique(s$by))>1) split(s,s$by)[as.character(lvs(s$by))] else{
+    cdat=lapply(cdat,function(s)if(length(unique(s$by))>1) split(s, factor(as.character(s$by), lvs(s$by))) else{
       s=lapply(seg$by$l,function(l) if(sum(s$by==l)) s else NULL)
       names(s)=seg$by$l
       s

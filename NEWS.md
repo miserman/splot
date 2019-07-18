@@ -1,6 +1,7 @@
 # splot 0.4.3
 
 ## Improvements
+* better retains or infers names for multiple variables.
 * avoids an error when colorby's by has missing values.
 
 ## Bug fixes
