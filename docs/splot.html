@@ -20,21 +20,23 @@ splot(y, data = NULL, su = NULL, type = "", split = "median",
   levels = list(), sort = NULL, error = "standard",
   error.color = "#585858", error.lwd = 2, lim = 9, lines = TRUE,
   colors = "pastel", ..., colorby = NULL, colorby.leg = TRUE,
-  color.lock = FALSE, color.offset = 1.1, opacity = 1, x = NULL,
-  by = NULL, between = NULL, cov = NULL, line.type = "l",
-  mv.scale = "none", mv.as.x = FALSE, save = FALSE,
-  format = cairo_pdf, dims = dev.size(), file.name = "splot",
-  myl = NULL, mxl = NULL, autori = TRUE, xlas = 0, ylas = 1,
-  xaxis = TRUE, yaxis = TRUE, bw = "nrd0", adj = 2,
-  breaks = "scott", leg = "outside", lpos = "auto", lvn = TRUE,
-  leg.title = TRUE, leg.args = list(), title = TRUE, labx = TRUE,
-  laby = TRUE, lty = TRUE, lwd = 2, sub = TRUE, ndisp = TRUE,
-  note = TRUE, font = c(title = 2, sud = 1, leg = 1, leg.title = 2,
-  note = 3), cex = c(title = 1.5, sud = 0.9, leg = 0.9, note = 0.7,
-  points = 1), sud = TRUE, labels = TRUE, labels.filter = "_",
-  labels.trim = 20, points = TRUE, points.first = TRUE, byx = TRUE,
-  drop = c(x = TRUE, by = TRUE, bet = TRUE), prat = c(1, 1),
-  check.height = TRUE, model = FALSE, options = NULL, add = NULL)
+  color.lock = FALSE, color.offset = 1.1, color.summary = "mean",
+  opacity = 1, x = NULL, by = NULL, between = NULL, cov = NULL,
+  line.type = "l", mv.scale = "none", mv.as.x = FALSE,
+  save = FALSE, format = cairo_pdf, dims = dev.size(),
+  file.name = "splot", myl = NULL, mxl = NULL, autori = TRUE,
+  xlas = 0, ylas = 1, xaxis = TRUE, yaxis = TRUE,
+  breaks = "sturges", density.fill = TRUE, density.opacity = 0.4,
+  density.args = list(), leg = "outside", lpos = "auto",
+  lvn = TRUE, leg.title = TRUE, leg.args = list(), title = TRUE,
+  labx = TRUE, laby = TRUE, lty = TRUE, lwd = 2, sub = TRUE,
+  ndisp = TRUE, note = TRUE, font = c(title = 2, sud = 1, leg = 1,
+  leg.title = 2, note = 3), cex = c(title = 1.5, sud = 0.9, leg = 0.9,
+  note = 0.7, points = 1), sud = TRUE, labels = TRUE,
+  labels.filter = "_", labels.trim = 20, points = TRUE,
+  points.first = TRUE, byx = TRUE, drop = c(x = TRUE, by = TRUE, bet
+  = TRUE), prat = c(1, 1), check.height = TRUE, model = FALSE,
+  options = NULL, add = NULL)
 </pre>
 
 
@@ -161,9 +163,17 @@ of <code>y</code> (<code>rnorm(100)</code> in this case).</p>
 <p>how much points or histogram bars should be offset from the initial color used for lines. Default is
 1.1; values greater than 1 lighten, and less than 1 darken.</p>
 </td></tr>
+<tr valign="top"><td><code>color.summary</code></td>
+<td>
+<p>specifies the function used to collapse multiple colors for a single display. Either a string
+matching one of <code>'mean'</code> (which uses <code>splot.colormean</code> to average RGB values), <code>'median'</code> (
+which treats codes as ordered, and selects that at the rounded median), or <code>'mode'</code> (which selects the most
+common code), or a function which takes color codes in its first argument, and outputs a single color code as a
+character.</p>
+</td></tr>
 <tr valign="top"><td><code>opacity</code></td>
 <td>
-<p>a number between 0 and 1; sets the opacity of points, lines, and bars. Semiopaque lines will sometimes
+<p>a number between 0 and 1; sets the opacity of points, lines, and bars. Semi-opaque lines will sometimes
 not be displayed in the plot window, but will show up when the plot is written to a file.</p>
 </td></tr>
 <tr valign="top"><td><code>x</code></td>
@@ -256,18 +266,22 @@ that they extend to the bottom of the y axis.</p>
 <td>
 <p>logical; if <code>FALSE</code>, the axis will not be drawn.</p>
 </td></tr>
-<tr valign="top"><td><code>bw</code></td>
-<td>
-<p>sets the smoothing bandwidth when plotting densities. Default is <code>'nrd0'</code>. See
-<code>density</code>.</p>
-</td></tr>
-<tr valign="top"><td><code>adj</code></td>
-<td>
-<p>adjusts the smoothing of densities (<code>adj * bw</code>). See <code>density</code>.</p>
-</td></tr>
 <tr valign="top"><td><code>breaks</code></td>
 <td>
 <p>determines the width of histogram bars. See <code>hist</code>.</p>
+</td></tr>
+<tr valign="top"><td><code>density.fill</code></td>
+<td>
+<p>logical; <code>FALSE</code> will turn off polygon fills when they are displayed, <code>TRUE</code> will replace
+histograms with polygons.</p>
+</td></tr>
+<tr valign="top"><td><code>density.opacity</code></td>
+<td>
+<p>opacity of the density polygons, between 0 and 1.</p>
+</td></tr>
+<tr valign="top"><td><code>density.args</code></td>
+<td>
+<p>list of arguments to be passed to <code>density</code>.</p>
 </td></tr>
 <tr valign="top"><td><code>leg</code></td>
 <td>

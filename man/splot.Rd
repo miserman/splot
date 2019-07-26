@@ -8,21 +8,23 @@ splot(y, data = NULL, su = NULL, type = "", split = "median",
   levels = list(), sort = NULL, error = "standard",
   error.color = "#585858", error.lwd = 2, lim = 9, lines = TRUE,
   colors = "pastel", ..., colorby = NULL, colorby.leg = TRUE,
-  color.lock = FALSE, color.offset = 1.1, opacity = 1, x = NULL,
-  by = NULL, between = NULL, cov = NULL, line.type = "l",
-  mv.scale = "none", mv.as.x = FALSE, save = FALSE,
-  format = cairo_pdf, dims = dev.size(), file.name = "splot",
-  myl = NULL, mxl = NULL, autori = TRUE, xlas = 0, ylas = 1,
-  xaxis = TRUE, yaxis = TRUE, bw = "nrd0", adj = 2,
-  breaks = "scott", leg = "outside", lpos = "auto", lvn = TRUE,
-  leg.title = TRUE, leg.args = list(), title = TRUE, labx = TRUE,
-  laby = TRUE, lty = TRUE, lwd = 2, sub = TRUE, ndisp = TRUE,
-  note = TRUE, font = c(title = 2, sud = 1, leg = 1, leg.title = 2,
-  note = 3), cex = c(title = 1.5, sud = 0.9, leg = 0.9, note = 0.7,
-  points = 1), sud = TRUE, labels = TRUE, labels.filter = "_",
-  labels.trim = 20, points = TRUE, points.first = TRUE, byx = TRUE,
-  drop = c(x = TRUE, by = TRUE, bet = TRUE), prat = c(1, 1),
-  check.height = TRUE, model = FALSE, options = NULL, add = NULL)
+  color.lock = FALSE, color.offset = 1.1, color.summary = "mean",
+  opacity = 1, x = NULL, by = NULL, between = NULL, cov = NULL,
+  line.type = "l", mv.scale = "none", mv.as.x = FALSE,
+  save = FALSE, format = cairo_pdf, dims = dev.size(),
+  file.name = "splot", myl = NULL, mxl = NULL, autori = TRUE,
+  xlas = 0, ylas = 1, xaxis = TRUE, yaxis = TRUE,
+  breaks = "sturges", density.fill = TRUE, density.opacity = 0.4,
+  density.args = list(), leg = "outside", lpos = "auto",
+  lvn = TRUE, leg.title = TRUE, leg.args = list(), title = TRUE,
+  labx = TRUE, laby = TRUE, lty = TRUE, lwd = 2, sub = TRUE,
+  ndisp = TRUE, note = TRUE, font = c(title = 2, sud = 1, leg = 1,
+  leg.title = 2, note = 3), cex = c(title = 1.5, sud = 0.9, leg = 0.9,
+  note = 0.7, points = 1), sud = TRUE, labels = TRUE,
+  labels.filter = "_", labels.trim = 20, points = TRUE,
+  points.first = TRUE, byx = TRUE, drop = c(x = TRUE, by = TRUE, bet
+  = TRUE), prat = c(1, 1), check.height = TRUE, model = FALSE,
+  options = NULL, add = NULL)
 }
 \arguments{
 \item{y}{a formula (see note), or the primary variable(s) to be shown on the y axis (unless \code{x} is not specified).
@@ -109,6 +111,12 @@ of \code{y} (\code{rnorm(100)} in this case).}
 \item{color.offset}{how much points or histogram bars should be offset from the initial color used for lines. Default is
 1.1; values greater than 1 lighten, and less than 1 darken.}
 
+\item{color.summary}{specifies the function used to collapse multiple colors for a single display. Either a string
+matching one of \code{'mean'} (which uses \code{\link{splot.colormean}} to average RGB values), \code{'median'} (
+which treats codes as ordered, and selects that at the rounded median), or \code{'mode'} (which selects the most
+common code), or a function which takes color codes in its first argument, and outputs a single color code as a
+character.}
+
 \item{opacity}{a number between 0 and 1; sets the opacity of points, lines, and bars. Semi-opaque lines will sometimes
 not be displayed in the plot window, but will show up when the plot is written to a file.}
 
@@ -170,12 +178,14 @@ that they extend to the bottom of the y axis.}
 
 \item{xaxis, yaxis}{logical; if \code{FALSE}, the axis will not be drawn.}
 
-\item{bw}{sets the smoothing bandwidth when plotting densities. Default is \code{'nrd0'}. See
-\code{\link[stats]{density}}.}
-
-\item{adj}{adjusts the smoothing of densities (\code{adj * bw}). See \code{\link[stats]{density}}.}
-
 \item{breaks}{determines the width of histogram bars. See \code{\link[graphics]{hist}}.}
+
+\item{density.fill}{logical; \code{FALSE} will turn off polygon fills when they are displayed, \code{TRUE} will replace
+histograms with polygons.}
+
+\item{density.opacity}{opacity of the density polygons, between 0 and 1.}
+
+\item{density.args}{list of arguments to be passed to \code{\link[stats]{density}}.}
 
 \item{leg}{sets the legend inside or outside the plot frames (when a character matching \code{'^i'}, or a character
 matching \code{'^o'} or a number respectively), or turns it off (when \code{FALSE}). When inside, a legend is drawn in

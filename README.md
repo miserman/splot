@@ -33,7 +33,7 @@ Release ([version 0.4.2](https://CRAN.R-project.org/package=splot))
 ```R
 install.packages('splot')
 ```
-Development (version 0.4.3)
+Development (version 0.5.0)
 ```R
 install.packages('devtools')
 devtools::install_github('miserman/splot')

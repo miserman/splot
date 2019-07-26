@@ -80,11 +80,11 @@
 #' @export
 
 splot.color=function(x=NULL,by=NULL,seed='pastel',brightness=0,luminance=0,opacity=1,extend=.7,
-  lighten=FALSE,shuffle=FALSE,flat=TRUE,method='scale',grade=FALSE,decreasing=TRUE,nas='#000000'){
+  lighten=FALSE,shuffle=FALSE,flat=TRUE,method='scale',grade=FALSE,decreasing=FALSE,nas='#000000'){
   sets=list(
-    bright=c('#45ff00','#ba00ff','#000000','#ff0000','#fffd00','#003dff','#00f2f8','#999999','#ff891b'),
-    dark=c('#1b8621','#681686','#2a2a2a','#7c0d0d','#b5bc00','#241c80','#1a7e8b','#666666','#b06622'),
-    pastel=c('#82c473','#a378c0','#616161','#9f5c61','#d3d280','#6970b2','#78c4c2','#454744','#d98c82'),
+    bright=c('#45FF00','#BA00FF','#000000','#FF0000','#FFFD00','#003DFF','#00F2F8','#999999','#FF891B'),
+    dark=c('#1B8621','#681686','#2A2A2A','#7C0D0D','#B5BC00','#241C80','#1A7E8B','#666666','#B06622'),
+    pastel=c('#82C473','#A378C0','#616161','#9F5C61','#D3D280','#6970B2','#78C4C2','#454744','#D98C82'),
     grey=function(n) grey(.2:n/(n+n*if(n<10) .1 else .3))
   )
   if(missing(seed) && is.character(x) && (length(x) == 1 || all(tolower(x) %in% colors()))){
@@ -97,8 +97,9 @@ splot.color=function(x=NULL,by=NULL,seed='pastel',brightness=0,luminance=0,opaci
   }
   seed=tolower(seed)
   ox=NULL
-  lvs=function(x) if(is.factor(x)) base::levels(x) else unique(na.omit(x))
-  if(!is.null(ncol(x)) && ncol(x)>1){
+  lvs=function(x) if(is.factor(x)) base::levels(x) else sort(unique(x[!is.na(x)]))
+  cn = ncol(x)
+  if(!is.null(cn) && !is.na(cn) && cn > 1){
     if(is.null(by)) by=x[,2]
     x=x[,1]
   }else if(is.list(x) && length(x)==1) x=x[[1]]
@@ -110,7 +111,7 @@ splot.color=function(x=NULL,by=NULL,seed='pastel',brightness=0,luminance=0,opaci
     }else if(ol!=length(by)){
       if(is.numeric(by) && length(by)==1 && by<ol) by=rep_len(seq_len(by),ol) else{
         by=NULL
-        warning('splot.color: by was dropped as it is not the same length as x')
+        warning('splot.color: by was dropped as it is not the same length as x', call. = FALSE)
       }
     }
   }
@@ -119,7 +120,7 @@ splot.color=function(x=NULL,by=NULL,seed='pastel',brightness=0,luminance=0,opaci
       ox=x
       x=as.list(table(x))[lvs(ox)]
     }else{
-      if(is.numeric(by) && length(lvs(by))>9) warning('splot.color: only non-numeric bys are accepted') else{
+      if(is.numeric(by) && length(lvs(by))>9) warning('splot.color: only non-numeric bys are accepted', call. = FALSE) else{
         ox = by = factor(by, lvs(by))
         x = split(x, by)
       }
@@ -131,16 +132,6 @@ splot.color=function(x=NULL,by=NULL,seed='pastel',brightness=0,luminance=0,opaci
     ol=length(x)
     ox=NULL
   }
-  ckd=!shuffle && ol!=1 && is.numeric(x) && anyDuplicated(x)
-  if(ckd){
-    ox=x
-    x=lvs(x)
-    ol=length(x)
-    if(ol==1){
-      ckd=FALSE
-      x=length(ox)
-    }
-  }
   n=if(ol==1) x else ol
   if(length(seed)==1 && grepl('^bri|^dar|^pas|^gr[ae]y',seed)){
     seed=match.arg(seed,names(sets))
@@ -148,10 +139,10 @@ splot.color=function(x=NULL,by=NULL,seed='pastel',brightness=0,luminance=0,opaci
       return(sets$grey(n)) else sets$grey(n) else sets[[seed]]
     if(is.null(x) || (ol==1 && n<2)) return(seed)
   }
+  ckno = grepl('^no|^f|^bin', method, TRUE)
   sc=if(grepl('^rel|^ran|^o',method,TRUE)){
     r=if(missing(extend)) 2 else max(.001,extend)
     function(cc,n){
-      if(length(n) != 1) n = length(n)
       cc=adjustcolor(cc)
       hdc=c(0:9,LETTERS[1:6])
       hdc=outer(hdc,hdc,paste0)
@@ -190,20 +181,17 @@ splot.color=function(x=NULL,by=NULL,seed='pastel',brightness=0,luminance=0,opaci
       }
       csamp(cc,n)
     }
-  }else if(grepl('^no|^f|^bin',method,TRUE)) function(cc, n){
-    if(length(n) != 1) n = length(n)
-    if(any(opacity!=1,brightness!=0,luminance!=0)){
-      adj=1+brightness
-      cc=adjustcolor(cc,opacity,adj,adj,adj,c(rep(luminance,3),0))
-    }
-    rep(cc, n)
+  }else if(ckno) function(cc, n){
+    ns = length(n)
+    vapply(seq_len(ns), function(i){
+      adj = ns / (ns + i - 1) + brightness
+      if(lighten) adj = 1.8 - adj
+      adjustcolor(cc, opacity, adj, adj, adj, c(rep(luminance, 3), 0))
+    }, '')
   }else function(cc, n){
-    s = if(length(n) != 1){
-      s = sort(n - mean(n, na.rm = TRUE), decreasing)
-      s = s + abs(min(s, na.rm = TRUE))
-      n = length(s)
-      s / max(s, na.rm = TRUE) * (n - 1) + 1
-    }else sort(seq_len(n), decreasing)
+    s = abs(n - max(n, na.rm = TRUE))
+    n = length(s)
+    s = s / max(s, na.rm = TRUE) * (n - 1) + 1
     r = max(n, n + n * extend)
     if(!lighten) s = s + r - max(s, na.rm = TRUE)
     vapply(s, function(i){
@@ -212,24 +200,26 @@ splot.color=function(x=NULL,by=NULL,seed='pastel',brightness=0,luminance=0,opaci
       adjustcolor(cc, opacity, adj, adj, adj, c(rep(luminance, 3), 0))
     }, '')
   }
+  asc = function(v, si){
+    n = length(v)
+    if(is.numeric(v)) v = round(v, 3)
+    if(!is.numeric(v) || (n != 1 && !grade)) v = as.numeric(factor(v, lvs(v)))
+    if(!ckno) if(n == 1) v = seq_len(max(1, v)) else if(length(lvs(v)) == 1) v = seq_along(v)
+    n = length(v)
+    l = lvs(v)
+    u = sort(unique(v), decreasing)
+    nu = length(u)
+    pr = rep(nas, n)
+    cols = if(nu < 2 && (!length(u) || u < 2)) si else sc(si, u)
+    v = factor(v[is.finite(v)], u)
+    if(n != nu) cols = rep(cols, tabulate(v))
+    if(shuffle) sample(cols) else cols[order(order(v, decreasing = decreasing))]
+  }
   if(!is.list(x)){
-    seed = sc(seed[1], if(grade) x else n)
-    if(ckd){
-      tx=ox
-      oxf = is.finite(ox)
-      for(i in seq_len(n)) ox[oxf & ox == x[i]] = seed[i]
-      x=tx
-      seed=ox
-    }else if(shuffle) seed=sample(seed) else if(length(x)!=1) seed=seed[order(order(x))]
+    seed = asc(x, seed[1])
   }else{
-    if(length(seed)<n) seed=rep_len(seed,n)
-    seed=lapply(seq_len(n),function(g){
-      l=length(x[[g]])
-      if(l!=1 || as.integer(x[[g]])>0){
-        cs=sc(seed[[g]],if(l==1 || (is.numeric(x[[g]]) && grade)) x[[g]] else l)
-        if(shuffle) sample(cs) else if(l!=1) cs[order(order(x[[g]]))] else cs
-      }else seed[[g]]
-    })
+    if(length(seed) < n) seed = rep_len(seed, n)
+    seed = lapply(seq_len(n), function(i) asc(x[[i]], seed[i]))
     names(seed)=if(!is.null(names(x))) names(x) else vapply(seed,'[[','',1)
     if(flat) seed=if(!is.null(ox) && all(lvs(ox)%in%names(seed))){
       by=as.character(ox)
@@ -244,6 +234,42 @@ splot.color=function(x=NULL,by=NULL,seed='pastel',brightness=0,luminance=0,opaci
   if(!is.list(seed)) seed[is.na(seed) | is.nan(seed) | seed %in% c('NA', 'NaN', 'Inf', '-Inf')] = nas
   if(opacity == 1) seed = if(is.list(seed)) lapply(seed, function(s) sub('FF$', '', s)) else sub('FF$', '', seed)
   seed
+}
+
+#' splot color average
+#'
+#' Calculates the average of a set of colors, returning its Hex code.
+#' @param ... color codes or names as characters.
+#'
+#' @examples
+#' # average of red and blue
+#' plot(
+#'   1:3, numeric(3), pch = 15, cex = 20, xlim = c(0, 4),
+#'   col = c('red', splot.colormean('red', 'blue'), 'blue')
+#' )
+#'
+#' # average of a set
+#' x = rnorm(100)
+#' set = splot.color(x, method = 'related')
+#' splot(
+#'   x ~ rnorm(100), colors = set,
+#'   add = points(0, 0, pch = 15, cex = 10, col = splot.colormean(set))
+#' )
+#'
+#' @export
+
+splot.colormean = function(...){
+  hdc = c(0:9, LETTERS[1:6])
+  hdc = outer(hdc, hdc, paste0)
+  s = seq_len(16)
+  ccs = adjustcolor(unlist(list(...), use.names = FALSE))
+  paste(c('#', apply(Reduce('+', lapply(ccs, function(cc){
+    cc = strsplit(cc, '')[[1]][2:7]
+    cc = paste0(cc[c(TRUE, FALSE)], cc[c(FALSE, TRUE)])
+    vapply(cc, function(c) which(hdc == c, TRUE), numeric(2))
+  })) / length(ccs), 2, function(cc){
+    hdc[which.min(abs(s - cc[1])), which.min(abs(s - cc[2]))]
+  })), collapse = '')
 }
 
 #' splot benchmarker

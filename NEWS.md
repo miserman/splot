@@ -1,12 +1,26 @@
-# splot 0.4.3
+# splot 0.5.0
+
+## Additions
+* specify how colors are interpolated with color.summary.
+* calculate average colors with the splot.colormean function.
+* fill the area under each density lines with its color with
+  density.fill = TRUE (default), adjust the fill's opacity
+  with density.opacity, and further control the densities with
+  arguments in density.args (which replaces the old bw and adj
+  arguments).
 
 ## Improvements
+* broadens colorby applicability and flexibility.
+* tweaks default spacing rules to maximize plot areas.
+* aligns axis label specification for density with other types.
 * better retains or infers names for multiple variables.
 * avoids an error when colorby's by has missing values.
 
 ## Bug fixes
-* correctly assigns colorby colors to scatter plot lines in each
-  between panel.
+* corrects several colorby assignment issues.
+* handles mixed-type multiple ys by converting non-numeric variables
+  to numeric when other numeric variables are included.
+* maintains variable ordering when displaying counts of categorical ys.
 * includes colorby variable name in split note when split.
 
 # splot 0.4.2

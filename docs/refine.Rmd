@@ -46,7 +46,8 @@ Quite messy, and the legend is not drawn automatically when there are so many le
 
 We could add an arranged legend, and get rid of points to clean things up a bit:
 ```{r, fig.height=5, fig.width=10, dev='CairoSVG'}
-#lpos positions, ncol changes the number of columns, and cex['leg'] changes the font size of the legend.
+#lpos positions, ncol changes the number of columns, and
+#cex['leg'] changes the font size of the legend.
 splot(anger~index*name, lpos='top', ncol=4, cex=c(leg=.8), points=FALSE)
 ```
 With this many levels of `by`, the legend isn't very useful, so we might just keep it off.
@@ -77,10 +78,14 @@ Here, the `mnc` part is calculating the mean of each text across segments, then 
 
 In the first `legend` call, the constants are position (set in the first argument), and line weight (`lwd`) and box type (`bty`; `'n'` for none). Dynamic arguments are pulled from the `disp` object we created before, based on the names in `mnc`.
 ```{r, fig.height=5, fig.width=10, dev='CairoSVG'}
-splot(anger~index*name, points=FALSE, lines='loess', myl=c(0,2.2), colors=disp$col, lty=disp$lty, add={
-    mnc=names(sort(colMeans(sapply(cdat$`.^^.`, '[[', 'y'))[-grep('Hit|Rod', names(cdat$`.^^.`))], TRUE)[1:2])
-    legend('topleft', sort(mnc), lty=disp[disp$name%in%mnc, 2], col=disp[disp$name%in%mnc, 3], lwd=2, bty='n')
-    legend('topright', c('Adolf Hitler', 'Elliot Rodger'), lty=1:2, col=disp$col[grep('Hit|Rod', disp$name)], lwd=2, bty='n')
+splot(anger~index*name, points=FALSE, lines='loess', myl=c(0,2.2), colors=disp$col, lty=disp$lty,
+  add={
+    mnc=names(sort(colMeans(sapply(cdat$`.^^.`, '[[', 'y'))[-grep('Hit|Rod', names(cdat$`.^^.`))],
+      TRUE)[1:2])
+    legend('topleft', sort(mnc), lty=disp[disp$name%in%mnc, 2], col=disp[disp$name%in%mnc, 3],
+      lwd=2, bty='n')
+    legend('topright', c('Adolf Hitler', 'Elliot Rodger'), lty=1:2, col=disp$col[grep('Hit|Rod',
+      disp$name)], lwd=2, bty='n')
 })
 ```
 
@@ -93,9 +98,12 @@ opt = list(
   colors = disp$col,
   lty = disp$lty,
   add = quote({
-    mnc=names(sort(colMeans(sapply(cdat$`.^^.`, '[[', 'y'))[-grep('Hit|Rod', names(cdat$`.^^.`))], TRUE)[1:2])
-    legend('topleft', sort(mnc), lty=disp[disp$name%in%mnc, 2], col=disp[disp$name%in%mnc, 3], lwd=2, bty='n')
-    legend('topright', c('Adolf Hitler', 'Elliot Rodger'), lty=1:2, col=disp$col[grep('Hit|Rod', disp$name)], lwd=2, bty='n')
+    mnc=names(sort(colMeans(sapply(cdat$`.^^.`, '[[', 'y'))[-grep('Hit|Rod',
+      names(cdat$`.^^.`))], TRUE)[1:2])
+    legend('topleft', sort(mnc), lty=disp[disp$name%in%mnc, 2], col=disp[disp$name%in%mnc, 3],
+      lwd=2, bty='n')
+    legend('topright', c('Adolf Hitler', 'Elliot Rodger'), lty=1:2,
+      col=disp$col[grep('Hit|Rod', disp$name)], lwd=2, bty='n')
   })
 )
 ```
