@@ -183,8 +183,8 @@
 #'   corresponding panel will be blank. See the input section.
 #' @param prat panel ratio, referring to the ratio between plot frames and the legend frame when the legend is out. A
 #'   single number will make all panels of equal width. A vector of two numbers will adjust the ratio between plot panels
-#'   and the legend panel. For example, \code{prat=c(3,1)} makes all plot panels a relative width of 3, and the legend frame a
-#'   relative width of 1.
+#'   and the legend panel. For example, \code{prat=c(3,1)} makes all plot panels a relative width of 3, and the legend frame
+#'   a relative width of 1.
 #' @param check.height logical; if \code{FALSE}, the height of the plot frame will not be checked before plotting is
 #'   attempted. The check tries to avoid later errors, but may prevent plotting when a plot is possible.
 #' @param model logical; if \code{TRUE}, the summary of an interaction model will be printed. This model won't always align
@@ -554,6 +554,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
     #setting up multiple y variables
     dn=grep('^y\\.',dn)
     ck$mvn=colnames(dat)[dn]
+    ck$mvnl = length(ck$mvn)
     if(any(tcn <- grepl('(V\\d+$|c\\(|y\\.(\\d+$|.*\\.))', ck$mvn))){
       ncn = substitute(y)
       if(length(ncn) > 1 && length(ncn <- as.character(ncn[-1])) == length(dn))
@@ -606,7 +607,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
       }
     }
     nr=nrow(dat)
-  }
+  }else ck$mv = FALSE
   if(!'x'%in%dn){
     ck$t=2
     if(!missing(type) && !grepl('^d',type,TRUE)) message('x must be included to show other types of splots')
@@ -852,6 +853,10 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
     cba$flat=TRUE
     cn=names(cba)
     ck$cbb='by'%in%cn
+    if(ck$mv && length(cba$x) * ck$mvnl == nr){
+      cba$x = rep(cba$x, ck$mvnl)
+      if(ck$cbb) cba$by = rep(cba$by, ck$mvnl)
+    }
     if(ck$cbb){
       cba$by = if(is.numeric(cba$by) && length(unique(cba$by)) > lim){
         ptxt$cbos = if(missing(leg.title)) colorby else leg.title
@@ -1121,8 +1126,9 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
     lega$title=if(is.character(leg.title)) leg.title else ptxt$by
   l=length(lega$legend)
   seg$lwd=rep_len(if(is.numeric(lwd)) lwd else 2,seg$by$ll)
-  if(!'lty' %in% names(seg)) seg$lty=rep_len(if(!ck$ltym && !ck$lty) lty else if(ck$cbleg && ck$cbb && seg$by$ll==length(cba$by))
-    as.numeric(cba$by) else if(ck$lty && lty) seq_len(6) else 1,seg$by$ll)
+  if(!'lty' %in% names(seg)) seg$lty=rep_len(if(!ck$ltym && !ck$lty) lty else
+    if(ck$cbleg && ck$cbb && seg$by$ll==length(cba$by)) as.numeric(cba$by) else
+      if(ck$lty && lty) seq_len(6) else 1,seg$by$ll)
   if(length(seg$cols)==length(seg$lcols)) names(seg$lcols)=names(seg$cols)
   if(seg$by$e || ck$cbb) names(seg$lwd)=names(seg$lty)=if(length(seg$lcols)==seg$by$ll) names(seg$lcols) else
     if(all(c(length(seg$lwd), length(seg$lty)) == length(seg$cols))) names(seg$cols) else seg$by$l
