@@ -73,7 +73,8 @@ of 1; e.g., \code{x=10}), the vector's length (if \code{x} is numeric), or the c
 (if \code{x} is a factor or character vector).
 }
 \examples{
-# including no arguments or just a palette name will only return the palette as a character vector
+# including no arguments or just a palette name will only return
+# the palette as a character vector
 pastel_palette = splot.color()
 dark_palette = splot.color('dark')
 

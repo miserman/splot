@@ -78,8 +78,8 @@ is treated as infinite (set to \code{Inf}).}
 \code{\link[stats]{lm}}. For (potentially) bendy lines, \code{'loess'} (matching \code{'^loe|^po|^cu'}) will use
 \code{\link[stats]{loess}}, and \code{'spline'} (\code{'^sm|^sp|^in'}) will use \code{\link[stats]{smooth.spline}}.
 If \code{y} is not numeric and has only 2 levels, \code{'probability'} (\code{'^pr|^log'}) will draw probabilities
-estimated by a logistic regression (\code{glm(y~x,binomial)}). \code{'connected'} (\code{'^e|^co|^d'}) will draw
-lines connecting all points, and \code{FALSE} will not draw any lines.}
+estimated by a logistic regression (\code{glm(y ~} \code{x, binomial)}). \code{'connected'} (\code{'^e|^co|^d'}) will
+draw lines connecting all points, and \code{FALSE} will not draw any lines.}
 
 \item{colors}{sets a color theme or manually specifies colors. Default theme is \code{"pastel"}, with \code{"dark"} and
 \code{"bright"} as options; these are passed to \code{\link{splot.color}}. If set to \code{"grey"}, or if \code{by}
@@ -271,8 +271,8 @@ corresponding panel will be blank. See the input section.}
 
 \item{prat}{panel ratio, referring to the ratio between plot frames and the legend frame when the legend is out. A
 single number will make all panels of equal width. A vector of two numbers will adjust the ratio between plot panels
-and the legend panel. For example, \code{prat=c(3,1)} makes all plot panels a relative width of 3, and the legend frame a
-relative width of 1.}
+and the legend panel. For example, \code{prat=c(3,1)} makes all plot panels a relative width of 3, and the legend frame
+a relative width of 1.}
 
 \item{check.height}{logical; if \code{FALSE}, the height of the plot frame will not be checked before plotting is
 attempted. The check tries to avoid later errors, but may prevent plotting when a plot is possible.}
@@ -281,10 +281,10 @@ attempted. The check tries to avoid later errors, but may prevent plotting when 
 with what is plotted since variables may be treated differently, particularly in the case of interactions.}
 
 \item{options}{a list with named arguments, useful for setting temporary defaults if you plan on using some of the same
-options for multiple plots (e.g., \code{opt =} \code{list(type = 'bar',} \code{colors = 'grey',}
-\code{bg = '#999999');} \code{splot(x~y,} \code{options = opt)}).
+options for multiple plots (e.g., \code{opt = list(}\code{type = 'bar',} \code{colors = 'grey',}
+\code{bg = '#999999');} \code{splot(x ~ y,} \code{options = opt)}).
 use \code{\link[base]{quote}} to include options that are to be evaluated within the function (e.g.,
-\code{opt =} \code{list(su =} \code{quote(y>0))}).}
+\code{opt =} \code{list(su =} \code{quote(y > 0))}).}
 
 \item{add}{evaluated within the function, so you can refer to the objects that are returned, to variable names (those
 from an entered data frame or entered as arguments), or entered data by their position, preceded by '.' (e.g.,
@@ -316,11 +316,11 @@ If the text of x-axis levels (those corresponding to the levels of \code{x}) are
 overlapping. To try and avoid this, by default longer texts are trimmed (dictated by \code{labels.trim}), and at some
 point the orientation of level text is changed (settable with \code{xlas}), but you may still see level text missing.
 To make these visible, you can reduce \code{labels.trim} from the default of 20 (or rename the levels of that variable),
-make the level text vertical (\code{xlas=3}), or expand your plot window if possible.
+make the level text vertical (\code{xlas = 3}), or expand your plot window if possible.
 
 \strong{missing levels, lines, and/or error bars}
 
-By default (if \code{drop=TRUE}), levels of \code{x} with no data are dropped, so you may not see every level of your
+By default (if \code{drop = TRUE}), levels of \code{x} with no data are dropped, so you may not see every level of your
 variable, at all or at a level of \code{by} or \code{between}. Sometimes error bars cannot be estimated (if, say, there
 is only one observation at the given level), but lines are still drawn in these cases, so you may sometimes see levels
 without error bars even when error bars are turned on. Sometimes (particularly when \code{drop['x']} is \code{FALSE}),
@@ -353,11 +353,11 @@ as levels), so anything entered as \code{by} is treated as \code{between[1]}, \c
 \strong{named vectors}
 
 Named vector arguments like \code{font}, \code{cex}, and \code{drop} can be set with a single value, positionally, or
-with names. If a single value is entered (e.g., \code{drop=FALSE}), this will be applied to each level (i.e.,
-\code{c(x=FALSE,by=FALSE,bet=FALSE)}). If more than one value is entered, these will be treated positionally (e.g.,
-\code{cex=c(2,1.2)} would be read as \code{c(title=2,sud=1.2,leg=.9,note=.7,points=1)}). If values are named, only
-named values will be set, with other defaults retained (e.g., \code{cex=c(note=1.2)} would be read as
-\code{c(title=1.5,sud=.9,leg=.9,note=1.2,points=1)}).
+with names. If a single value is entered (e.g., \code{drop = FALSE}), this will be applied to each level (i.e.,
+\code{c(x = FALSE, by = FALSE, bet = FALSE)}). If more than one value is entered, these will be treated positionally
+(e.g., \code{cex =} \code{c(2, 1.2)} would be read as \code{c(title = 2, sud = 1.2, leg = .9, note = .7, points = 1)}).
+If values are named, only named values will be set, with other defaults retained (e.g., \code{cex =} \code{c(note = 1.2)}
+would be read as \code{c(title = 1.5, sud = .9, leg = .9, note = 1.2, points = 1)}).
 }
 
 \examples{
