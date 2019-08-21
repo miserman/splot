@@ -10,7 +10,7 @@ In terms of design, it has three general principles:
 * **Tweakability**: Though splot is focused on quick, automated plotting, you should be able to adjust any aspect of the display with additional arguments, if you find a plot you want to display elsewhere.
 
 ## features
-By entering a fomula as the first argument in the `splot` function (e.g., `splot(y ~ x)`), you can make
+By entering a formula as the first argument in the `splot` function (e.g., `splot(y ~ x)`), you can make
 
 * Density distributions (overlaid on histograms when there is no `by` variable)
 * Scatter plots with prediction lines
@@ -29,11 +29,11 @@ and data at levels of one or two `between` variables are shown in separate plot 
 ## installation
 Download R from [r-project.org](https://www.r-project.org/).
 
-Release ([version 0.4.2](https://CRAN.R-project.org/package=splot))
+Release ([version 0.5.0](https://CRAN.R-project.org/package=splot))
 ```R
 install.packages('splot')
 ```
-Development (version 0.5.0)
+Development (version 0.5.1)
 ```R
 install.packages('devtools')
 devtools::install_github('miserman/splot')
