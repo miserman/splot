@@ -1,3 +1,8 @@
+# slot 0.5.1
+## Improvements
+* adds a cutoff option and relative timings to splot.bench for better
+  display, and adds the printed summary to its return.
+
 # splot 0.5.0
 
 ## Additions

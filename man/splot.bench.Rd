@@ -5,7 +5,7 @@
 \title{splot benchmarker}
 \usage{
 splot.bench(..., runs = 20, runsize = 200, cleanup = FALSE,
-  print.names = FALSE, options = list())
+  print.names = FALSE, limit.outliers = TRUE, options = list())
 }
 \arguments{
 \item{...}{accepts any number of expressions to be timed. See examples.}
@@ -22,6 +22,9 @@ Garbage collection greatly increases run time, but may result in more stable tim
 as legend names. Otherwise, (and if the number of expressions is over 5 or the length of any
 expression is over 50 characters) expressions are replaced with numbers corresponding to their
 entered position.}
+
+\item{limit.outliers}{logical; if \code{TRUE} (default), times over an upper bound for the given
+expression will be set to that upper bound, removing aberant extremes.}
 
 \item{options}{a list of options to pass on to splot.}
 }

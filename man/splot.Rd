@@ -10,20 +10,19 @@ splot(y, data = NULL, su = NULL, type = "", split = "median",
   colors = "pastel", ..., colorby = NULL, colorby.leg = TRUE,
   color.lock = FALSE, color.offset = 1.1, color.summary = "mean",
   opacity = 1, x = NULL, by = NULL, between = NULL, cov = NULL,
-  line.type = "l", mv.scale = "none", mv.as.x = FALSE,
-  save = FALSE, format = cairo_pdf, dims = dev.size(),
-  file.name = "splot", myl = NULL, mxl = NULL, autori = TRUE,
-  xlas = 0, ylas = 1, xaxis = TRUE, yaxis = TRUE,
-  breaks = "sturges", density.fill = TRUE, density.opacity = 0.4,
-  density.args = list(), leg = "outside", lpos = "auto",
-  lvn = TRUE, leg.title = TRUE, leg.args = list(), title = TRUE,
-  labx = TRUE, laby = TRUE, lty = TRUE, lwd = 2, sub = TRUE,
-  ndisp = TRUE, note = TRUE, font = c(title = 2, sud = 1, leg = 1,
-  leg.title = 2, note = 3), cex = c(title = 1.5, sud = 0.9, leg = 0.9,
-  note = 0.7, points = 1), sud = TRUE, labels = TRUE,
+  line.type = "l", mv.scale = "none", mv.as.x = FALSE, save = FALSE,
+  format = cairo_pdf, dims = dev.size(), file.name = "splot",
+  myl = NULL, mxl = NULL, autori = TRUE, xlas = 0, ylas = 1,
+  xaxis = TRUE, yaxis = TRUE, breaks = "sturges", density.fill = TRUE,
+  density.opacity = 0.4, density.args = list(), leg = "outside",
+  lpos = "auto", lvn = TRUE, leg.title = TRUE, leg.args = list(),
+  title = TRUE, labx = TRUE, laby = TRUE, lty = TRUE, lwd = 2,
+  sub = TRUE, ndisp = TRUE, note = TRUE, font = c(title = 2, sud = 1,
+  leg = 1, leg.title = 2, note = 3), cex = c(title = 1.5, sud = 0.9, leg =
+  0.9, note = 0.7, points = 1), sud = TRUE, labels = TRUE,
   labels.filter = "_", labels.trim = 20, points = TRUE,
-  points.first = TRUE, byx = TRUE, drop = c(x = TRUE, by = TRUE, bet
-  = TRUE), prat = c(1, 1), check.height = TRUE, model = FALSE,
+  points.first = TRUE, byx = TRUE, drop = c(x = TRUE, by = TRUE, bet =
+  TRUE), prat = c(1, 1), check.height = TRUE, model = FALSE,
   options = NULL, add = NULL)
 }
 \arguments{
