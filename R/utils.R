@@ -287,23 +287,35 @@ splot.colormean = function(...){
 #'   expression is over 50 characters) expressions are replaced with numbers corresponding to their
 #'   entered position.
 #' @param limit.outliers logical; if \code{TRUE} (default), times over an upper bound for the given
-#'   expression will be set to that upper bound, removing aberant extremes.
+#'   expression will be set to that upper bound, removing aberrant extremes.
+#' @param check_output logical; if \code{TRUE}, the output of each expression is checked with
+#'   \code{\link[base]{all.equal}} against that of the first. A warning indicates if any are not
+#'   equal, and results are invisibly returned.
+#' @param check_args a list of arguments to be passed to \code{\link[base]{all.equal}}, if
+#'   \code{check_output} is \code{TRUE}.
 #' @param options a list of options to pass on to splot.
+#' @return A list:
+#' \tabular{ll}{
+#'   plot \tab splot output\cr
+#'   checks \tab a list of result from all.equal, if \code{check_output} was \code{TRUE}\cr
+#'   expressions \tab a list of the entered expressions \cr
+#'   summary \tab a matrix of the printed results \cr
+#' }
 #' @examples
 #' # increase the number of runs for more stable estimates
 #'
 #' # compare ways of looping through a vector
 #' splot.bench(
-#'   sapply(1:100,'*',10),
-#'   mapply('*',1:100,10),
-#'   vapply(1:100,'*',0,10),
-#'   unlist(lapply(1:100,'*',10)),
-#'   {a=numeric(100); for(i in 1:100) a[i]=i*10; a},
-#'   runs = 20, runsize = 200
+#'   sapply(1:100, '*', 10),
+#'   mapply('*', 1:100, 10),
+#'   vapply(1:100, '*', 0, 10),
+#'   unlist(lapply(1:100, '*', 10)),
+#'   runs = 20, runsize = 200, check_output = TRUE
 #' )
 #'
 #' # compare ways of setting all but the maximum value of each row in a matrix to 0
 #' \dontrun{
+#'
 #' mat = matrix(c(rep(1, 4), rep(0, 8)), 4, 3)
 #' splot.bench(
 #'   t(vapply(seq_len(4), function(r){
@@ -336,13 +348,13 @@ splot.colormean = function(...){
 #'     r[r < max(r)] = 0
 #'     r
 #'   })),
-#'   runs = 50, runsize = 200
+#'   runs = 50, runsize = 200, check_output = TRUE
 #' )
 #' }
 #' @export
 
 splot.bench = function(..., runs = 20, runsize = 200, cleanup = FALSE, print.names = FALSE,
-  limit.outliers = TRUE, options = list()){
+  limit.outliers = TRUE, check_output = TRUE, check_args = list(), options = list()){
   e = sapply(as.character(substitute(list(...)))[-1], function(t) parse(text = t))
   e = e[!duplicated(names(e))]
   es = length(e)
@@ -350,14 +362,26 @@ splot.bench = function(..., runs = 20, runsize = 200, cleanup = FALSE, print.nam
   ne = names(e)
   seconds = matrix(NA, runs, es, dimnames = list(NULL, ne))
   rs = seq_len(runsize)
-  tryCatch(
-    for(t in e) eval(t),
+  ops = tryCatch(
+    lapply(e, eval, .GlobalEnv),
     error = function(e) stop('one of your expressions breaks:\n', e, call. = FALSE)
+  )
+  checks = if(check_output && length(e) != 1){
+    if(!'check.attributes' %in% names(check_args)) check_args$check.attributes = FALSE
+    if(!'check.names' %in% names(check_args)) check_args$check.names = FALSE
+    lapply(ops[-1], function(r) tryCatch(
+      do.call(all.equal, c(list(r), list(ops[[1]]), check_args)),
+      error = function(e) FALSE
+    ))
+  }else NULL
+  if(!is.null(checks) && !all(vapply(checks, isTRUE, TRUE))) warning(
+    'some of your expressions do not seem to have similar results as the first;',
+    ' see the `checks` output.', call. = FALSE
   )
   ost = proc.time()[3]
   cat('benchmarking', es, 'expression(s) in chunks of', runsize, 'per run... \nrun 0 of', runs)
   fun = function(e){
-    eval(e)
+    eval(e, .GlobalEnv)
     NULL
   }
   for(r in seq_len(runs)){
@@ -394,6 +418,8 @@ splot.bench = function(..., runs = 20, runsize = 200, cleanup = FALSE, print.nam
   }
   invisible(list(
     plot = splot(seconds, title = title, labels.filter = FALSE, labels.trim = FALSE, options = options),
+    checks = checks,
+    expressions = as.list(unname(e)),
     summary = res
   ))
 }

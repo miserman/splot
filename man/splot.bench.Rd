@@ -5,7 +5,8 @@
 \title{splot benchmarker}
 \usage{
 splot.bench(..., runs = 20, runsize = 200, cleanup = FALSE,
-  print.names = FALSE, limit.outliers = TRUE, options = list())
+  print.names = FALSE, limit.outliers = TRUE, check_output = TRUE,
+  check_args = list(), options = list())
 }
 \arguments{
 \item{...}{accepts any number of expressions to be timed. See examples.}
@@ -24,9 +25,25 @@ expression is over 50 characters) expressions are replaced with numbers correspo
 entered position.}
 
 \item{limit.outliers}{logical; if \code{TRUE} (default), times over an upper bound for the given
-expression will be set to that upper bound, removing aberant extremes.}
+expression will be set to that upper bound, removing aberrant extremes.}
+
+\item{check_output}{logical; if \code{TRUE}, the output of each expression is checked with
+\code{\link[base]{all.equal}} against that of the first. A warning indicates if any are not
+equal, and results are invisibly returned.}
+
+\item{check_args}{a list of arguments to be passed to \code{\link[base]{all.equal}}, if
+\code{check_output} is \code{TRUE}.}
 
 \item{options}{a list of options to pass on to splot.}
+}
+\value{
+A list:
+\tabular{ll}{
+  plot \tab splot output\cr
+  checks \tab a list of result from all.equal, if \code{check_output} was \code{TRUE}\cr
+  expressions \tab a list of the entered expressions \cr
+  summary \tab a matrix of the printed results \cr
+}
 }
 \description{
 Time one or more expressions over several iteration, then plot the distributions of their times.
@@ -36,16 +53,16 @@ Time one or more expressions over several iteration, then plot the distributions
 
 # compare ways of looping through a vector
 splot.bench(
-  sapply(1:100,'*',10),
-  mapply('*',1:100,10),
-  vapply(1:100,'*',0,10),
-  unlist(lapply(1:100,'*',10)),
-  {a=numeric(100); for(i in 1:100) a[i]=i*10; a},
-  runs = 20, runsize = 200
+  sapply(1:100, '*', 10),
+  mapply('*', 1:100, 10),
+  vapply(1:100, '*', 0, 10),
+  unlist(lapply(1:100, '*', 10)),
+  runs = 20, runsize = 200, check_output = TRUE
 )
 
 # compare ways of setting all but the maximum value of each row in a matrix to 0
 \dontrun{
+
 mat = matrix(c(rep(1, 4), rep(0, 8)), 4, 3)
 splot.bench(
   t(vapply(seq_len(4), function(r){
@@ -78,7 +95,7 @@ splot.bench(
     r[r < max(r)] = 0
     r
   })),
-  runs = 50, runsize = 200
+  runs = 50, runsize = 200, check_output = TRUE
 )
 }
 }

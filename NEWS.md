@@ -1,7 +1,13 @@
-# slot 0.5.1
+# splot 0.5.1
+
+## Additions
+* check equivalency of expression outputs within splot.bench.
+
 ## Improvements
 * adds a cutoff option and relative timings to splot.bench for better
-  display, and adds the printed summary to its return.
+  display, and includes more in its return.
+* splot.bench now evaluates within the global environment so loaded
+  packages can be used.
 
 # splot 0.5.0
 

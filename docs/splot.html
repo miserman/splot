@@ -22,20 +22,19 @@ splot(y, data = NULL, su = NULL, type = "", split = "median",
   colors = "pastel", ..., colorby = NULL, colorby.leg = TRUE,
   color.lock = FALSE, color.offset = 1.1, color.summary = "mean",
   opacity = 1, x = NULL, by = NULL, between = NULL, cov = NULL,
-  line.type = "l", mv.scale = "none", mv.as.x = FALSE,
-  save = FALSE, format = cairo_pdf, dims = dev.size(),
-  file.name = "splot", myl = NULL, mxl = NULL, autori = TRUE,
-  xlas = 0, ylas = 1, xaxis = TRUE, yaxis = TRUE,
-  breaks = "sturges", density.fill = TRUE, density.opacity = 0.4,
-  density.args = list(), leg = "outside", lpos = "auto",
-  lvn = TRUE, leg.title = TRUE, leg.args = list(), title = TRUE,
-  labx = TRUE, laby = TRUE, lty = TRUE, lwd = 2, sub = TRUE,
-  ndisp = TRUE, note = TRUE, font = c(title = 2, sud = 1, leg = 1,
-  leg.title = 2, note = 3), cex = c(title = 1.5, sud = 0.9, leg = 0.9,
-  note = 0.7, points = 1), sud = TRUE, labels = TRUE,
+  line.type = "l", mv.scale = "none", mv.as.x = FALSE, save = FALSE,
+  format = cairo_pdf, dims = dev.size(), file.name = "splot",
+  myl = NULL, mxl = NULL, autori = TRUE, xlas = 0, ylas = 1,
+  xaxis = TRUE, yaxis = TRUE, breaks = "sturges", density.fill = TRUE,
+  density.opacity = 0.4, density.args = list(), leg = "outside",
+  lpos = "auto", lvn = TRUE, leg.title = TRUE, leg.args = list(),
+  title = TRUE, labx = TRUE, laby = TRUE, lty = TRUE, lwd = 2,
+  sub = TRUE, ndisp = TRUE, note = TRUE, font = c(title = 2, sud = 1,
+  leg = 1, leg.title = 2, note = 3), cex = c(title = 1.5, sud = 0.9, leg =
+  0.9, note = 0.7, points = 1), sud = TRUE, labels = TRUE,
   labels.filter = "_", labels.trim = 20, points = TRUE,
-  points.first = TRUE, byx = TRUE, drop = c(x = TRUE, by = TRUE, bet
-  = TRUE), prat = c(1, 1), check.height = TRUE, model = FALSE,
+  points.first = TRUE, byx = TRUE, drop = c(x = TRUE, by = TRUE, bet =
+  TRUE), prat = c(1, 1), check.height = TRUE, model = FALSE,
   options = NULL, add = NULL)
 </pre>
 
@@ -118,8 +117,8 @@ is treated as infinite (set to <code>Inf</code>).</p>
 <code>lm</code>. For (potentially) bendy lines, <code>'loess'</code> (matching <code>'^loe|^po|^cu'</code>) will use
 <code>loess</code>, and <code>'spline'</code> (<code>'^sm|^sp|^in'</code>) will use <code>smooth.spline</code>.
 If <code>y</code> is not numeric and has only 2 levels, <code>'probability'</code> (<code>'^pr|^log'</code>) will draw probabilities
-estimated by a logistic regression (<code>glm(y~x,binomial)</code>). <code>'connected'</code> (<code>'^e|^co|^d'</code>) will draw
-lines connecting all points, and <code>FALSE</code> will not draw any lines.</p>
+estimated by a logistic regression (<code>glm(y ~</code> <code>x, binomial)</code>). <code>'connected'</code> (<code>'^e|^co|^d'</code>) will
+draw lines connecting all points, and <code>FALSE</code> will not draw any lines.</p>
 </td></tr>
 <tr valign="top"><td><code>colors</code></td>
 <td>
@@ -413,8 +412,8 @@ corresponding panel will be blank. See the input section.</p>
 <td>
 <p>panel ratio, referring to the ratio between plot frames and the legend frame when the legend is out. A
 single number will make all panels of equal width. A vector of two numbers will adjust the ratio between plot panels
-and the legend panel. For example, <code>prat=c(3,1)</code> makes all plot panels a relative width of 3, and the legend frame a
-relative width of 1.</p>
+and the legend panel. For example, <code>prat=c(3,1)</code> makes all plot panels a relative width of 3, and the legend frame
+a relative width of 1.</p>
 </td></tr>
 <tr valign="top"><td><code>check.height</code></td>
 <td>
@@ -429,10 +428,10 @@ with what is plotted since variables may be treated differently, particularly in
 <tr valign="top"><td><code>options</code></td>
 <td>
 <p>a list with named arguments, useful for setting temporary defaults if you plan on using some of the same
-options for multiple plots (e.g., <code>opt =</code> <code>list(type = 'bar',</code> <code>colors = 'grey',</code>
-<code>bg = '#999999');</code> <code>splot(x~y,</code> <code>options = opt)</code>).
+options for multiple plots (e.g., <code>opt = list(</code><code>type = 'bar',</code> <code>colors = 'grey',</code>
+<code>bg = '#999999');</code> <code>splot(x ~ y,</code> <code>options = opt)</code>).
 use <code>quote</code> to include options that are to be evaluated within the function (e.g.,
-<code>opt =</code> <code>list(su =</code> <code>quote(y&gt;0))</code>).</p>
+<code>opt =</code> <code>list(su =</code> <code>quote(y &gt; 0))</code>).</p>
 </td></tr>
 <tr valign="top"><td><code>add</code></td>
 <td>
@@ -505,11 +504,11 @@ as levels), so anything entered as <code>by</code> is treated as <code>between[1
 <p><strong>named vectors</strong>
 </p>
 <p>Named vector arguments like <code>font</code>, <code>cex</code>, and <code>drop</code> can be set with a single value, positionally, or
-with names. If a single value is entered (e.g., <code>drop=FALSE</code>), this will be applied to each level (i.e.,
-<code>c(x=FALSE,by=FALSE,bet=FALSE)</code>). If more than one value is entered, these will be treated positionally (e.g.,
-<code>cex=c(2,1.2)</code> would be read as <code>c(title=2,sud=1.2,leg=.9,note=.7,points=1)</code>). If values are named, only
-named values will be set, with other defaults retained (e.g., <code>cex=c(note=1.2)</code> would be read as
-<code>c(title=1.5,sud=.9,leg=.9,note=1.2,points=1)</code>).
+with names. If a single value is entered (e.g., <code>drop = FALSE</code>), this will be applied to each level (i.e.,
+<code>c(x = FALSE, by = FALSE, bet = FALSE)</code>). If more than one value is entered, these will be treated positionally
+(e.g., <code>cex =</code> <code>c(2, 1.2)</code> would be read as <code>c(title = 2, sud = 1.2, leg = .9, note = .7, points = 1)</code>).
+If values are named, only named values will be set, with other defaults retained (e.g., <code>cex =</code> <code>c(note = 1.2)</code>
+would be read as <code>c(title = 1.5, sud = .9, leg = .9, note = 1.2, points = 1)</code>).
 </p>
 
 
@@ -521,11 +520,11 @@ named values will be set, with other defaults retained (e.g., <code>cex=c(note=1
 overlapping. To try and avoid this, by default longer texts are trimmed (dictated by <code>labels.trim</code>), and at some
 point the orientation of level text is changed (settable with <code>xlas</code>), but you may still see level text missing.
 To make these visible, you can reduce <code>labels.trim</code> from the default of 20 (or rename the levels of that variable),
-make the level text vertical (<code>xlas=3</code>), or expand your plot window if possible.
+make the level text vertical (<code>xlas = 3</code>), or expand your plot window if possible.
 </p>
 <p><strong>missing levels, lines, and/or error bars</strong>
 </p>
-<p>By default (if <code>drop=TRUE</code>), levels of <code>x</code> with no data are dropped, so you may not see every level of your
+<p>By default (if <code>drop = TRUE</code>), levels of <code>x</code> with no data are dropped, so you may not see every level of your
 variable, at all or at a level of <code>by</code> or <code>between</code>. Sometimes error bars cannot be estimated (if, say, there
 is only one observation at the given level), but lines are still drawn in these cases, so you may sometimes see levels
 without error bars even when error bars are turned on. Sometimes (particularly when <code>drop['x']</code> is <code>FALSE</code>),
