@@ -462,7 +462,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
       x=parse(text=tx)
       tx=tryCatch(eval(x,data,parent.frame(2)),error=function(e)NULL)
     }else if(is.null(tx)) tx=tryCatch(eval(x,data,parent.frame(3)),error=function(e)NULL)
-    if(is.null(tx) || class(tx)%in%c('name','call','expression','function')) stop('could not find ',x,call.=FALSE)
+    if(is.null(tx) || any(class(tx)%in%c('name','call','expression','function'))) stop('could not find ',x,call.=FALSE)
     if(!is.null(l) && is.null(ncol(tx))) if(length(tx)!=l){
       tx=rep_len(tx,l)
       if(is.call(x)) x=deparse(x)
@@ -470,7 +470,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
     }
     tx
   }
-  if(!missing(data) && !class(data)%in%c('matrix','data.frame'))
+  if(!missing(data) && !any(class(data)%in%c('matrix','data.frame')))
     data=if(is.character(data)) eval(parse(text=data)) else eval(data,globalenv())
   dat = data.frame(y = tdc(txt$y), check.names = FALSE)
   if(ncol(dat)==1) names(dat)='y'
@@ -1221,7 +1221,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
   ck$scol='scols'%in%names(seg)
   for(i in names(cdat)){tryCatch({
     #plotting
-    cl=(if(class(cdat[[i]])=='list') vapply(cdat[[i]],NROW,0) else nrow(cdat[[i]])) > 0
+    cl = (if('list' %in% class(cdat[[i]])) vapply(cdat[[i]], NROW, 0) else nrow(cdat[[i]])) > 0
     if(any(!cl)){
       cdat[[i]]=cdat[[i]][cl]
       if(length(cdat[[i]])==0) next
@@ -1234,8 +1234,8 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
         if(seg$f2$e) paste0(', ',if(lvn || (ck$mlvn && grepl('^[0-9]',cl[2]))) paste0(ptxt$bet[2],': '),cl[2])
       ),if((length(names(cdat))>1 || !missing(ndisp)) && ndisp) paste(', n =',seg$n[i])
     ) else ''
-    if(!is.null(sort) && ck$t!=2 && class(if(seg$by$e) cdat[[i]][[1]][,'x'] else cdat[[i]][,'x']) %in%
-        c('factor','character')){
+    if(!is.null(sort) && ck$t != 2 && any(class(if(seg$by$e) cdat[[i]][[1]][, 'x'] else cdat[[i]][, 'x']) %in%
+        c('factor','character'))){
       nsl = grepl('^[Ff]', as.character(sort))
       sdir = grepl('^[DdTt]',as.character(sort))
       td=if(seg$by$e) do.call(rbind,cdat[[i]]) else cdat[[i]]
@@ -1260,7 +1260,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
         if(is.numeric(cdat[[i]]$x)) cdat[[i]]$x = as.character(cdat[[i]]$x)
         cdat[[i]]=split(cdat[[i]],cdat[[i]]$by)[lvs(cdat[[i]]$by)]
       }
-      dl=if(cl<-class(cdat[[1]])=='list') length(cdat[[i]]) else 1
+      dl = if(cl <- 'list' %in% class(cdat[[1]])) length(cdat[[i]]) else 1
       mot=paste0('y~0+',paste(names(if(cl) cdat[[i]][[1]] else cdat[[i]])[c(2,cvar)],collapse='+'))
       m=pe=ne=matrix(NA,seg$by$ll,max(c(1,length(seg$x$l))),dimnames=list(seg$by$l,seg$x$l))
       if(flipped) m=pe=ne=t(m)
@@ -1405,7 +1405,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
       if(!'n' %in% dan) density.args$n = 512
       n = density.args$n
       m=list()
-      dl=if(cl<-class(cdat[[i]])=='list') length(cdat[[i]]) else 1
+      dl = if(cl <- 'list' %in% class(cdat[[i]])) length(cdat[[i]]) else 1
       rnl=logical(dl)
       rn=if(is.data.frame(cdat[[i]])) names(ptxt$l.by) else names(cdat[[i]])
       dx = dy = numeric(n * seg$by$ll)
@@ -1453,7 +1453,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
       if(yaxis) axis(2,las=ylas,cex=par('cex.axis'),fg=par('col.axis'))
     }else{
       #scatter
-      dl=if(cl<-class(cdat[[i]])=='list') length(cdat[[i]]) else 1
+      dl = if(cl <- 'list' %in% class(cdat[[i]])) length(cdat[[i]]) else 1
       rn=if(is.data.frame(cdat[[i]])) seg$by$l else names(cdat[[i]])
       td=if(cl) do.call(rbind,cdat[[i]]) else cdat[[i]]
       cx=td[,'x']
