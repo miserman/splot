@@ -377,7 +377,8 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
     opacity=!missing(opacity) && opacity<=1 && opacity>0
   )
   if(ck$lpm) lpos='center'
-  if(ck$d && !is.data.frame(data)) data=as.data.frame(data)
+  if(ck$d && !is.data.frame(data)) data = if(!is.matrix(data) && !is.list(data))
+    as.data.frame(as.matrix(data)) else as.data.frame(data)
   ck$ltck=(is.logical(ck$line) && ck$line) || !grepl('^F',ck$line)
   if(!ck$ltck && ck$note) note=FALSE
   ck$ltco=if(ck$ltck) if(is.logical(ck$line) || ck$c || grepl('^li|^lm|^st',ck$line,TRUE)) 'li' else
@@ -468,6 +469,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
       if(is.call(x)) x=deparse(x)
       warning(x,' is not the same length as y',call.=FALSE)
     }
+    if(!is.null(dim(tx)) && !is.matrix(tx) && !is.data.frame(tx)) tx = as.matrix(tx)
     tx
   }
   if(!missing(data) && !any(class(data)%in%c('matrix','data.frame')))

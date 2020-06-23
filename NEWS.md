@@ -4,6 +4,7 @@
 * check equivalency of expression outputs within splot.bench.
 
 ## Improvements
+* handles input with as.matrix but not as.data.frame methods.
 * adds a cutoff option and relative timings to splot.bench for better
   display, and includes more in its return.
 * splot.bench now evaluates within the global environment so loaded

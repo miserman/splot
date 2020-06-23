@@ -58,7 +58,7 @@ data$Type = with(data, paste0(
 ))
 ```
 
-Now we can actually calculate Language Style Matching (LSM). A Standard LSM calculation (from <a href='http://sml.comm.cornell.edu/wordpress/wp-content/uploads/2013/12/Gonzales-Hancock-Pennebaker-2010-Language-style-matching-as-a-predictor-of-social-dynamics-in-small-groups.pdf' target='_blank'>Gonzales, Hancock, & Pennebaker, 2009</a>) uses 9 LIWC function word categories. We'll save these names to easily identify them in each dataset:
+Now we can actually calculate Language Style Matching (LSM). A Standard LSM calculation (from <a href='https://pdfs.semanticscholar.org/8dc8/df95e36cc9e37f87410a4309a3ee62b965bf.pdf' target='_blank'>Gonzales, Hancock, & Pennebaker, 2009</a>) uses 9 LIWC function word categories. We'll save these names to easily identify them in each dataset:
 ```{r}
 cats = c('ppron','ipron','article','adverb','conj','prep','auxverb','negate','quant')
 ```
