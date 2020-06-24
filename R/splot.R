@@ -45,7 +45,7 @@
 #'   draw lines connecting all points, and \code{FALSE} will not draw any lines.
 #' @param colors sets a color theme or manually specifies colors. Default theme is \code{"pastel"}, with \code{"dark"} and
 #'   \code{"bright"} as options; these are passed to \code{\link{splot.color}}. If set to \code{"grey"}, or if \code{by}
-#'   has more than 9 levels, a grey scale is calculated using \code{\link[grDevices]{grey}}. See the \code{col} parameter
+#'   has more than 9 levels, a grey scale is calculated using \code{\link[grDevices]{gray}}. See the \code{col} parameter
 #'   in \code{\link[graphics]{par}} for acceptable manual inputs. To set text and axis colors, \code{col} sets outside
 #'   texts (title, sud, labx, laby, and note), \code{col.sub} or \code{col.main} sets the frame titles, and \code{col.axis}
 #'   sets the axis text and line colors. To set the color of error bars, use \code{error.color}. For histograms, a vector of
@@ -102,15 +102,15 @@
 #'   will also scale.
 #' @param mv.as.x logical; if \code{TRUE}, variable names are displayed on the x axis, and \code{x} is treated as \code{by}.
 #' @param save logical; if \code{TRUE}, an image of the plot is saved to the current working directory.
-#' @param format the type of file to save plots as. default is \code{\link[grDevices]{cairo_pdf}}. See
+#' @param format the type of file to save plots as. Default is \code{cairo_pdf}; see
 #'   \code{\link[grDevices]{Devices}} for options.
 #' @param dims a vector of 2 values (\code{c(width, height)}) specifying the dimensions of a plot to save in inches or
 #'   pixels depending on \code{format}. Defaults to the dimensions of the plot window.
 #' @param file.name a string with the name of the file to be save (excluding the extension, as this is added depending on
 #'   \code{format}).
-#' @param myl sets the range of the y axis (\code{ylim} of \code{\link[graphics]{plot}} or \code{\link[graphics]{barplot}}).
+#' @param myl sets the range of the y axis (\code{ylim} of \code{\link{plot}} or \code{\link[graphics]{barplot}}).
 #'   If not specified, this will be calculated from the data.
-#' @param mxl sets the range of the x axis (\code{xlim} of \code{\link[graphics]{plot}}). If not specified, this will be
+#' @param mxl sets the range of the x axis (\code{xlim} of \code{\link{plot}}). If not specified, this will be
 #'   calculated from the data.
 #' @param autori logical; if \code{FALSE}, the origin of plotted bars will be set to 0. Otherwise, bars are adjusted such
 #'   that they extend to the bottom of the y axis.
@@ -192,7 +192,7 @@
 #' @param options a list with named arguments, useful for setting temporary defaults if you plan on using some of the same
 #'   options for multiple plots (e.g., \code{opt = list(}\code{type = 'bar',} \code{colors = 'grey',}
 #'   \code{bg = '#999999');} \code{splot(x ~ y,} \code{options = opt)}).
-#'   use \code{\link[base]{quote}} to include options that are to be evaluated within the function (e.g.,
+#'   use \code{\link{quote}} to include options that are to be evaluated within the function (e.g.,
 #'   \code{opt =} \code{list(su =} \code{quote(y > 0))}).
 #' @param add evaluated within the function, so you can refer to the objects that are returned, to variable names (those
 #'   from an entered data frame or entered as arguments), or entered data by their position, preceded by '.' (e.g.,
