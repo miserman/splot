@@ -35,8 +35,8 @@ install.packages('splot')
 ```
 Development (version 0.5.2)
 ```R
-install.packages('devtools')
-devtools::install_github('miserman/splot')
+install.packages('remotes')
+remotes::install_github('miserman/splot')
 ```
 Then load the package:
 ```R

@@ -1,3 +1,8 @@
+# splot 0.5.2
+
+## Improvements
+* treats logical y variables as binary rather than factors.
+
 # splot 0.5.1
 
 ## Additions

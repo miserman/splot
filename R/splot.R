@@ -582,8 +582,8 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
     by=sub('^y\\.','',ck$mvn)
     if(any(by == '')) by[by == ''] = seq_len(sum(by == ''))
     by=factor(rep(by,each=nr),levels=by)
-    cncls = vapply(dat[, dn], class, '')
-    if(any(cnslsn <- cncls %in% c('numeric', 'integer')) && any(!cnslsn)) for(cnc in which(!cnslsn))
+    cncls = vapply(dat[, dn], function(v) is.numeric(v) || is.integer(v) || is.factor(v), TRUE)
+    if(any(cncls) && any(!cncls)) for(cnc in which(!cncls))
       dat[, cnc] = as.numeric(factor(dat[, cnc], lvs(dat[, cnc])))
     dat=data.frame(y=unlist(dat[,dn],use.names=FALSE))
     if(ncol(td)>length(dn)) dat=cbind(dat,do.call(rbind,lapply(seq_along(dn),function(i)td[,-dn,drop=FALSE])))
@@ -624,7 +624,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
   if(ck$ltym && is.logical(lines) && !lines){ck$lty=FALSE; lty=1}
   if(!is.numeric(dat$y)){
     txt$yax = lvs(dat$y)
-    if(!is.factor(dat$y)) dat$y = factor(dat$y, lvs(dat$y))
+    if(!is.logical(dat$y) && !is.factor(dat$y)) dat$y = factor(dat$y, lvs(dat$y))
     dat$y = as.numeric(dat$y)
   }
   if('by'%in%dn && is.character(dat$by) && all(!grepl('[^0-9]',dat$by)))
