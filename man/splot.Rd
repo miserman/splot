@@ -6,24 +6,24 @@
 \usage{
 splot(y, data = NULL, su = NULL, type = "", split = "median",
   levels = list(), sort = NULL, error = "standard",
-  error.color = "#585858", error.lwd = 2, lim = 9, lines = TRUE,
-  colors = "pastel", ..., colorby = NULL, colorby.leg = TRUE,
+  error.color = "#585858", error.lwd = 2, lim = 9, lines = TRUE, ...,
+  colors = "pastel", colorby = NULL, colorby.leg = TRUE,
   color.lock = FALSE, color.offset = 1.1, color.summary = "mean",
-  opacity = 1, x = NULL, by = NULL, between = NULL, cov = NULL,
-  line.type = "l", mv.scale = "none", mv.as.x = FALSE, save = FALSE,
-  format = cairo_pdf, dims = dev.size(), file.name = "splot",
-  myl = NULL, mxl = NULL, autori = TRUE, xlas = 0, ylas = 1,
-  xaxis = TRUE, yaxis = TRUE, breaks = "sturges", density.fill = TRUE,
-  density.opacity = 0.4, density.args = list(), leg = "outside",
-  lpos = "auto", lvn = TRUE, leg.title = TRUE, leg.args = list(),
-  title = TRUE, labx = TRUE, laby = TRUE, lty = TRUE, lwd = 2,
-  sub = TRUE, ndisp = TRUE, note = TRUE, font = c(title = 2, sud = 1,
-  leg = 1, leg.title = 2, note = 3), cex = c(title = 1.5, sud = 0.9, leg =
-  0.9, note = 0.7, points = 1), sud = TRUE, labels = TRUE,
-  labels.filter = "_", labels.trim = 20, points = TRUE,
-  points.first = TRUE, byx = TRUE, drop = c(x = TRUE, by = TRUE, bet =
-  TRUE), prat = c(1, 1), check.height = TRUE, model = FALSE,
-  options = NULL, add = NULL)
+  opacity = 1, dark = FALSE, x = NULL, by = NULL, between = NULL,
+  cov = NULL, line.type = "l", mv.scale = "none", mv.as.x = FALSE,
+  save = FALSE, format = cairo_pdf, dims = dev.size(),
+  file.name = "splot", myl = NULL, mxl = NULL, autori = TRUE,
+  xlas = 0, ylas = 1, xaxis = TRUE, yaxis = TRUE, breaks = "sturges",
+  density.fill = TRUE, density.opacity = 0.4, density.args = list(),
+  leg = "outside", lpos = "auto", lvn = TRUE, leg.title = TRUE,
+  leg.args = list(), title = TRUE, labx = TRUE, laby = TRUE,
+  lty = TRUE, lwd = 2, sub = TRUE, ndisp = TRUE, note = TRUE,
+  font = c(title = 2, sud = 1, leg = 1, leg.title = 2, note = 3),
+  cex = c(title = 1.5, sud = 0.9, leg = 0.9, note = 0.7, points = 1),
+  sud = TRUE, labels = TRUE, labels.filter = "_", labels.trim = 20,
+  points = TRUE, points.first = TRUE, byx = TRUE, drop = c(x = TRUE, by
+  = TRUE, bet = TRUE), prat = c(1, 1), check.height = TRUE,
+  model = FALSE, options = NULL, add = NULL)
 }
 \arguments{
 \item{y}{a formula (see note), or the primary variable(s) to be shown on the y axis (unless \code{x} is not specified).
@@ -80,6 +80,9 @@ If \code{y} is not numeric and has only 2 levels, \code{'probability'} (\code{'^
 estimated by a logistic regression (\code{glm(y ~} \code{x, binomial)}). \code{'connected'} (\code{'^e|^co|^d'}) will
 draw lines connecting all points, and \code{FALSE} will not draw any lines.}
 
+\item{...}{passes additional arguments to \code{\link[graphics]{par}} or \code{\link[graphics]{legend}}. Arguments before
+this can be named partially; those after must by fully named.}
+
 \item{colors}{sets a color theme or manually specifies colors. Default theme is \code{"pastel"}, with \code{"dark"} and
 \code{"bright"} as options; these are passed to \code{\link{splot.color}}. If set to \code{"grey"}, or if \code{by}
 has more than 9 levels, a grey scale is calculated using \code{\link[grDevices]{gray}}. See the \code{col} parameter
@@ -89,9 +92,6 @@ sets the axis text and line colors. To set the color of error bars, use \code{er
 two colors would apply to the density line and bars separately (e.g., for \code{color =} \code{c('red','green')}, the
 density line would be red and the histogram bars would be green). See the \code{color.lock} and \code{color.offset}
 arguments for more color controls.}
-
-\item{...}{passes additional arguments to \code{\link[graphics]{par}} or \code{\link[graphics]{legend}}. Arguments before
-this can be named partially; those after must by fully named.}
 
 \item{colorby}{a variable or list of arguments used to set colors and the legend, alternatively to \code{by}. If
 \code{by} is not missing, \code{colorby} will be reduced to only the unique combinations of \code{by} and \code{colorby}.
@@ -118,6 +118,8 @@ character.}
 
 \item{opacity}{a number between 0 and 1; sets the opacity of points, lines, and bars. Semi-opaque lines will sometimes
 not be displayed in the plot window, but will show up when the plot is written to a file.}
+
+\item{dark}{logical; if \code{TRUE}, sets text and axis colors to "white".}
 
 \item{x}{secondary variable, to be shown in on the x axis. If not specified, \code{type} will be set to \code{'density'}.
 If \code{x} is a factor or vector of characters, or has fewer than \code{lim} levels when treated as a factor,

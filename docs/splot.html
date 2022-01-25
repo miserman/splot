@@ -1,7 +1,8 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Split Plot</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
 <link rel="stylesheet" type="text/css" href="R.css" />
-</head><body>
+</head><body><div class="container">
 
 <table width="100%" summary="page for splot"><tr><td>splot</td><td style="text-align: right;">R Documentation</td></tr></table>
 
@@ -18,24 +19,24 @@
 <pre>
 splot(y, data = NULL, su = NULL, type = "", split = "median",
   levels = list(), sort = NULL, error = "standard",
-  error.color = "#585858", error.lwd = 2, lim = 9, lines = TRUE,
-  colors = "pastel", ..., colorby = NULL, colorby.leg = TRUE,
+  error.color = "#585858", error.lwd = 2, lim = 9, lines = TRUE, ...,
+  colors = "pastel", colorby = NULL, colorby.leg = TRUE,
   color.lock = FALSE, color.offset = 1.1, color.summary = "mean",
-  opacity = 1, x = NULL, by = NULL, between = NULL, cov = NULL,
-  line.type = "l", mv.scale = "none", mv.as.x = FALSE, save = FALSE,
-  format = cairo_pdf, dims = dev.size(), file.name = "splot",
-  myl = NULL, mxl = NULL, autori = TRUE, xlas = 0, ylas = 1,
-  xaxis = TRUE, yaxis = TRUE, breaks = "sturges", density.fill = TRUE,
-  density.opacity = 0.4, density.args = list(), leg = "outside",
-  lpos = "auto", lvn = TRUE, leg.title = TRUE, leg.args = list(),
-  title = TRUE, labx = TRUE, laby = TRUE, lty = TRUE, lwd = 2,
-  sub = TRUE, ndisp = TRUE, note = TRUE, font = c(title = 2, sud = 1,
-  leg = 1, leg.title = 2, note = 3), cex = c(title = 1.5, sud = 0.9, leg =
-  0.9, note = 0.7, points = 1), sud = TRUE, labels = TRUE,
-  labels.filter = "_", labels.trim = 20, points = TRUE,
-  points.first = TRUE, byx = TRUE, drop = c(x = TRUE, by = TRUE, bet =
-  TRUE), prat = c(1, 1), check.height = TRUE, model = FALSE,
-  options = NULL, add = NULL)
+  opacity = 1, dark = FALSE, x = NULL, by = NULL, between = NULL,
+  cov = NULL, line.type = "l", mv.scale = "none", mv.as.x = FALSE,
+  save = FALSE, format = cairo_pdf, dims = dev.size(),
+  file.name = "splot", myl = NULL, mxl = NULL, autori = TRUE,
+  xlas = 0, ylas = 1, xaxis = TRUE, yaxis = TRUE, breaks = "sturges",
+  density.fill = TRUE, density.opacity = 0.4, density.args = list(),
+  leg = "outside", lpos = "auto", lvn = TRUE, leg.title = TRUE,
+  leg.args = list(), title = TRUE, labx = TRUE, laby = TRUE,
+  lty = TRUE, lwd = 2, sub = TRUE, ndisp = TRUE, note = TRUE,
+  font = c(title = 2, sud = 1, leg = 1, leg.title = 2, note = 3),
+  cex = c(title = 1.5, sud = 0.9, leg = 0.9, note = 0.7, points = 1),
+  sud = TRUE, labels = TRUE, labels.filter = "_", labels.trim = 20,
+  points = TRUE, points.first = TRUE, byx = TRUE, drop = c(x = TRUE, by
+  = TRUE, bet = TRUE), prat = c(1, 1), check.height = TRUE,
+  model = FALSE, options = NULL, add = NULL)
 </pre>
 
 
@@ -120,22 +121,22 @@ If <code>y</code> is not numeric and has only 2 levels, <code>'probability'</cod
 estimated by a logistic regression (<code>glm(y ~</code> <code>x, binomial)</code>). <code>'connected'</code> (<code>'^e|^co|^d'</code>) will
 draw lines connecting all points, and <code>FALSE</code> will not draw any lines.</p>
 </td></tr>
+<tr valign="top"><td><code>...</code></td>
+<td>
+<p>passes additional arguments to <code>par</code> or <code>legend</code>. Arguments before
+this can be named partially; those after must by fully named.</p>
+</td></tr>
 <tr valign="top"><td><code>colors</code></td>
 <td>
 <p>sets a color theme or manually specifies colors. Default theme is <code>"pastel"</code>, with <code>"dark"</code> and
 <code>"bright"</code> as options; these are passed to <code>splot.color</code>. If set to <code>"grey"</code>, or if <code>by</code>
-has more than 9 levels, a grey scale is calculated using <code>grey</code>. See the <code>col</code> parameter
+has more than 9 levels, a grey scale is calculated using <code>gray</code>. See the <code>col</code> parameter
 in <code>par</code> for acceptable manual inputs. To set text and axis colors, <code>col</code> sets outside
 texts (title, sud, labx, laby, and note), <code>col.sub</code> or <code>col.main</code> sets the frame titles, and <code>col.axis</code>
 sets the axis text and line colors. To set the color of error bars, use <code>error.color</code>. For histograms, a vector of
 two colors would apply to the density line and bars separately (e.g., for <code>color =</code> <code>c('red','green')</code>, the
 density line would be red and the histogram bars would be green). See the <code>color.lock</code> and <code>color.offset</code>
 arguments for more color controls.</p>
-</td></tr>
-<tr valign="top"><td><code>...</code></td>
-<td>
-<p>passes additional arguments to <code>par</code> or <code>legend</code>. Arguments before
-this can be named partially; those after must by fully named.</p>
 </td></tr>
 <tr valign="top"><td><code>colorby</code></td>
 <td>
@@ -174,6 +175,10 @@ character.</p>
 <td>
 <p>a number between 0 and 1; sets the opacity of points, lines, and bars. Semi-opaque lines will sometimes
 not be displayed in the plot window, but will show up when the plot is written to a file.</p>
+</td></tr>
+<tr valign="top"><td><code>dark</code></td>
+<td>
+<p>logical; if <code>TRUE</code>, sets text and axis colors to &quot;white&quot;.</p>
 </td></tr>
 <tr valign="top"><td><code>x</code></td>
 <td>
@@ -229,7 +234,7 @@ will also scale.</p>
 </td></tr>
 <tr valign="top"><td><code>format</code></td>
 <td>
-<p>the type of file to save plots as. default is <code>cairo_pdf</code>. See
+<p>the type of file to save plots as. Default is <code>cairo_pdf</code>; see
 <code>Devices</code> for options.</p>
 </td></tr>
 <tr valign="top"><td><code>dims</code></td>
@@ -596,4 +601,4 @@ splot(cbind(
 </pre>
 
 
-</body></html>
+</div></body></html>
