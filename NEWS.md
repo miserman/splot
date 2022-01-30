@@ -4,6 +4,7 @@
 * dark option to more easily set text colors for dark backgrounds.
 
 ## Improvements
+* standardizes color codes before passing them to par.
 * avoids overwriting par color settings.
 * better handles arguments outside of options when options is specified.
 * treats logical y variables as binary rather than factors.

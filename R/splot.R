@@ -1219,6 +1219,11 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
     if(any(!cpdo)) warning('unused argument', if(sum(!cpdo) == 1) ': ' else 's: ' ,
       paste(names(pdo)[!cpdo], collapse=', '), call.=FALSE)
   }
+  expand_color_code = function(e){
+    if(is.character(e) && all(grepl("^#[0-9a-f]{3}$", e, TRUE))) paste0(e, substring(e, 2)) else e
+  }
+  pdo = lapply(pdo, expand_color_code)
+  op = lapply(op, expand_color_code)
   par(op)
   on.exit(par(dop))
   layout(seg$dmat,c(rep.int(seg$prat[1],seg$dim[2]),if(ck$legcol) seg$prat[if(length(seg$prat)>1) 2 else 1]))
