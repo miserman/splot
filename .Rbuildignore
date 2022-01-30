@@ -1,0 +1,7 @@
+^CRAN-RELEASE$
+^CRAN-SUBMISSION$
+^.*\.Rproj$
+^\.Rproj\.user$
+^\.git
+docs
+^cran-comments\.md$
