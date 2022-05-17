@@ -375,7 +375,8 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
     note=!is.character(note),
     mv=FALSE,
     mlvn=missing(lvn),
-    opacity=!missing(opacity) && opacity<=1 && opacity>0
+    opacity=!missing(opacity) && opacity<=1 && opacity>0,
+    mai=FALSE
   )
   if(ck$lpm) lpos='center'
   if(ck$d && !is.data.frame(data)) data = if(!is.matrix(data) && !is.list(data))
@@ -1188,7 +1189,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
       max(sum((main != '') * 1.8 + if(sum(seg$dim) > 2) .5 else 0, ck$sud), 1), .5
     ),
     mar=c(
-      if(ck$lx) 2 else 1.5, if(ck$ly) 2.8 else 2.4, (ck$sud && (ck$su || ck$c)) *
+      if(ck$lx) 2 else 1.5, if(ck$ly) 3 else 2.4, (ck$sud && (ck$su || ck$c)) *
       ifelse(seg$ll > 1, 2, 0) + (ck$sub && sum(seg$dim) > 2) * 1.3, 0
     ),
     mgp=c(3,.3,0),
@@ -1203,9 +1204,11 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
   )
   if(dark){
     op$fg = op$col = op$col.axis = op$col.main = op$col.sub = op$col.sub = "white"
+    if (par('bg') == "white") warning("foreground and background are both white")
   }
   if(length(pdo)!=0){
     if(any(cpdo<-(npdo<-names(pdo))%in%names(dop))){
+      ck$mai = 'mai' %in% npdo
       op[npdo[cpdo]]=pdo[cpdo]
       if('font.sub'%in%names(op)) op$font.main=op$font.sub
       if('cex.sub'%in%names(op)) op$cex.main=op$cex.sub
@@ -1344,7 +1347,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
         xlas=3
         if(missing(mxl)) mxl=c(1,dm[2])
         mh=c(par('fin')[2]/2,max(stw))
-        par(mai=c(min(mh)+.1,par('mai')[-1]))
+        par(mai = if (ck$mai) op$mai else c(min(mh) + .25, par('mai')[-1]))
         if(mh[1]<mh[2] && missing(labels.trim)){
           mh=round(mh[1]/.1)
           n=colnames(m)
@@ -1476,7 +1479,9 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
         a2a$labels=ptxt$l.x
         if(missing(xlas) || xlas>1){
           xlas=3
-          par(mai=c(min(c(par('fin')[2]/2,max(strwidth(ptxt$l.x,'i'))))+.1,par('mai')[-1]))
+          par(mai = if (ck$mai) op$mai else c(
+            min(c(par('fin')[2] / 2, max(strwidth(ptxt$l.x, 'i'))) + .25, par('mai')[-1])
+          ))
         }
       }
       plot(

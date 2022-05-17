@@ -1,3 +1,8 @@
+# splot 0.5.3
+
+## Improvements
+* allows for more control over graphical parameters
+
 # splot 0.5.2
 
 ## Additions
