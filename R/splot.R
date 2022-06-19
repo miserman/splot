@@ -812,6 +812,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
       if(length(n) != 0 && all(n != 'NULL' & n != '')){
         names(n) = n
         if(is.character(labels.filter)) n=gsub(labels.filter,' ',n,perl=TRUE)
+        if (any(is.na(iconv(n)))) stop("labels appear to be misencoded -- check them with the iconv function")
         if(is.numeric(labels.trim)) if(any(ln<-nchar(n)>(labels.trim+3))) n[ln]=sub('$','...',strtrim(n[ln],labels.trim))
       }
       n
@@ -1202,10 +1203,6 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
     pch=19,
     xpd=NA
   )
-  if(dark){
-    op$fg = op$col = op$col.axis = op$col.main = op$col.sub = op$col.sub = "white"
-    if (par('bg') == "white") warning("foreground and background are both white")
-  }
   if(length(pdo)!=0){
     if(any(cpdo<-(npdo<-names(pdo))%in%names(dop))){
       ck$mai = 'mai' %in% npdo
@@ -1227,6 +1224,10 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
   }
   pdo = lapply(pdo, expand_color_code)
   op = lapply(op, expand_color_code)
+  if(dark){
+    op$fg = op$col = op$col.axis = op$col.main = op$col.sub = op$col.sub = "white"
+    if (is.null(op$bg) && par('bg') == "white") warning("foreground and background are both white")
+  }
   par(op)
   on.exit(par(dop))
   layout(seg$dmat,c(rep.int(seg$prat[1],seg$dim[2]),if(ck$legcol) seg$prat[if(length(seg$prat)>1) 2 else 1]))
@@ -1480,7 +1481,7 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
         if(missing(xlas) || xlas>1){
           xlas=3
           par(mai = if (ck$mai) op$mai else c(
-            min(c(par('fin')[2] / 2, max(strwidth(ptxt$l.x, 'i'))) + .25, par('mai')[-1])
+            min(c(par('fin')[2] / 2, max(strwidth(ptxt$l.x, 'i')))) + .25, par('mai')[-1]
           ))
         }
       }

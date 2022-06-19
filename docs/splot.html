@@ -1,10 +1,20 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Split Plot</title>
+<!DOCTYPE html><html><head><title>R: Split Plot</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.css">
+<script type="text/javascript">
+const macros = { "\\R": "\\textsf{R}", "\\code": "\\texttt"};
+function processMathHTML() {
+    var l = document.getElementsByClassName('reqn');
+    for (let e of l) { katex.render(e.textContent, e, { throwOnError: false, macros }); }
+    return;
+}</script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.js"
+    onload="processMathHTML();"></script>
 <link rel="stylesheet" type="text/css" href="R.css" />
 </head><body><div class="container">
 
-<table width="100%" summary="page for splot"><tr><td>splot</td><td style="text-align: right;">R Documentation</td></tr></table>
+<table width="100%"><tr><td>splot</td><td style="text-align: right;">R Documentation</td></tr></table>
 
 <h2>Split Plot</h2>
 
@@ -16,8 +26,7 @@
 
 <h3>Usage</h3>
 
-<pre>
-splot(y, data = NULL, su = NULL, type = "", split = "median",
+<pre><code class='language-R'>splot(y, data = NULL, su = NULL, type = "", split = "median",
   levels = list(), sort = NULL, error = "standard",
   error.color = "#585858", error.lwd = 2, lim = 9, lines = TRUE, ...,
   colors = "pastel", colorby = NULL, colorby.leg = TRUE,
@@ -37,12 +46,12 @@ splot(y, data = NULL, su = NULL, type = "", split = "median",
   points = TRUE, points.first = TRUE, byx = TRUE, drop = c(x = TRUE, by
   = TRUE, bet = TRUE), prat = c(1, 1), check.height = TRUE,
   model = FALSE, options = NULL, add = NULL)
-</pre>
+</code></pre>
 
 
 <h3>Arguments</h3>
 
-<table summary="R argblock">
+<table>
 <tr valign="top"><td><code>y</code></td>
 <td>
 <p>a formula (see note), or the primary variable(s) to be shown on the y axis (unless <code>x</code> is not specified).
@@ -455,7 +464,7 @@ line at the mean of x).</p>
 Each of these objects can also be pulled from within <code>add</code>:
 </p>
 
-<table summary="Rd table">
+<table>
 <tr>
  <td style="text-align: left;">
   <code>dat</code> </td><td style="text-align: left;"> a <code>data.frame</code> of processed, unsegmented data.</td>
@@ -551,8 +560,7 @@ old ones, you might try entering <code>dev.off()</code> into the console. If new
 
 <h3>Examples</h3>
 
-<pre>
-# simulating data
+<pre><code class='language-R'># simulating data
 n=2000
 dat=data.frame(sapply(c('by','bet1','bet2'),function(c)sample(0:1,n,TRUE)))
 dat$x=with(dat,
@@ -598,7 +606,8 @@ splot(cbind(
   Tangent=y+tan(x)
 )~x, dat, myl=c(-10,15), lines='loess', laby='y + versions of x')
 
-</pre>
+</code></pre>
 
 
-</div></body></html>
+</div>
+</body></html>

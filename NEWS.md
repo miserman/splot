@@ -1,7 +1,10 @@
 # splot 0.5.3
 
+## Additions
+* adds splot.colorcontrast.
+
 ## Improvements
-* allows for more control over graphical parameters
+* allows for more control over graphical parameters.
 
 # splot 0.5.2
 

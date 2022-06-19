@@ -3,6 +3,7 @@
 export(splot)
 export(splot.bench)
 export(splot.color)
+export(splot.colorcontrast)
 export(splot.colormean)
 importFrom(grDevices,adjustcolor)
 importFrom(grDevices,cairo_pdf)

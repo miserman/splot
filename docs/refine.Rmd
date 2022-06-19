@@ -29,7 +29,7 @@ library(splot)
 
 Then load in the data and attach it (can take a little while):
 ```{r}
-data=read.csv('https://osf.io/ey9hs/?action=download')
+data=read.csv('https://osf.io/ey9hs/?action=download', fileEncoding = "ISO-8859-1")
 attach(data)
 ```
 
