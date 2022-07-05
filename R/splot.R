@@ -690,6 +690,9 @@ splot=function(y,data=NULL,su=NULL,type='',split='median',levels=list(),sort=NUL
       seg[[e]]$e=TRUE
       seg[[e]]$i=i
       seg[[e]]$l=lvs(dat[,i])
+      if (is.factor(dat[, i]) && drop[[dn[i]]]) {
+        seg[[e]]$l = seg[[e]]$l[seg[[e]]$l %in% dat[, i]]
+      }
       seg[[e]]$ll=length(seg[[e]]$l)
       if(seg[[e]]$ll>lim && !(is.character(dat[,i]) || is.factor(dat[,i]))){
         dat[,i]=splt(dat[,i],ck$sp)
