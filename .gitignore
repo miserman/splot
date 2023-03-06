@@ -28,3 +28,5 @@ build.R
 .Rproj.user
 cran-comments.md
 /inst/
+docs
+inst/doc

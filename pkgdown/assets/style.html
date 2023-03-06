@@ -1,0 +1,177 @@
+<!doctype html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="icon" href="https://github.com/fluidicon.png">
+<title>Splot Settings</title>
+<style type="text/css">
+*{margin:0;padding:0;font-family:"Lucida Sans Unicode","Lucida Grande",Sans-serif;color:#fff}
+html{background:#000}
+code{font-family:monospace}
+.plot{max-width:60em;margin:1em auto;border:solid 1px;-webkit-user-select:none;-khtml-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}
+.labyo{-webkit-transform:rotate(270deg);-moz-transform:rotate(270deg);-o-transform: rotate(270deg);-ms-transform:rotate(270deg);transform: rotate(270deg)}
+#panels td{border:solid 1px;height:200px;width:40em;min-width:13em;text-align:center}
+#panels a{font-size:.7em;position:relative;top:-7em}
+#title{font-size:1.5em}
+#title,#laby,#labx{font-weight:bold}
+#title,#sub,#labx{text-align:center;display:inline-block;width:100%}
+#legend td{width:10em;font-size:.9em;min-width:7em}
+#legend td::before{content:'— '}
+#note{position:relative;left:-3.2em;font-size:.7em;padding:.2em 4em .2em 2em}
+.info{min-width:35em;max-width:60em;margin:0 auto}
+.idoc{height:18.5em;overflow-y:auto}
+#doc table tr td{vertical-align:baseline}
+#doc table tr td:first-child{font-family:monospace; padding: 0 1em 0 0}
+#title:hover,#sub:hover,#laby:hover,#panels:hover,#legend:hover,#labx:hover,#note:hover{background:rgba(130, 196, 115, 0.3);cursor:pointer}
+@media screen and (max-width:65em){.plot{margin:1em}.info{margin:0 1em}}
+</style>
+</head>
+<body>
+<table class='plot'>
+<tr><td></td><td><a onclick='lock(this)' onmouseover='show(this)' onmouseout='reset()' id='title'>title</a>
+<br /><a onclick='lock(this)' onmouseover='show(this)' onmouseout='reset()' id='sub'><code>sud</code> (subset, covariates/line adjustment)</a></td><td></td></tr>
+<tr><td onclick='lock(this)' onmouseover='show(this)' onmouseout='reset()' id='laby'><div class='labyo'>laby</div></td><td>
+<table onclick='lock(this)' onmouseover='show(this)' onmouseout='reset()' id='panels'>
+<tr>
+	<td><a>bet1: level 1, bet2: level 1, n = 000</a><p><code>leg</code> = 1</p></td>
+	<td><a>bet1: level 1, bet2: level 2, n = 000</a><p><code>leg</code> = 2</p></td>
+</tr>
+<tr>
+	<td><a>bet1: level 2, bet2: level 1, n = 000</a><p><code>leg</code> = 3</p></td>
+	<td><a>bet1: level 2, bet2: level 2, n = 000</a><p><code>leg</code> = 4</p></td>
+</tr>
+</table>
+</td><td onclick='lock(this)' onmouseover='show(this)' onmouseout='reset()' id='legend'>
+<table>
+<tr><td>by: level 1</td></tr>
+<tr><td>by: level 2</td></tr>
+<tr><td>by: level 3</td></tr>
+</table>
+</td></tr>
+<tr><td></td><td><a onclick='lock(this)' onmouseover='show(this)' onmouseout='reset()' id='labx'>labx</a>
+<br /><a onclick='lock(this)' onmouseover='show(this)' onmouseout='reset()' id='note'><code>note</code> (variables split, error bars type, line type).</a></td><td></td></tr>
+
+</table>
+<div class='info'>
+<div id='call'>splot(laby ~ labx * by * bet1 * bet2)</div>
+<div id='doc'>
+
+<div id='general_doc'>
+<h1>general settings</h1>
+<div class='idoc'><table>
+<tr><td>labels</td><td>Hide all labels with <code>FALSE</code></td></tr>
+<tr><td>labels.filter</td><td>Filter out strings from label text. Default is <code>'_|\\.'</code>, which replaces underscores and periods with blank spaces.</td></tr>
+<tr><td>labels.trim</td><td>Truncate labels that are longer than the set number of characters, or prevent truncation with <code>FALSE</code>.</td></tr>
+<tr><td>levels</td><td>Rename or reorder the levels that appear in the legend or panels (e.g., <code>levels = list(by = c('a','b','c'))</code>; see the full documentation for more).</td></tr>
+<tr><td>lvn</td><td>Hide the variable names before the legend and panel labels with <code>FALSE</code>.</td></tr>
+<tr><td>mv.as.x</td><td>When <code>y</code> has multiple variables, <code>by</code> is used to list their names (so they appear in the legend). Move these to <code>x</code> with <code>TRUE</code>.</td></tr>
+<tr><td>bg, fg</td><td>Change the background or text colors with a code or name (e.g., <code>bg = '#c9c9c9'</code>). <code>fg</code> applies to label texts.</td></tr>
+<tr><td>oma</td><td>Adjust the spacing around the plot window: <code>c(bottom, left, top, right)</code>, e.g., <code>oma = c(3, 2, 3, 2)</code>.</td></tr>
+</table></div>
+</div>
+
+<div style='display:none' id='title_doc'>
+<h1>main title</h1>
+<div class='idoc'><table>
+<tr><td>title</td><td>Hide the title with <code>FALSE</code>, or enter text to be used in place of the automatic title.</td></tr>
+<tr><td>font</td><td>Change the font, e.g., <code>font = c(title = 3)</code>.</td></tr>
+<tr><td>cex</td><td>Change the font size, e.g., <code>cex = c(title = 3)</code>.</td></tr>
+</table></div>
+</div>
+
+<div style='display:none' id='sub_doc'>
+<h1>subset display</h1>
+<div class='idoc'><table>
+<tr><td>sud</td><td>Hide the subset display with <code>FALSE</code>.</td></tr>
+<tr><td>font</td><td>Change the font by a code. Generally, 1 = plain, 2 = bold, 3 = italic, 4 = bold italic, e.g., <code>font = c(sud = 3)</code>.</td></tr>
+<tr><td>cex</td><td>Change the font size by the set magnification factor, e.g., <code>cex = c(sud = 3)</code>.</td></tr>
+</table></div>
+</div>
+
+<div style='display:none' id='laby_doc'>
+<h1>y-axis label</h1>
+<div class='idoc'><table>
+<tr><td>laby</td><td>Hide the y-axis with <code>FALSE</code>, or enter text to be used in place of the automatic label.</td></tr>
+<tr><td>font.lab</td><td>Change the font by a code. Generally, 1 = plain, 2 = bold, 3 = italic, 4 = bold italic.</td></tr>
+<tr><td>cex.lab</td><td>Change the font size of both x- and y-axis labels by the set magnification factor.</td></tr>
+</table></div>
+</div>
+
+<div style='display:none' id='panels_doc'>
+<h1>plot panels</h1>
+<div class='idoc'><table>
+<tr><td>sub</td><td>Hide the label at the top of each panel with <code>FALSE</code>.</td></tr>
+<tr><td>ndisp</td><td>Hide just the n display in the panel label with <code>FALSE</code>.</td></tr>
+<tr><td>myl, mxl</td><td>Adjust the range of the y- and x-axis, e.g., <code>myl = c(0, 10)</code>.</td></tr>
+<tr><td>ylas, xlas</td><td>Change the orientation of the axis labels (the numbers or level names on each axis). 0 = parallel to axis, 1 = horizontal, 2 = perpendicular to axis, 3 = vertical.</td></tr>
+<tr><td>font.axis, font.sub</td><td>Change the font by a code. Generally, 1 = plain, 2 = bold, 3 = italic, 4 = bold italic.</td></tr>
+<tr><td>cex.axis, cex.sub</td><td>Change the font size of axis labels by the set magnification factor.</td></tr>
+<tr><td>col.axis, col.sub</td><td>Change label colors with a code or name (e.g., <code>col.axis = '#303030'</code>). <code>col.axis</code> applies to axis labels and lines/tick marks. <code>col.main</code> applies to the panel labels.</td></tr>
+<tr><td>pch, cex</td><td>Change the points' style (e.g., <code>pch = 1</code>) or size (e.g., <code>cex = c(points = 2)</code>).</td></tr>
+<tr><td>drop</td><td><code>drop['bet']</code> can affect the layout of panels; e.g., <code>drop = c(bet = FALSE)</code> will show empty panels if there are levels of <code>between</code> without data.</td></tr>
+<tr><td>mfrow</td><td>Specifies the number of rows and column. This is normally set based on the levels of <code>between</code>, but can be overwritten (e.g., <code>mfrow = c(2, 3)</code> would make a layout of 2 rows and 3 columns).</td></tr>
+<tr><td>mar</td><td>Adjust the spacing between the labels and the plotting area: <code>c(bottom, left, top, right)</code>, e.g., <code>mar = c(1, 1, 3, 0).</code></td></tr>
+</table></div>
+</div>
+
+<div style='display:none' id='legend_doc'>
+<h1>legend</h1>
+<div class='idoc'><table>
+<tr><td>leg</td><td>Hide the legend with <code>FALSE</code>. Move the legend outside of the plot panels with a string matching <code>'outside'</code>, or inside the plot panels with any other string (e.g., <code>'inside'</code>). If The legend is outside and there are empty plot panels, the legend will be placed in the empty frame; in this case, a number will specify which panel the legend is placed in.</td></tr>
+<tr><td>lpos</td><td>Set the position of the legend with a keyword (e.g., <code>'topleft'</code> or <code>'center'</code>), or place it with a click with <code>'place'</code>. If not specified, this is done automatically.</td></tr>
+<tr><td>leg.title</td><td>Turn off the title above the legend with <code>FALSE</code>, or enter a custom title in quotes.</td></tr>
+<tr><td>prat</td><td>When the legend is outside (as here), this will adjust the ratio between the plot panels and the legend (e.g., <code>prat = c(2, 1)</code>, where the first value applies to each plot panels, and the second to the legend).</td></tr>
+<tr><td>font</td><td>Change the font of the legend title or labels, e.g., <code>font = c(leg.title = 4, leg = 3)</code>.</td></tr>
+<tr><td>cex</td><td>Change the font size, e.g., <code>cex = c(leg = 3)</code>.</td></tr>
+<tr><td>drop</td><td><code>drop['by']</code> can affect which labels appear in the legend; e.g., <code>drop = c(by = FALSE)</code> will show labels for all levels of <code>by</code>, even if some have no data.</td></tr>
+<tr><td>leg.args</td><td>A list passing additional arguments to legend (see ?legend).</td></tr>
+</table></div>
+</div>
+
+<div style='display:none' id='labx_doc'>
+<h1>x-axis label</h1>
+<div class='idoc'><table>
+<tr><td>labx</td><td>Hide the x-axis label with <code>FALSE</code>, or enter text to be used in place of the automatic label.</td></tr>
+<tr><td>font.lab</td><td>Change the font by a code. Generally, 1 = plain, 2 = bold, 3 = italic, 4 = bold italic.</td></tr>
+<tr><td>cex.lab</td><td>Change the font size of both x- and y-axis labels.</td></tr>
+</table></div>
+</div>
+
+<div style='display:none' id='note_doc'>
+<h1>note</h1>
+<div class='idoc'><table>
+<tr><td>note</td><td>Hide the note with <code>FALSE</code>, or enter a custom note in quotes.</td></tr>
+<tr><td>font</td><td>Change the font, e.g., <code>font = c(note = 2)</code>.</td></tr>
+<tr><td>cex</td><td>Change the font size, e.g., <code>cex = c(note = 3)</code>.</td></tr>
+</table></div>
+</div>
+
+</div>
+</div>
+<script type="text/javascript">
+var docs = document.getElementById('doc').children, gen = document.getElementById('general_doc'),
+  dn = docs.length, le = '', i
+function docoff(){
+  for(i = dn; i--;) docs[i].style.display = 'none'
+}
+function lock(e){
+	docoff()
+	if(le !== '' && le !== e.id){
+		document.getElementById(le).style.background = ''
+		le = ''
+	}
+ 	document.getElementById(e.id + '_doc').style.display = ''
+	e.style.background = le === '' ? 'rgba(163, 120, 192, 0.3)' : ''
+	le = le === '' ? e.id : ''
+}
+function show(e){if(le === ''){
+	docoff()
+	document.getElementById(e.id + '_doc').style.display=''
+}}
+function reset(){if(le === ''){
+	docoff()
+	gen.style.display = ''
+}}
+</script>
+</body>
+</html>

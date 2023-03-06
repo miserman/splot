@@ -4,10 +4,12 @@
 * adds splot.colorcontrast.
 
 ## Improvements
+* improves reference resolution in colors and add.
 * allows for more control over graphical parameters.
 
 ## Bug fixes
-* appropriately drops levels when they are based on a factor
+* accounts for NULL stringsAsFactors option.
+* appropriately drops levels when they are based on a factor.
 
 # splot 0.5.2
 

@@ -1,0 +1,67 @@
+url: https://miserman.github.io/splot
+
+template:
+  bootswatch: cyborg
+  theme: arrow-dark
+  bootstrap: 5
+  bslib:
+    bg: "#000"
+    fg: "#c3c3c3"
+    link-color: "#fff"
+    navbar-dark-active-color: "#fff !important"
+    border-color: "#3e3e3e"
+    dropdown-header-color: "#fff"
+    text-muted: "#747474"
+
+navbar:
+  structure:
+    left: [intro, style, gallery, articles, reference, news]
+    right: [github]
+  components:
+    style:
+      text: Style Helper
+      href: articles/style.html
+    gallery:
+      text: Gallery
+      href: articles/gallery.html
+    articles:
+      text: Articles
+      menu:
+      - text: Explore - Gendered Language Styles
+        href: articles/explore.html
+      - text: Refine - Killer's Autobiographies
+        href: articles/refine.html
+
+home:
+  sidebar:
+    structure: links
+  links:
+  - text: Test Coverage
+    href: coverage.html
+
+reference:
+  - title: Main Function
+  - contents:
+    - splot
+
+  - title: Color Utilities
+    desc: These can help calculate and specify colors.
+  - contents:
+    - splot.color
+    - splot.colormean
+    - splot.colorcontrast
+
+  - title: Tools
+    desc: These are extra tools not directly relating to plotting.
+  - contents:
+    - splot.bench
+
+news:
+  cran_dates: false
+
+footer:
+  structure:
+    left: none
+    right: none
+  components:
+    none: ""

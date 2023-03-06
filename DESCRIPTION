@@ -13,6 +13,10 @@ URL: https://miserman.github.io/splot/
 BugReports: https://github.com/miserman/splot/issues
 Depends: R (>= 3.1), graphics, stats, grDevices
 License: GPL (>= 2)
-RoxygenNote: 7.2.0
+RoxygenNote: 7.2.3
 Roxygen: list(old_usage = TRUE)
-Suggests: knitr, rmarkdown
+Suggests: 
+    knitr,
+    rmarkdown,
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3

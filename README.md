@@ -20,11 +20,12 @@ For each type, multiple `y` variables or data at levels of a `by` variable are s
 and data at levels of one or two `between` variables are shown in separate plot frames, organized in a grid.
 
 ## resources
-* [Introduction](https://miserman.github.io/splot/)
-* [Documentation](https://miserman.github.io/splot/#main_function)  
-* [Style Guide](https://miserman.github.io/splot/#style)  
-* [Gallery](https://miserman.github.io/splot/#gallery)
-* Applied examples: [Exploring Data](https://miserman.github.io/splot/#explore) | [Refining a Result](https://miserman.github.io/splot/#refine)
+* [Introduction](https://miserman.github.io/splot/articles/intro.html)
+* [Documentation](https://miserman.github.io/splot/reference/splot.html)  
+* [Style Guide](https://miserman.github.io/splot/articles/style.html)  
+* [Gallery](https://miserman.github.io/splot/articles/gallery.html)
+* Applied examples: [Exploring Data](https://miserman.github.io/splot/articles/explore.html) |
+[Refining a Result](https://miserman.github.io/splot/articles/refine.html)
 
 ## installation
 Download R from [r-project.org](https://www.r-project.org/).
@@ -35,7 +36,7 @@ install.packages('splot')
 ```
 Development (version 0.5.3)
 ```R
-install.packages('remotes')
+# install.packages('remotes')
 remotes::install_github('miserman/splot')
 ```
 Then load the package:
