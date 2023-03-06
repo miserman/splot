@@ -1,7 +1,7 @@
 Package: splot
 Type: Package
 Title: Split Plot
-Version: 0.5.3
+Version: 0.5.4
 Author: Micah Iserman
 Maintainer: Micah Iserman <micah.iserman@gmail.com>
 Description: Automates common plotting tasks to ease data exploration.
