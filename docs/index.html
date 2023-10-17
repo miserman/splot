@@ -132,11 +132,11 @@
 <p>Download R from <a href="https://www.r-project.org/" class="external-link">r-project.org</a>.</p>
 <p>Release (<a href="https://CRAN.R-project.org/package=splot" class="external-link">version 0.5.3</a>)</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">'splot'</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"splot"</span><span class="op">)</span></span></code></pre></div>
 <p>Development (version 0.5.4)</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># install.packages('remotes')</span></span>
-<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">'miserman/splot'</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># install.packages("remotes")</span></span>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"miserman/splot"</span><span class="op">)</span></span></code></pre></div>
 <p>Then load the package:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://miserman.github.io/splot/">splot</a></span><span class="op">)</span></span></code></pre></div>
@@ -146,7 +146,7 @@
 </h2>
 <p>Make some data: random group and x variables, and a y variable related to x:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">group</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'group 1'</span>, <span class="st">'group 2'</span><span class="op">)</span>, <span class="fl">50</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">group</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"group 1"</span>, <span class="st">"group 2"</span><span class="op">)</span>, <span class="fl">50</span><span class="op">)</span></span>
 <span><span class="va">x</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">100</span><span class="op">)</span></span>
 <span><span class="va">y</span> <span class="op">=</span> <span class="va">x</span> <span class="op">*</span> <span class="fl">.5</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">100</span><span class="op">)</span></span></code></pre></div>
 <p>The distribution of y:</p>
@@ -164,10 +164,10 @@
 <p>Could also separate by median or standard deviations of x:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/splot.html">splot</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="va">x</span> <span class="op">*</span> <span class="va">x</span><span class="op">)</span></span>
-<span><span class="fu"><a href="reference/splot.html">splot</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="va">x</span> <span class="op">*</span> <span class="va">x</span>, split<span class="op">=</span><span class="st">'sd'</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="reference/splot.html">splot</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="va">x</span> <span class="op">*</span> <span class="va">x</span>, split <span class="op">=</span> <span class="st">"sd"</span><span class="op">)</span></span></code></pre></div>
 <p>Summarize with a bar plot:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="reference/splot.html">splot</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="va">x</span> <span class="op">*</span> <span class="va">group</span>, type<span class="op">=</span><span class="st">'bar'</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="reference/splot.html">splot</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="va">x</span> <span class="op">*</span> <span class="va">group</span>, type <span class="op">=</span> <span class="st">"bar"</span><span class="op">)</span></span></code></pre></div>
 <p>Two-level y variable with a probability prediction line:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># make some new data for this example:</span></span>
@@ -175,8 +175,8 @@
 <span><span class="va">y_bin</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">5</span><span class="op">)</span>, <span class="fl">50</span><span class="op">)</span></span>
 <span><span class="va">x_con</span> <span class="op">=</span> <span class="va">y_bin</span> <span class="op">*</span> <span class="fl">.4</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">100</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># lines = 'prob' for a prediction line from a logistic model:</span></span>
-<span><span class="fu"><a href="reference/splot.html">splot</a></span><span class="op">(</span><span class="va">y_bin</span> <span class="op">~</span> <span class="va">x_con</span>, lines <span class="op">=</span> <span class="st">'prob'</span><span class="op">)</span></span></code></pre></div>
+<span><span class="co"># lines = "prob" for a prediction line from a logistic model:</span></span>
+<span><span class="fu"><a href="reference/splot.html">splot</a></span><span class="op">(</span><span class="va">y_bin</span> <span class="op">~</span> <span class="va">x_con</span>, lines <span class="op">=</span> <span class="st">"prob"</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">

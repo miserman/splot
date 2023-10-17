@@ -20,6 +20,8 @@ test_that("scale works", {
     order(-colMeans(col2rgb(initial))),
     order(colMeans(col2rgb(splot.color(1:5, decreasing = TRUE))))
   )
-  expect_false(all(initial == splot.color(1:5, shuffle = TRUE)))
+  expect_true(!all(
+    initial == vapply(1:10, function(i) splot.color(1:5, shuffle = TRUE), character(5))
+  ))
   expect_true(all(initial %in% splot.color(1:5, shuffle = TRUE)))
 })

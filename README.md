@@ -32,12 +32,12 @@ Download R from [r-project.org](https://www.r-project.org/).
 
 Release ([version 0.5.3](https://CRAN.R-project.org/package=splot))
 ```R
-install.packages('splot')
+install.packages("splot")
 ```
 Development (version 0.5.4)
 ```R
-# install.packages('remotes')
-remotes::install_github('miserman/splot')
+# install.packages("remotes")
+remotes::install_github("miserman/splot")
 ```
 Then load the package:
 ```R
@@ -46,7 +46,7 @@ library(splot)
 ## examples
 Make some data: random group and x variables, and a y variable related to x:
 ```R
-group = rep(c('group 1', 'group 2'), 50)
+group = rep(c("group 1", "group 2"), 50)
 x = rnorm(100)
 y = x * .5 + rnorm(100)
 ```
@@ -69,11 +69,11 @@ splot(y ~ x * group)
 Could also separate by median or standard deviations of x:
 ```R
 splot(y ~ x * x)
-splot(y ~ x * x, split='sd')
+splot(y ~ x * x, split = "sd")
 ```
 Summarize with a bar plot:
 ```R
-splot(y ~ x * group, type='bar')
+splot(y ~ x * group, type = "bar")
 ```
 Two-level y variable with a probability prediction line:
 ```R
@@ -82,6 +82,6 @@ Two-level y variable with a probability prediction line:
 y_bin = rep(c(1, 5), 50)
 x_con = y_bin * .4 + rnorm(100)
 
-# lines = 'prob' for a prediction line from a logistic model:
-splot(y_bin ~ x_con, lines = 'prob')
+# lines = "prob" for a prediction line from a logistic model:
+splot(y_bin ~ x_con, lines = "prob")
 ```

@@ -138,7 +138,7 @@ equal, and results are invisibly returned.</p></dd>
 <span class="r-in"><span>  runs <span class="op">=</span> <span class="fl">20</span>, runsize <span class="op">=</span> <span class="fl">200</span>, check_output <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> benchmarking 4 expression(s) in chunks of 200 per run... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> run 0 of 20run 1 of 20run 2 of 20run 3 of 20run 4 of 20run 5 of 20run 6 of 20run 7 of 20run 8 of 20run 9 of 20run 10 of 20run 11 of 20run 12 of 20run 13 of 20run 14 of 20run 15 of 20run 16 of 20run 17 of 20run 18 of 20run 19 of 20run 20 of 20finished 20 runs in 1.04 seconds       </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> run 0 of 20run 1 of 20run 2 of 20run 3 of 20run 4 of 20run 5 of 20run 6 of 20run 7 of 20run 8 of 20run 9 of 20run 10 of 20run 11 of 20run 12 of 20run 13 of 20run 14 of 20run 15 of 20run 16 of 20run 17 of 20run 18 of 20run 19 of 20run 20 of 20finished 20 runs in 0.96 seconds       </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> expressions:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -147,10 +147,10 @@ equal, and results are invisibly returned.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3. vapply(1:100, "*", 0, 10)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4. unlist(lapply(1:100, "*", 10))</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                          1     2     3     4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> total time (seconds) 0.260 0.440 0.160 0.180</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> mean time per run    0.013 0.022 0.008 0.009</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> times the minimum    1.625 2.750 1.000 1.125</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                           1      2      3      4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> total time (seconds) 0.2300 0.3800 0.1700 0.1800</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> mean time per run    0.0115 0.0190 0.0085 0.0090</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> times the minimum    1.3529 2.2353 1.0000 1.0588</span>
 <span class="r-plt img"><img src="splot.bench-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># compare ways of setting all but the maximum value of each row in a matrix to 0</span></span></span>
