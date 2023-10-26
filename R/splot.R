@@ -1926,7 +1926,7 @@ splot <- function(
         }, tt)
         dev.copy(format, fn, width = dims[1], height = dims[2])
         dev.off()
-        message("image saved: ", getwd(), "/", fn)
+        if (file.exists(fn)) message("image saved: ", fn) else warning("failed to save image")
       },
       error = function(e) warning("unable to save image: ", e$message, call. = FALSE)
     )

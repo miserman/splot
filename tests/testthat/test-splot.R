@@ -104,8 +104,9 @@ test_that("colorby works", {
   )
 })
 
+skip_if_not(capabilities("cairo"), "Cairo devices not supported")
 test_that("saving works", {
-  file <- paste0(tempfile(), ".png")
-  splot(1:10, file.name = file, format = "png")
+  file <- paste0(tempfile(), ".svg")
+  splot(1:10, file.name = file, format = "svg")
   expect_true(file.exists(file))
 })
