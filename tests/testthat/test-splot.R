@@ -105,7 +105,7 @@ test_that("colorby works", {
 })
 
 test_that("saving works", {
-  file <- paste0(tempfile(), ".svg")
-  splot(1:10, file.name = file, format = "svg")
+  file <- paste0(tempfile(), ".png")
+  splot(1:10, file.name = file, format = "png")
   expect_true(file.exists(file))
 })
