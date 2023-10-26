@@ -1919,7 +1919,11 @@ splot <- function(
           paste0(".", tolower(strsplit(t, "_|Cairo")[[1]][2]))
         } else if (t == "postscript") ".ps" else paste0(".", t)
         if (missing(dims) && grepl("jpeg|png|tiff|bmp|bit", t, TRUE)) dims <- dev.size(units = "px")
-        fn <- paste0(if (main == "" || !missing(file.name)) file.name else gsub(" ", "_", gsub("^ +| +$|  ", "", main), fixed = TRUE), tt)
+        fn <- paste0(if (main == "" || !missing(file.name)) {
+          sub("\\.[^.]+$", "", file.name)
+        } else {
+          gsub("\\s+", "_", gsub("^ +| +$|  ", "", main))
+        }, tt)
         dev.copy(format, fn, width = dims[1], height = dims[2])
         dev.off()
         message("image saved: ", getwd(), "/", fn)

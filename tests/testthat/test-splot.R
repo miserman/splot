@@ -98,4 +98,14 @@ test_that("colorby works", {
   res <- splot(d$v1 ~ d$v2, colorby = .y)
   expect_true(res$ptxt$cbo == ".y")
   expect_identical(res$ptxt$leg, splot(d$v1 ~ d$v2, colorby = d$v1)$ptxt$leg)
+  expect_identical(
+    sort(splot(as.character(c1), d, colorby = v1)$lega$legend),
+    sort(unname(formatC(tapply(d$v1, d$c1, mean), 2, format = "f")))
+  )
+})
+
+test_that("saving works", {
+  file <- paste0(tempfile(), ".svg")
+  splot(1:10, file.name = file, format = "svg")
+  expect_true(file.exists(file))
 })

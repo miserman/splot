@@ -1,3 +1,8 @@
+# splot 0.5.4
+
+## Improvements
+* improves export name handling.
+
 # splot 0.5.3
 
 ## Additions
