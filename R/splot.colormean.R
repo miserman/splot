@@ -2,7 +2,7 @@
 #'
 #' Calculates the average of a set of colors, returning its Hex code.
 #' @param ... color codes or names as characters.
-#'
+#' @return The calculated color code.
 #' @examples
 #' # average of red and blue
 #' plot(

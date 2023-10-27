@@ -20,7 +20,7 @@ For each type, multiple `y` variables or data at levels of a `by` variable are s
 and data at levels of one or two `between` variables are shown in separate plot frames, organized in a grid.
 
 ## resources
-* [Introduction](https://miserman.github.io/splot/articles/intro.html)
+* [Introduction](https://miserman.github.io/splot/articles/splot.html)
 * [Documentation](https://miserman.github.io/splot/reference/splot.html)  
 * [Style Guide](https://miserman.github.io/splot/articles/style.html)  
 * [Gallery](https://miserman.github.io/splot/articles/gallery.html)

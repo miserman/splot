@@ -24,7 +24,7 @@ vignettes/
 *.knit.md
 *.Rproj
 # Utility file
-build.R
+CRAN-SUBMISSION
 .Rproj.user
 cran-comments.md
 /inst/

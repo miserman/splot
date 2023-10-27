@@ -677,17 +677,33 @@ splot <- function(
   }
   odat <- dat
   # splitting and parsing variables
+  splt_type <- function(x, s) {
+    if (s == 1) {
+      "mean"
+    } else if (s == 3) {
+      "standard deviation"
+    } else if (s == 2) {
+      "quantile"
+    } else if (s == 4 && is.double(split) && (length(split) != 1 || all(c(
+      sum(split >= x, na.rm = TRUE),
+      sum(split <= x, na.rm = TRUE)
+    ) > 1))) {
+      paste(split, collapse = ", ")
+    } else if (s == 4 && is.numeric(split) && split > 1) {
+      split <- min(length(x), round(split), na.rm = TRUE)
+      paste0("segments (", split, ")")
+    } else {
+      "median"
+    }
+  }
   splt <- function(x, s) {
     if (s == 1) {
-      txt$split <<- "mean"
       factor(x >= mean(x, na.rm = TRUE) * 1, labels = c("Below Average", "Above Average"))
     } else if (s == 3) {
-      txt$split <<- "standard deviation"
       m <- mean(x, na.rm = TRUE)
       s <- sd(x, TRUE)
       cut(x, c(-Inf, m - s, m + s, Inf), labels = c("-1 SD", "Mean", "+1 SD"))
     } else if (s == 2) {
-      txt$split <<- "quantile"
       cut(x, c(-Inf, quantile(x, na.rm = TRUE)[c(2, 4)], Inf),
         labels = c("2nd Quantile", "Median", "4th Quantile")
       )
@@ -695,15 +711,12 @@ splot <- function(
       sum(split >= x, na.rm = TRUE),
       sum(split <= x, na.rm = TRUE)
     ) > 1))) {
-      txt$split <<- paste(split, collapse = ", ")
       cut(x, c(-Inf, split, Inf), paste0("<=", c(split, "Inf")), ordered_result = TRUE)
     } else if (s == 4 && is.numeric(split) && split > 1) {
       n <- length(x)
       split <- min(n, round(split), na.rm = TRUE)
-      txt$split <<- paste0("segments (", split, ")")
       factor(paste("seg", rep(seq_len(split), each = round(n / split + .49))[order(order(x))]))
     } else {
-      txt$split <<- "median"
       factor(x >= median(x, TRUE) * 1, labels = c("Under Median", "Over Median"))
     }
   }
@@ -719,6 +732,7 @@ splot <- function(
       dat$x <- if (!is.character(dat$x) && !is.factor(dat$x) && length(unique(dat$x)) > lim) {
         seg$x$s <- TRUE
         if (missing(type)) ck$t <- 1
+        txt$split <- splt_type(dat$x, ck$sp)
         splt(dat$x, ck$sp)
       } else {
         if (missing(type)) ck$t <- 1
@@ -744,6 +758,7 @@ splot <- function(
       }
       seg[[e]]$ll <- length(seg[[e]]$l)
       if (seg[[e]]$ll > lim && !(is.character(dat[, i]) || is.factor(dat[, i]))) {
+        txt$split <- splt_type(dat[, i], ck$sp)
         dat[, i] <- splt(dat[, i], ck$sp)
         seg[[e]]$s <- TRUE
         seg[[e]]$l <- lvs(dat[, i])

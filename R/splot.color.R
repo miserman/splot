@@ -30,6 +30,7 @@
 #'   Otherwise, seeds are adjusted in even steps along numeric \code{x}s.
 #' @param decreasing logical; if \code{FALSE}, assigns colors to numeric \code{x}s in increasing order.
 #' @param nas value to replace missing values with.
+#' @return A character vector of color codes, or a list of such vectors if \code{flat} if \code{FALSE}.
 #' @details
 #' If \code{x} and \code{by} are not specified (or are characters with a length of 1, in which case they
 #' are treated as \code{seed}), only the seed palette is returned.

@@ -53,6 +53,9 @@ Otherwise, seeds are adjusted in even steps along numeric \code{x}s.}
 
 \item{nas}{value to replace missing values with.}
 }
+\value{
+A character vector of color codes, or a list of such vectors if \code{flat} if \code{FALSE}.
+}
 \description{
 Get a prespecified set of 9 colors, or a set of graded or random, potentially grouped colors.
 }

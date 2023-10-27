@@ -135,10 +135,10 @@ equal, and results are invisibly returned.</p></dd>
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/mapply.html" class="external-link">mapply</a></span><span class="op">(</span><span class="st">"*"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">100</span>, <span class="fl">10</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">vapply</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">100</span>, <span class="st">"*"</span>, <span class="fl">0</span>, <span class="fl">10</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">100</span>, <span class="st">"*"</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  runs <span class="op">=</span> <span class="fl">20</span>, runsize <span class="op">=</span> <span class="fl">200</span>, check_output <span class="op">=</span> <span class="cn">TRUE</span></span></span>
+<span class="r-in"><span>  runs <span class="op">=</span> <span class="fl">20</span>, runsize <span class="op">=</span> <span class="fl">200</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> benchmarking 4 expression(s) in chunks of 200 per run... </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> run 0 of 20run 1 of 20run 2 of 20run 3 of 20run 4 of 20run 5 of 20run 6 of 20run 7 of 20run 8 of 20run 9 of 20run 10 of 20run 11 of 20run 12 of 20run 13 of 20run 14 of 20run 15 of 20run 16 of 20run 17 of 20run 18 of 20run 19 of 20run 20 of 20finished 20 runs in 0.92 seconds       </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> run 0 of 20run 1 of 20run 2 of 20run 3 of 20run 4 of 20run 5 of 20run 6 of 20run 7 of 20run 8 of 20run 9 of 20run 10 of 20run 11 of 20run 12 of 20run 13 of 20run 14 of 20run 15 of 20run 16 of 20run 17 of 20run 18 of 20run 19 of 20run 20 of 20finished 20 runs in 0.9 seconds       </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> expressions:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -147,14 +147,14 @@ equal, and results are invisibly returned.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3. vapply(1:100, "*", 0, 10)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4. unlist(lapply(1:100, "*", 10))</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                          1      2     3      4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> total time (seconds) 0.220 0.3700 0.080 0.2500</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> mean time per run    0.011 0.0185 0.004 0.0125</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> times the minimum    2.750 4.6250 1.000 3.1250</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                           1      2      3      4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> total time (seconds) 0.2500 0.3700 0.1300 0.1500</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> mean time per run    0.0125 0.0185 0.0065 0.0075</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> times the minimum    1.9231 2.8462 1.0000 1.1538</span>
 <span class="r-plt img"><img src="splot.bench-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># compare ways of setting all but the maximum value of each row in a matrix to 0</span></span></span>
-<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span><span class="co"># \donttest{</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">mat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">4</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">8</span><span class="op">)</span><span class="op">)</span>, <span class="fl">4</span>, <span class="fl">3</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">splot.bench</span><span class="op">(</span></span></span>
@@ -206,10 +206,71 @@ equal, and results are invisibly returned.</p></dd>
 <span class="r-in"><span>    <span class="va">r</span></span></span>
 <span class="r-in"><span>  <span class="op">}</span><span class="op">)</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  runs <span class="op">=</span> <span class="fl">50</span>,</span></span>
-<span class="r-in"><span>  runsize <span class="op">=</span> <span class="fl">200</span>,</span></span>
-<span class="r-in"><span>  check_output <span class="op">=</span> <span class="cn">TRUE</span></span></span>
+<span class="r-in"><span>  runsize <span class="op">=</span> <span class="fl">200</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> benchmarking 8 expression(s) in chunks of 200 per run... </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> run 0 of 50run 1 of 50run 2 of 50run 3 of 50run 4 of 50run 5 of 50run 6 of 50run 7 of 50run 8 of 50run 9 of 50run 10 of 50run 11 of 50run 12 of 50run 13 of 50run 14 of 50run 15 of 50run 16 of 50run 17 of 50run 18 of 50run 19 of 50run 20 of 50run 21 of 50run 22 of 50run 23 of 50run 24 of 50run 25 of 50run 26 of 50run 27 of 50run 28 of 50run 29 of 50run 30 of 50run 31 of 50run 32 of 50run 33 of 50run 34 of 50run 35 of 50run 36 of 50run 37 of 50run 38 of 50run 39 of 50run 40 of 50run 41 of 50run 42 of 50run 43 of 50run 44 of 50run 45 of 50run 46 of 50run 47 of 50run 48 of 50run 49 of 50run 50 of 50finished 50 runs in 74.62 seconds       </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> expressions:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1. t(vapply(seq_len(4), function(r) {</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        mat[r, mat[r, ] &lt; max(mat[r, ])] &lt;- 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        mat[r, ]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    }, numeric(ncol(mat))))</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2. do.call(rbind, lapply(seq_len(4), function(r) {</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        mat[r, mat[r, ] &lt; max(mat[r, ])] &lt;- 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        mat[r, ]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    }))</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3. do.call(rbind, lapply(seq_len(4), function(r) {</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        nr &lt;- mat[r, ]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        nr[nr &lt; max(nr)] &lt;- 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        nr</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    }))</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4. {</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        nm &lt;- mat</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        for (r in seq_len(4)) {</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>            nr &lt;- nm[r, ]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>            nm[r, nr &lt; max(nr)] &lt;- 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        }</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        nm</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    }</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5. {</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        nm &lt;- mat</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        for (r in seq_len(4)) nm[r, nm[r, ] &lt; max(nm[r, ])] &lt;- 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        nm</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    }</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6. {</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        nm &lt;- matrix(0, dim(mat)[1], dim(mat)[2])</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        for (r in seq_len(4)) {</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>            m &lt;- which.max(mat[r, ])</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>            nm[r, m] &lt;- mat[r, m]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        }</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        nm</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    }</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7. {</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        ck &lt;- do.call(rbind, lapply(seq_len(4), function(r) {</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>            nr &lt;- mat[r, ]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>            nr &lt; max(nr)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        }))</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        nm &lt;- mat</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        nm[ck] &lt;- 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        nm</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    }</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8. t(apply(mat, 1, function(r) {</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        r[r &lt; max(r)] &lt;- 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        r</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    }))</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                           1      2      3        4       5        6      7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> total time (seconds) 0.2900 0.1800 0.1700  24.6700  22.750  25.9200 0.1300</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> mean time per run    0.0058 0.0036 0.0034   0.4934   0.455   0.5184 0.0026</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> times the minimum    2.2308 1.3846 1.3077 189.7692 175.000 199.3846 1.0000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                           8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> total time (seconds) 0.5100</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> mean time per run    0.0102</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> times the minimum    3.9231</span>
+<span class="r-plt img"><img src="splot.bench-2.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span><span class="co"># }</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

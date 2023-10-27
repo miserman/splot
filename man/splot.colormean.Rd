@@ -9,6 +9,9 @@ splot.colormean(...)
 \arguments{
 \item{...}{color codes or names as characters.}
 }
+\value{
+The calculated color code.
+}
 \description{
 Calculates the average of a set of colors, returning its Hex code.
 }

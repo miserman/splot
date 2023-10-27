@@ -57,11 +57,11 @@ splot.bench(
   mapply("*", 1:100, 10),
   vapply(1:100, "*", 0, 10),
   unlist(lapply(1:100, "*", 10)),
-  runs = 20, runsize = 200, check_output = TRUE
+  runs = 20, runsize = 200
 )
 
 # compare ways of setting all but the maximum value of each row in a matrix to 0
-\dontrun{
+\donttest{
 
 mat <- matrix(c(rep(1, 4), rep(0, 8)), 4, 3)
 splot.bench(
@@ -113,8 +113,7 @@ splot.bench(
     r
   })),
   runs = 50,
-  runsize = 200,
-  check_output = TRUE
+  runsize = 200
 )
 }
 }
