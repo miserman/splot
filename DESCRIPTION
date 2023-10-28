@@ -1,7 +1,7 @@
 Package: splot
 Type: Package
 Title: Simplified Plotting for Data Exploration
-Version: 0.5.4
+Version: 0.5.5
 Authors@R: c(
     person("Micah", "Iserman", role = c("aut", "cre", "cph"), email = "micah.iserman@gmail.com")
   )

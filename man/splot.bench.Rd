@@ -61,7 +61,7 @@ splot.bench(
 )
 
 # compare ways of setting all but the maximum value of each row in a matrix to 0
-\donttest{
+if (FALSE) {
 
 mat <- matrix(c(rep(1, 4), rep(0, 8)), 4, 3)
 splot.bench(
@@ -115,5 +115,6 @@ splot.bench(
   runs = 50,
   runsize = 200
 )
+
 }
 }
