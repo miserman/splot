@@ -2,14 +2,28 @@ n <- 2000
 d <- data.frame(sapply(c("c1", "c2", "c3"), function(c) sample(0:1, n, TRUE)))
 d$v1 <- with(
   d,
-  rnorm(n) + c1 * -.4 + c1 * c2 * -.3 + c1 * c3 *
-    .3 + c2 * c3 * .9 - .8 + rnorm(n, 0, c1)
+  rnorm(n) +
+    c1 * -.4 +
+    c1 * c2 * -.3 +
+    c1 * c3 * .3 +
+    c2 * c3 * .9 -
+    .8 +
+    rnorm(n, 0, c1)
 )
 d$v2 <- with(
   d,
-  v1 * .2 + c1 * .3 + c3 * -.6 + c2 * c3 * .8 + v1 *
-    c1 * c2 * -.5 + v1 * c1 * c2 * c3 * -.5
-    + rnorm(n, 5) + rnorm(n, -1, .1 * v1^2)
+  v1 *
+    .2 +
+    c1 * .3 +
+    c3 * -.6 +
+    c2 * c3 * .8 +
+    v1 *
+      c1 *
+      c2 *
+      -.5 +
+    v1 * c1 * c2 * c3 * -.5 +
+    rnorm(n, 5) +
+    rnorm(n, -1, .1 * v1^2)
 )
 
 test_that("density works", {
@@ -51,7 +65,10 @@ test_that("line/bar works", {
   expect_identical(res$dat, splot(v1 ~ c1, d)$dat)
 
   res <- splot(v1 ~ c1, d, by = c2, model = TRUE)
-  expect_identical(names(res$fmod$coefficients), c("(Intercept)", "c1", "c2", "c1:c2"))
+  expect_identical(
+    names(res$fmod$coefficients),
+    c("(Intercept)", "c1", "c2", "c1:c2")
+  )
   expect_true(res$ck$t == 1)
   expect_true(res$lega$title == "c2")
   expect_identical(res$dat, splot(v1 ~ c1 * c2, d)$dat)
@@ -73,7 +90,10 @@ test_that("scatter works", {
   res <- splot(d$v1 ~ d$v2)
 
   res <- splot(v1 ~ v2, d, by = c1, model = TRUE)
-  expect_identical(names(res$fmod$coefficients), c("(Intercept)", "v2", "c1", "v2:c1"))
+  expect_identical(
+    names(res$fmod$coefficients),
+    c("(Intercept)", "v2", "c1", "v2:c1")
+  )
   expect_true(res$ck$t == 3)
   expect_true(res$lega$title == "c1")
   expect_true(res$ck$t == 3)

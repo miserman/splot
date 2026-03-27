@@ -1,0 +1,12 @@
+---
+title: 'Style Helper'
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Style Helper}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, echo=FALSE, out.width=960}
+knitr::include_url("../style.html", height = "950px")
+```

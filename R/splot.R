@@ -323,40 +323,112 @@
 #' var binomial
 
 splot <- function(
-    y, data = NULL, su = NULL, type = "", split = "median", levels = list(), sort = NULL,
-    error = "standard", error.color = "#585858", error.lwd = 2, lim = 9, lines = TRUE, ...,
-    colors = "pastel", colorby = NULL, colorby.leg = TRUE, color.lock = FALSE, color.offset = 1.1,
-    color.summary = "mean", opacity = 1, dark = getOption("splot.dark", FALSE), x = NULL,
-    by = NULL, between = NULL, cov = NULL, line.type = "l", mv.scale = "none", mv.as.x = FALSE,
-    save = FALSE, format = cairo_pdf, dims = dev.size(), file.name = "splot", myl = NULL,
-    mxl = NULL, autori = TRUE, xlas = 0, ylas = 1, xaxis = TRUE, yaxis = TRUE, breaks = "sturges",
-    density.fill = TRUE, density.opacity = .4, density.args = list(), leg = "outside",
-    lpos = "auto", lvn = TRUE, leg.title = TRUE, leg.args = list(), title = TRUE, labx = TRUE,
-    laby = TRUE, lty = TRUE, lwd = 2, sub = TRUE, ndisp = TRUE, note = TRUE,
-    font = c(title = 2, sud = 1, leg = 1, leg.title = 2, note = 3),
-    cex = c(title = 1.5, sud = .9, leg = .9, note = .7, points = 1), sud = TRUE, labels = TRUE,
-    labels.filter = "_", labels.trim = 20, points = TRUE, points.first = TRUE, byx = TRUE,
-    drop = c(x = TRUE, by = TRUE, bet = TRUE), prat = c(1, 1), check.height = TRUE, model = FALSE,
-    options = NULL, add = NULL) {
+  y,
+  data = NULL,
+  su = NULL,
+  type = "",
+  split = "median",
+  levels = list(),
+  sort = NULL,
+  error = "standard",
+  error.color = "#585858",
+  error.lwd = 2,
+  lim = 9,
+  lines = TRUE,
+  ...,
+  colors = "pastel",
+  colorby = NULL,
+  colorby.leg = TRUE,
+  color.lock = FALSE,
+  color.offset = 1.1,
+  color.summary = "mean",
+  opacity = 1,
+  dark = getOption("splot.dark", FALSE),
+  x = NULL,
+  by = NULL,
+  between = NULL,
+  cov = NULL,
+  line.type = "l",
+  mv.scale = "none",
+  mv.as.x = FALSE,
+  save = FALSE,
+  format = cairo_pdf,
+  dims = dev.size(),
+  file.name = "splot",
+  myl = NULL,
+  mxl = NULL,
+  autori = TRUE,
+  xlas = 0,
+  ylas = 1,
+  xaxis = TRUE,
+  yaxis = TRUE,
+  breaks = "sturges",
+  density.fill = TRUE,
+  density.opacity = .4,
+  density.args = list(),
+  leg = "outside",
+  lpos = "auto",
+  lvn = TRUE,
+  leg.title = TRUE,
+  leg.args = list(),
+  title = TRUE,
+  labx = TRUE,
+  laby = TRUE,
+  lty = TRUE,
+  lwd = 2,
+  sub = TRUE,
+  ndisp = TRUE,
+  note = TRUE,
+  font = c(title = 2, sud = 1, leg = 1, leg.title = 2, note = 3),
+  cex = c(title = 1.5, sud = .9, leg = .9, note = .7, points = 1),
+  sud = TRUE,
+  labels = TRUE,
+  labels.filter = "_",
+  labels.trim = 20,
+  points = TRUE,
+  points.first = TRUE,
+  byx = TRUE,
+  drop = c(x = TRUE, by = TRUE, bet = TRUE),
+  prat = c(1, 1),
+  check.height = TRUE,
+  model = FALSE,
+  options = NULL,
+  add = NULL
+) {
   # parsing input and preparing data
   if (check.height && dev.size()[2] < 1.7) {
-    stop("the plot window seems too short; increase the height of the plot window, or set check.height to FALSE",
+    stop(
+      "the plot window seems too short; increase the height of the plot window, or set check.height to FALSE",
       call. = FALSE
     )
   }
   if (!missing(options) && is.list(options) && length(options) != 0) {
     a <- as.list(match.call())[-1]
     options <- tryCatch(options, error = function(e) NULL)
-    if (is.null(options)) stop("could not find options")
-    return(do.call(splot, c(a[names(a) != "options"], options[!names(options) %in% names(a)]), envir = parent.frame()))
+    if (is.null(options)) {
+      stop("could not find options")
+    }
+    return(do.call(
+      splot,
+      c(a[names(a) != "options"], options[!names(options) %in% names(a)]),
+      envir = parent.frame()
+    ))
   }
-  if (!labels) title <- sud <- sub <- labx <- laby <- note <- FALSE
+  if (!labels) {
+    title <- sud <- sub <- labx <- laby <- note <- FALSE
+  }
   opt_saf <- getOption("stringsAsFactors")
   on.exit(options(stringsAsFactors = opt_saf))
   options(stringsAsFactors = FALSE)
   ck <- list(
     ff = list(bet = FALSE, cov = FALSE),
-    t = if (grepl("^b|^l", type, TRUE)) 1 else if (grepl("^d", type, TRUE)) 2 else 3,
+    t = if (grepl("^b|^l", type, TRUE)) {
+      1
+    } else if (grepl("^d", type, TRUE)) {
+      2
+    } else {
+      3
+    },
     b = grepl("^b", type, TRUE),
     tt = !missing(type) && !grepl("^b|^l", type, TRUE),
     d = !missing(data) && !is.null(data),
@@ -386,7 +458,13 @@ splot <- function(
     lty = is.logical(lty),
     ltym = missing(lty),
     ltm = missing(line.type),
-    leg = if (is.logical(leg) && !leg) 0 else if (!is.character(leg) || grepl("^o", leg, TRUE)) 1 else 2,
+    leg = if (is.logical(leg) && !leg) {
+      0
+    } else if (!is.character(leg) || grepl("^o", leg, TRUE)) {
+      1
+    } else {
+      2
+    },
     legm = missing(leg),
     legt = !(is.logical(leg.title) && !leg.title),
     lp = is.character(lpos) && grepl("^a", lpos, TRUE),
@@ -398,7 +476,9 @@ splot <- function(
     opacity = !missing(opacity) && opacity <= 1 && opacity > 0,
     mai = FALSE
   )
-  if (ck$lpm) lpos <- "center"
+  if (ck$lpm) {
+    lpos <- "center"
+  }
   if (ck$d && !is.data.frame(data)) {
     data <- if (!is.matrix(data) && !is.list(data)) {
       as.data.frame(as.matrix(data))
@@ -407,28 +487,70 @@ splot <- function(
     }
   }
   ck$ltck <- (is.logical(ck$line) && ck$line) || !grepl("^F", ck$line)
-  if (!ck$ltck && ck$note) note <- FALSE
-  ck$ltco <- if (ck$ltck) if (is.logical(ck$line) || ck$c || grepl("^li|^lm|^st", ck$line, TRUE)) "li" else if (grepl("^loe|^po|^cu", ck$line, TRUE)) "lo" else if (grepl("^sm|^sp|^in", ck$line, TRUE)) "sm" else if (grepl("^e|^co|^d", ck$line, TRUE)) "e" else if (grepl("^pr|^log", ck$line, TRUE)) "pr" else "li" else "li"
+  if (!ck$ltck && ck$note) {
+    note <- FALSE
+  }
+  ck$ltco <- if (ck$ltck) {
+    if (is.logical(ck$line) || ck$c || grepl("^li|^lm|^st", ck$line, TRUE)) {
+      "li"
+    } else if (grepl("^loe|^po|^cu", ck$line, TRUE)) {
+      "lo"
+    } else if (grepl("^sm|^sp|^in", ck$line, TRUE)) {
+      "sm"
+    } else if (grepl("^e|^co|^d", ck$line, TRUE)) {
+      "e"
+    } else if (grepl("^pr|^log", ck$line, TRUE)) {
+      "pr"
+    } else {
+      "li"
+    }
+  } else {
+    "li"
+  }
   if (any(!missing(font), !missing(cex), !missing(drop))) {
     dop <- formals(splot)[c("font", "cex", "drop")]
     oco <- function(s, d) {
       od <- d <- eval(d)
       if (length(s) != length(d)) {
         n <- NULL
-        if (!is.null(n <- names(s)) || length(s) != 1) if (!is.null(n)) d[n] <- s[n] else d[seq_along(s)] <- s else d[] <- s
+        if (!is.null(n <- names(s)) || length(s) != 1) {
+          if (!is.null(n)) d[n] <- s[n] else d[seq_along(s)] <- s
+        } else {
+          d[] <- s
+        }
         s <- d
       }
       s <- s[names(od)]
       names(s) <- names(od)
-      if (any(n <- is.na(s))) s[n] <- od[n]
+      if (any(n <- is.na(s))) {
+        s[n] <- od[n]
+      }
       s
     }
-    if (!missing(font)) font <- oco(font, dop$font)
-    if (!missing(cex)) cex <- oco(cex, dop$cex)
+    if (!missing(font)) {
+      font <- oco(font, dop$font)
+    }
+    if (!missing(cex)) {
+      cex <- oco(cex, dop$cex)
+    }
     if (!missing(drop)) drop <- oco(drop, dop$drop)
   }
   dn <- if (ck$d) names(data) else ""
-  if (any(grepl("~", c(substitute(y), if (paste(deparse(substitute(y)), collapse = "") %in% ls(envir = globalenv())) y), fixed = TRUE))) {
+  if (
+    any(grepl(
+      "~",
+      c(
+        substitute(y),
+        if (
+          paste(deparse(substitute(y)), collapse = "") %in%
+            ls(envir = globalenv())
+        ) {
+          y
+        }
+      ),
+      fixed = TRUE
+    ))
+  ) {
     f <- as.character(as.formula(y))[-1]
     y <- as.formula(y)[[2]]
     bl <- function(x) {
@@ -437,25 +559,45 @@ splot <- function(
       l <- vapply(rs, length, 0)
       cr <- TRUE
       if (any(l != 0)) {
-        if (l[1] != l[2] || l[3] != l[4]) stop("invalid parentheses or brackets in ", x)
-        cr <- !seq_along(cs) %in% c(
-          unlist(lapply(seq_len(l[1]), function(r) do.call(seq, lapply(rs[1:2], "[[", r)))),
-          unlist(lapply(seq_len(l[3]), function(r) do.call(seq, lapply(rs[3:4], "[[", r))))
-        )
+        if (l[1] != l[2] || l[3] != l[4]) {
+          stop("invalid parentheses or brackets in ", x)
+        }
+        cr <- !seq_along(cs) %in%
+          c(
+            unlist(lapply(
+              seq_len(l[1]),
+              function(r) do.call(seq, lapply(rs[1:2], "[[", r))
+            )),
+            unlist(lapply(
+              seq_len(l[3]),
+              function(r) do.call(seq, lapply(rs[3:4], "[[", r))
+            ))
+          )
       }
-      cs[cr] <- sub("*", "_VAR_", sub("+", "_COV_", cs[cr], fixed = TRUE), fixed = TRUE)
+      cs[cr] <- sub(
+        "*",
+        "_VAR_",
+        sub("+", "_COV_", cs[cr], fixed = TRUE),
+        fixed = TRUE
+      )
       paste(cs, collapse = "")
     }
     f <- strsplit(bl(f[-1]), " _COV_ ", fixed = TRUE)[[1]]
     if (any(grepl(" _VAR_ ", f, fixed = TRUE))) {
       r <- strsplit(f[1], " _VAR_ ", fixed = TRUE)[[1]]
-      if (length(r)) x <- r[1]
-      if (length(r) > 1) by <- r[2]
+      if (length(r)) {
+        x <- r[1]
+      }
+      if (length(r) > 1) {
+        by <- r[2]
+      }
       if (length(r) > 2) {
         ck$ff$bet <- TRUE
         between <- r[3]
       }
-      if (length(r) > 3) between <- c(r[3], r[4])
+      if (length(r) > 3) {
+        between <- c(r[3], r[4])
+      }
       f <- f[!grepl(" _VAR_ ", f, fixed = TRUE)]
     } else {
       x <- f[1]
@@ -478,54 +620,100 @@ splot <- function(
   txt[c("bet", "cov")] <- lapply(c("bet", "cov"), function(l) {
     paste(if (!ck$ff[[l]] && length(txt[[l]]) > 1) txt[[l]][-1] else txt[[l]])
   })
-  txt <- lapply(txt, function(e) if (is.call(e)) paste(deparse(e), collapse = "\n") else e)
-  if (length(txt$bet) > 2) txt$bet <- txt$bet[1:2]
+  txt <- lapply(
+    txt,
+    function(e) if (is.call(e)) paste(deparse(e), collapse = "\n") else e
+  )
+  if (length(txt$bet) > 2) {
+    txt$bet <- txt$bet[1:2]
+  }
   tdc <- function(x, l = NULL) {
     if (!is.call(x)) {
       if ((is.null(l) && length(x) != 1) || (!is.null(l) && length(x) == l)) {
         return(x)
       }
     }
-    if (is.character(x)) x <- parse(text = x)
+    if (is.character(x)) {
+      x <- parse(text = x)
+    }
     tx <- tryCatch(eval(x, data, parent.frame(2)), error = function(e) NULL)
     if (is.character(tx) && length(tx) < 2) {
       x <- parse(text = tx)
       tx <- tryCatch(eval(x, data, parent.frame(2)), error = function(e) NULL)
-    } else if (is.null(tx)) tx <- tryCatch(eval(x, data, parent.frame(3)), error = function(e) NULL)
-    if (is.null(tx) || any(class(tx) %in% c("name", "call", "expression", "function"))) stop("could not find ", x, call. = FALSE)
+    } else if (is.null(tx)) {
+      tx <- tryCatch(eval(x, data, parent.frame(3)), error = function(e) NULL)
+    }
+    if (
+      is.null(tx) ||
+        any(class(tx) %in% c("name", "call", "expression", "function"))
+    ) {
+      stop("could not find ", x, call. = FALSE)
+    }
     if (!is.null(l) && is.null(ncol(tx))) {
       if (length(tx) != l) {
         tx <- rep_len(tx, l)
-        if (is.call(x)) x <- deparse(x)
+        if (is.call(x)) {
+          x <- deparse(x)
+        }
         warning(x, " is not the same length as y", call. = FALSE)
       }
     }
-    if (!is.null(dim(tx)) && !is.matrix(tx) && !is.data.frame(tx)) tx <- as.matrix(tx)
+    if (!is.null(dim(tx)) && !is.matrix(tx) && !is.data.frame(tx)) {
+      tx <- as.matrix(tx)
+    }
     tx
   }
   if (!missing(data) && !any(class(data) %in% c("matrix", "data.frame"))) {
-    data <- if (is.character(data)) eval(parse(text = data)) else eval(data, globalenv())
+    data <- if (is.character(data)) {
+      eval(parse(text = data))
+    } else {
+      eval(data, globalenv())
+    }
   }
   dat <- data.frame(y = tdc(txt$y), check.names = FALSE)
-  if (ncol(dat) == 1) names(dat) <- "y"
+  if (ncol(dat) == 1) {
+    names(dat) <- "y"
+  }
   nr <- nrow(dat)
-  lvs <- function(x, s = FALSE) if (is.factor(x)) base::levels(x) else if (s) sort(unique(x[!is.na(x)])) else unique(x[!is.na(x)])
+  lvs <- function(x, s = FALSE) {
+    if (is.factor(x)) {
+      base::levels(x)
+    } else if (s) {
+      sort(unique(x[!is.na(x)]))
+    } else {
+      unique(x[!is.na(x)])
+    }
+  }
   for (n in names(txt)[-c(1, 2, 7)]) {
     l <- length(txt[[n]])
-    if (l == 0) next
+    if (l == 0) {
+      next
+    }
     if (l == nr) {
       dat[, n] <- txt[[n]]
       txt[[n]] <- n
-    } else if (l == 1) dat[, n] <- tdc(txt[[n]], nr) else for (i in seq_along(txt[[n]])) dat[, paste0(n, ".", i)] <- tdc(txt[[n]][[i]], nr)
+    } else if (l == 1) {
+      dat[, n] <- tdc(txt[[n]], nr)
+    } else {
+      for (i in seq_along(txt[[n]])) {
+        dat[, paste0(n, ".", i)] <- tdc(txt[[n]][[i]], nr)
+      }
+    }
   }
-  if (length(txt$y) == nr) txt$y <- "y"
+  if (length(txt$y) == nr) {
+    txt$y <- "y"
+  }
   if (missing(x) && !is.null(dat$y) && !is.numeric(dat$y)) {
     dat$x <- dat$y
     sl <- grepl("^(y|by|bet[.12]{,2})$", colnames(dat))
     dat$y <- if (sum(sl) == 1) dat[, sl] else do.call(paste, dat[, sl])
     dat$y <- table(dat$y)[dat$y]
-    if (sum(sl) != 1) dat <- dat[, c("y", "x", colnames(dat)[!colnames(dat) %in% c("y", "x")])]
-    if (ck$t != 2) txt[c("y", "x")] <- c("count", txt$y)
+    if (sum(sl) != 1) {
+      dat <- dat[, c("y", "x", colnames(dat)[!colnames(dat) %in% c("y", "x")])]
+    }
+    if (ck$t != 2) {
+      txt[c("y", "x")] <- c("count", txt$y)
+    }
     ck$el <- FALSE
     if (missing(type)) {
       ck$b <- TRUE
@@ -563,7 +751,9 @@ splot <- function(
     na = apply(dat, 1, function(r) any(is.na(r))),
     inf = apply(dat[, tsu, drop = FALSE], 1, function(r) any(is.infinite(r)))
   )
-  if (ck$su) ck$omitted$su <- !su
+  if (ck$su) {
+    ck$omitted$su <- !su
+  }
   ck$omitted$all <- !Reduce("|", ck$omitted)
   if (any(!ck$omitted$all)) {
     if (any(ck$omitted$all)) {
@@ -593,16 +783,22 @@ splot <- function(
     ck$mvnl <- length(ck$mvn)
     if (any(tcn <- grepl("(V\\d+$|c\\(|y\\.(\\d+$|.*\\.))", ck$mvn))) {
       ncn <- substitute(y)
-      if (length(ncn) > 1 && length(ncn <- as.character(ncn[-1])) == length(dn)) {
+      if (
+        length(ncn) > 1 && length(ncn <- as.character(ncn[-1])) == length(dn)
+      ) {
         ck$mvn[tcn] <- paste0("y.", ncn[tcn])
       }
     }
     ck$mv <- TRUE
-    if (ck$mlvn) lvn <- FALSE
+    if (ck$mlvn) {
+      lvn <- FALSE
+    }
     if (!missing(by)) {
       txt$bet <- c(txt$by, txt$bet)
       if (length(txt$bet) > 2) {
-        warning("multiple y variables moves by to between, so the second level of between was dropped")
+        warning(
+          "multiple y variables moves by to between, so the second level of between was dropped"
+        )
         txt$bet <- txt$bet[1:2]
         dat <- dat[-grep("bet", colnames(dat))[2]]
       }
@@ -615,36 +811,64 @@ splot <- function(
       }
     }
     td <- dat
-    if (any(ckn <- duplicated(ck$mvn))) ck$mvn[ckn] <- paste0(ck$mvn[ckn], "_", seq_len(sum(ckn)))
+    if (any(ckn <- duplicated(ck$mvn))) {
+      ck$mvn[ckn] <- paste0(ck$mvn[ckn], "_", seq_len(sum(ckn)))
+    }
     by <- sub("^y\\.", "", ck$mvn)
-    if (any(by == "")) by[by == ""] <- seq_len(sum(by == ""))
+    if (any(by == "")) {
+      by[by == ""] <- seq_len(sum(by == ""))
+    }
     by <- factor(rep(by, each = nr), levels = by)
-    cncls <- vapply(dat[, dn], function(v) is.numeric(v) || is.integer(v) || is.factor(v), TRUE)
+    cncls <- vapply(
+      dat[, dn],
+      function(v) is.numeric(v) || is.integer(v) || is.factor(v),
+      TRUE
+    )
     if (any(cncls) && any(!cncls)) {
       for (cnc in which(!cncls)) {
         dat[, cnc] <- as.numeric(factor(dat[, cnc], lvs(dat[, cnc])))
       }
     }
     dat <- data.frame(y = unlist(dat[, dn], use.names = FALSE))
-    if (ncol(td) > length(dn)) dat <- cbind(dat, do.call(rbind, lapply(seq_along(dn), function(i) td[, -dn, drop = FALSE])))
+    if (ncol(td) > length(dn)) {
+      dat <- cbind(
+        dat,
+        do.call(
+          rbind,
+          lapply(seq_along(dn), function(i) td[, -dn, drop = FALSE])
+        )
+      )
+    }
     if (mv.as.x) {
       txt$by <- txt$x
-      txt$x <- if (missing(labx)) "variable" else if (labx == txt$by) paste0(labx, ".1") else labx
+      txt$x <- if (missing(labx)) {
+        "variable"
+      } else if (labx == txt$by) {
+        paste0(labx, ".1")
+      } else {
+        labx
+      }
       dat$by <- dat$x
       dat$x <- by
     } else {
       txt$by <- "variable"
       dat$by <- by
     }
-    if (missing(leg.title) && !mv.as.x) ck$legt <- FALSE
-    if (!missing(levels) && "mv" %in% names(levels)) names(levels)[names(levels) == "mv"] <- txt[[if (mv.as.x) "x" else "by"]]
+    if (missing(leg.title) && !mv.as.x) {
+      ck$legt <- FALSE
+    }
+    if (!missing(levels) && "mv" %in% names(levels)) {
+      names(levels)[names(levels) == "mv"] <- txt[[if (mv.as.x) "x" else "by"]]
+    }
     dn <- colnames(dat)
     if (!missing(mv.scale) && mv.scale != "none") {
       tv <- if (mv.as.x) dat$x else dat$by
       for (g in levels(as.factor(tv))) {
         svar <- tv == g
         cvar <- scale(dat[svar, 1], scale = grepl("^t|z|sc", mv.scale, TRUE))
-        if (any(is.na(cvar))) cvar <- dat[svar, 1] - mean(dat[svar, 1], na.rm = TRUE)
+        if (any(is.na(cvar))) {
+          cvar <- dat[svar, 1] - mean(dat[svar, 1], na.rm = TRUE)
+        }
         dat[svar, 1] <- cvar
       }
     }
@@ -654,26 +878,41 @@ splot <- function(
   }
   if (!"x" %in% dn) {
     ck$t <- 2
-    if (!missing(type) && !grepl("^d", type, TRUE)) warning("x must be included to show other types of splots")
+    if (!missing(type) && !grepl("^d", type, TRUE)) {
+      warning("x must be included to show other types of splots")
+    }
   }
-  if (!ck$cb && !"by" %in% dn) ck$leg <- 0
+  if (!ck$cb && !"by" %in% dn) {
+    ck$leg <- 0
+  }
   if (lim > 20 || (is.logical(lim) && !lim)) {
     lim <- Inf
-    if (ck$legm && !ck$cb) ck$leg <- 0
+    if (ck$legm && !ck$cb) {
+      ck$leg <- 0
+    }
     if (missing(error)) ck$el <- FALSE
   }
-  if (ck$ltm && !ck$el) line.type <- "b"
+  if (ck$ltm && !ck$el) {
+    line.type <- "b"
+  }
   if (ck$ltym && is.logical(lines) && !lines) {
     ck$lty <- FALSE
     lty <- 1
   }
   if (!is.numeric(dat$y)) {
     txt$yax <- lvs(dat$y)
-    if (!is.logical(dat$y) && !is.factor(dat$y)) dat$y <- factor(dat$y, lvs(dat$y))
+    if (!is.logical(dat$y) && !is.factor(dat$y)) {
+      dat$y <- factor(dat$y, lvs(dat$y))
+    }
     dat$y <- as.numeric(dat$y)
   }
   if ("by" %in% dn && is.character(dat$by) && all(!grepl("[^0-9]", dat$by))) {
-    dat$by <- gsub(" ", "0", base::format(dat$by, justify = "right"), fixed = TRUE)
+    dat$by <- gsub(
+      " ",
+      "0",
+      base::format(dat$by, justify = "right"),
+      fixed = TRUE
+    )
   }
   odat <- dat
   # splitting and parsing variables
@@ -684,10 +923,18 @@ splot <- function(
       "standard deviation"
     } else if (s == 2) {
       "quantile"
-    } else if (s == 4 && is.double(split) && (length(split) != 1 || all(c(
-      sum(split >= x, na.rm = TRUE),
-      sum(split <= x, na.rm = TRUE)
-    ) > 1))) {
+    } else if (
+      s == 4 &&
+        is.double(split) &&
+        (length(split) != 1 ||
+          all(
+            c(
+              sum(split >= x, na.rm = TRUE),
+              sum(split <= x, na.rm = TRUE)
+            ) >
+              1
+          ))
+    ) {
       paste(split, collapse = ", ")
     } else if (s == 4 && is.numeric(split) && split > 1) {
       split <- min(length(x), round(split), na.rm = TRUE)
@@ -698,26 +945,50 @@ splot <- function(
   }
   splt <- function(x, s) {
     if (s == 1) {
-      factor(x >= mean(x, na.rm = TRUE) * 1, labels = c("Below Average", "Above Average"))
+      factor(
+        x >= mean(x, na.rm = TRUE) * 1,
+        labels = c("Below Average", "Above Average")
+      )
     } else if (s == 3) {
       m <- mean(x, na.rm = TRUE)
       s <- sd(x, TRUE)
       cut(x, c(-Inf, m - s, m + s, Inf), labels = c("-1 SD", "Mean", "+1 SD"))
     } else if (s == 2) {
-      cut(x, c(-Inf, quantile(x, na.rm = TRUE)[c(2, 4)], Inf),
+      cut(
+        x,
+        c(-Inf, quantile(x, na.rm = TRUE)[c(2, 4)], Inf),
         labels = c("2nd Quantile", "Median", "4th Quantile")
       )
-    } else if (s == 4 && is.double(split) && (length(split) != 1 || all(c(
-      sum(split >= x, na.rm = TRUE),
-      sum(split <= x, na.rm = TRUE)
-    ) > 1))) {
-      cut(x, c(-Inf, split, Inf), paste0("<=", c(split, "Inf")), ordered_result = TRUE)
+    } else if (
+      s == 4 &&
+        is.double(split) &&
+        (length(split) != 1 ||
+          all(
+            c(
+              sum(split >= x, na.rm = TRUE),
+              sum(split <= x, na.rm = TRUE)
+            ) >
+              1
+          ))
+    ) {
+      cut(
+        x,
+        c(-Inf, split, Inf),
+        paste0("<=", c(split, "Inf")),
+        ordered_result = TRUE
+      )
     } else if (s == 4 && is.numeric(split) && split > 1) {
       n <- length(x)
       split <- min(n, round(split), na.rm = TRUE)
-      factor(paste("seg", rep(seq_len(split), each = round(n / split + .49))[order(order(x))]))
+      factor(paste(
+        "seg",
+        rep(seq_len(split), each = round(n / split + .49))[order(order(x))]
+      ))
     } else {
-      factor(x >= median(x, TRUE) * 1, labels = c("Under Median", "Over Median"))
+      factor(
+        x >= median(x, TRUE) * 1,
+        labels = c("Under Median", "Over Median")
+      )
     }
   }
   seg <- list(
@@ -727,15 +998,25 @@ splot <- function(
     by = list(e = FALSE, s = FALSE, l = "", ll = 1)
   )
   if (seg$x$e && ck$t != 2) {
-    if ((ck$t == 1 || is.character(dat$x) || is.factor(dat$x) ||
-      (missing(type) && length(unique(dat$x)) < lim))) {
-      dat$x <- if (!is.character(dat$x) && !is.factor(dat$x) && length(unique(dat$x)) > lim) {
+    if (
+      (ck$t == 1 ||
+        is.character(dat$x) ||
+        is.factor(dat$x) ||
+        (missing(type) && length(unique(dat$x)) < lim))
+    ) {
+      dat$x <- if (
+        !is.character(dat$x) && !is.factor(dat$x) && length(unique(dat$x)) > lim
+      ) {
         seg$x$s <- TRUE
-        if (missing(type)) ck$t <- 1
+        if (missing(type)) {
+          ck$t <- 1
+        }
         txt$split <- splt_type(dat$x, ck$sp)
         splt(dat$x, ck$sp)
       } else {
-        if (missing(type)) ck$t <- 1
+        if (missing(type)) {
+          ck$t <- 1
+        }
         as.factor(dat$x)
       }
     }
@@ -749,7 +1030,11 @@ splot <- function(
   if (any(grepl("^b", dn))) {
     svar <- which(grepl("^b", dn))
     for (i in svar) {
-      e <- if (grepl("bet", dn[i])) if (!seg$f1$e) "f1" else "f2" else "by"
+      e <- if (grepl("bet", dn[i])) {
+        if (!seg$f1$e) "f1" else "f2"
+      } else {
+        "by"
+      }
       seg[[e]]$e <- TRUE
       seg[[e]]$i <- i
       seg[[e]]$l <- lvs(dat[, i])
@@ -757,7 +1042,9 @@ splot <- function(
         seg[[e]]$l <- seg[[e]]$l[seg[[e]]$l %in% dat[, i]]
       }
       seg[[e]]$ll <- length(seg[[e]]$l)
-      if (seg[[e]]$ll > lim && !(is.character(dat[, i]) || is.factor(dat[, i]))) {
+      if (
+        seg[[e]]$ll > lim && !(is.character(dat[, i]) || is.factor(dat[, i]))
+      ) {
         txt$split <- splt_type(dat[, i], ck$sp)
         dat[, i] <- splt(dat[, i], ck$sp)
         seg[[e]]$s <- TRUE
@@ -773,7 +1060,9 @@ splot <- function(
       }
     }
   }
-  if (seg$by$l[1] == "") seg$by$l <- "NA"
+  if (seg$by$l[1] == "") {
+    seg$by$l <- "NA"
+  }
   fmod <- NULL
   vs <- c(y = txt$y, x = txt$x, by = txt$by, bet = txt$bet, cov = txt$cov)
   colnames(odat) <- vs
@@ -781,7 +1070,9 @@ splot <- function(
     tryCatch(
       {
         mod <- formula(paste(
-          vs["y"], "~", vs["x"],
+          vs["y"],
+          "~",
+          vs["x"],
           if (seg$by$e) paste0("*", vs["by"]),
           if (seg$f1$e) paste0("*", vs[grep("^bet", names(vs))[1]]),
           if (seg$f2$e) paste0("*", vs["bet2"]),
@@ -794,7 +1085,9 @@ splot <- function(
           print(s)
         }
       },
-      error = function(e) warning(paste("summary model failed:", e$message), call. = FALSE)
+      error = function(e) {
+        warning(paste("summary model failed:", e$message), call. = FALSE)
+      }
     )
   }
   if (!missing(levels)) {
@@ -818,10 +1111,14 @@ splot <- function(
             ln <- levels[[n]]
             lo <- NULL
             if (is.list(ln)) {
-              if (length(ln) > 1) lo <- levels[[n]][[2]]
+              if (length(ln) > 1) {
+                lo <- levels[[n]][[2]]
+              }
               ln <- ln[[1]]
             }
-            if (is.numeric(ln)) ln <- vfac[ln]
+            if (is.numeric(ln)) {
+              ln <- vfac[ln]
+            }
             if (vl == length(ln)) {
               vl <- list(dat[, sl$i])
               if (all(ln %in% vfac)) {
@@ -837,7 +1134,14 @@ splot <- function(
               dat[, sl$i] <- do.call(factor, vl)
               if ("l" %in% names(sl)) seg[[lc[cns]]]$l <- levels(dat[, sl$i])
             } else {
-              warning(n, " has ", vl, " levels but you provided ", length(ln), call. = FALSE)
+              warning(
+                n,
+                " has ",
+                vl,
+                " levels but you provided ",
+                length(ln),
+                call. = FALSE
+              )
             }
             if (sl$i == 1) {
               txt$yax <- lvs(dat$y)
@@ -846,12 +1150,18 @@ splot <- function(
           }
         }
       },
-      error = function(e) warning("setting levels failed: ", e$message, call. = FALSE)
+      error = function(e) {
+        warning("setting levels failed: ", e$message, call. = FALSE)
+      }
     )
   }
   dsf <- list(c1 = "", sep = rep.int("^^", nr), c2 = "")
-  if (seg$f1$e) dsf$c1 <- dat[, seg$f1$i]
-  if (seg$f2$e) dsf$c2 <- dat[, seg$f2$i]
+  if (seg$f1$e) {
+    dsf$c1 <- dat[, seg$f1$i]
+  }
+  if (seg$f2$e) {
+    dsf$c2 <- dat[, seg$f2$i]
+  }
   cdat <- split(dat, dsf)
   if (seg$by$e) {
     cdat <- lapply(cdat, function(s) {
@@ -878,8 +1188,13 @@ splot <- function(
       vapply(rownames(seg$n), function(r) any(seg$n[r, ] > 1), TRUE)
     }
     if (!any(seg$by$l)) {
-      if (ck$t == 2) stop("no level of by has more than 1 observation")
-      warning("no level of by has more than 1 observation so it was treated as colorby", call. = FALSE)
+      if (ck$t == 2) {
+        stop("no level of by has more than 1 observation")
+      }
+      warning(
+        "no level of by has more than 1 observation so it was treated as colorby",
+        call. = FALSE
+      )
       seg$by$e <- FALSE
       seg$by$l <- ""
       seg$by$ll <- 1
@@ -902,32 +1217,65 @@ splot <- function(
     cdat <- cdat[apply(seg$n, 2, function(r) any(r > 1))]
     if (nrow(seg$n) > 1) seg$n <- colSums(seg$n[, names(cdat), drop = FALSE])
   }
-  if (ck$mv) seg$n <- seg$n / length(ck$mvn)
+  if (ck$mv) {
+    seg$n <- seg$n / length(ck$mvn)
+  }
   seg$ll <- length(seg$n)
-  if (ck$mlvn && seg$by$e && (seg$by$s || !any(grepl("^[0-9]", seg$by$l)))) lvn <- FALSE
+  if (ck$mlvn && seg$by$e && (seg$by$s || !any(grepl("^[0-9]", seg$by$l)))) {
+    lvn <- FALSE
+  }
   ptxt <- c(txt[-c(1, 7)], l = lapply(seg[1:4], "[[", "l"))
-  if (missing(labels.trim) && seg$ll == 1 && length(ptxt$l.x) < 2 && (seg$by$ll == 1 || ck$mv)) labels.trim <- 40
+  if (
+    missing(labels.trim) &&
+      seg$ll == 1 &&
+      length(ptxt$l.x) < 2 &&
+      (seg$by$ll == 1 || ck$mv)
+  ) {
+    labels.trim <- 40
+  }
   if (is.numeric(labels.trim) || is.character(labels.filter)) {
     vs <- c("y", "x", "by", "bet", "cov", "l.x", "l.f1", "l.f2", "l.by")
     ptxt <- lapply(vs, function(n) {
       n <- as.character(ptxt[[n]])
       if (length(n) != 0 && all(n != "NULL" & n != "")) {
         names(n) <- n
-        if (is.character(labels.filter)) n <- gsub(labels.filter, " ", n, perl = TRUE)
-        if (any(is.na(iconv(n)))) stop("labels appear to be misencoded -- check them with the iconv function")
-        if (is.numeric(labels.trim)) if (any(ln <- nchar(n) > (labels.trim + 3))) n[ln] <- sub("$", "...", strtrim(n[ln], labels.trim))
+        if (is.character(labels.filter)) {
+          n <- gsub(labels.filter, " ", n, perl = TRUE)
+        }
+        if (any(is.na(iconv(n)))) {
+          stop(
+            "labels appear to be misencoded -- check them with the iconv function"
+          )
+        }
+        if (is.numeric(labels.trim)) {
+          if (any(ln <- nchar(n) > (labels.trim + 3))) {
+            n[ln] <- sub("$", "...", strtrim(n[ln], labels.trim))
+          }
+        }
       }
       n
     })
     names(ptxt) <- vs
   }
-  if (is.character(labx)) ptxt$x <- labx else if (ck$t == 2) ptxt$x <- ptxt$y
-  if (is.character(laby)) ptxt$y <- laby else if (ck$t == 2) ptxt$y <- "Density"
+  if (is.character(labx)) {
+    ptxt$x <- labx
+  } else if (ck$t == 2) {
+    ptxt$x <- ptxt$y
+  }
+  if (is.character(laby)) {
+    ptxt$y <- laby
+  } else if (ck$t == 2) {
+    ptxt$y <- "Density"
+  }
   ck$ileg <- seg$by$e && ck$leg > 1
   ptxt$leg <- ptxt$l.by
   fdat <- dat
   names(fdat) <- paste0(".", names(dat))
-  fdat <- if (!is.null(data)) if (nrow(data) == nr) cbind(data, fdat, odat) else data else cbind(fdat, odat)
+  fdat <- if (!is.null(data)) {
+    if (nrow(data) == nr) cbind(data, fdat, odat) else data
+  } else {
+    cbind(fdat, odat)
+  }
   # figuring out colors
   csf <- if (is.function(color.summary)) {
     color.summary
@@ -939,15 +1287,32 @@ splot <- function(
     function(x) lvs(x)[round(median(as.numeric(factor(x, lvs(x)))))]
   }
   colors <- substitute(colors)
-  seg$cols <- if (ck$co) colors else if (any(paste(colors) %in% names(fdat))) NULL else tryCatch(tdc(colors), error = function(e) NULL)
-  if (is.null(seg$cols)) seg$cols <- eval(colors, fdat, parent.frame(1))
+  seg$cols <- if (ck$co) {
+    colors
+  } else if (any(paste(colors) %in% names(fdat))) {
+    NULL
+  } else {
+    tryCatch(tdc(colors), error = function(e) NULL)
+  }
+  if (is.null(seg$cols)) {
+    seg$cols <- eval(colors, fdat, parent.frame(1))
+  }
   ptxt$cbo <- substitute(colorby)
-  if (length(ptxt$cbo) > 1 && ptxt$cbo[[1]] == "list") ptxt$cbo <- ptxt$cbo[[2]]
-  if (!is.character(ptxt$cbo)) ptxt$cbo <- deparse(ptxt$cbo)
+  if (length(ptxt$cbo) > 1 && ptxt$cbo[[1]] == "list") {
+    ptxt$cbo <- ptxt$cbo[[2]]
+  }
+  if (!is.character(ptxt$cbo)) {
+    ptxt$cbo <- deparse(ptxt$cbo)
+  }
   if (length(seg$cols) == 1) {
-    if (grepl("^bri|^dar|^pas", seg$cols, TRUE) && (ck$cb || (seg$by$ll > 1 && seg$by$ll < 10))) {
+    if (
+      grepl("^bri|^dar|^pas", seg$cols, TRUE) &&
+        (ck$cb || (seg$by$ll > 1 && seg$by$ll < 10))
+    ) {
       seg$cols <- splot.color(seed = seg$cols)
-    } else if (ck$co || grepl("^gra|^grey", seg$cols, TRUE)) seg$cols <- splot.color(seg$by$ll, seed = "grey")
+    } else if (ck$co || grepl("^gra|^grey", seg$cols, TRUE)) {
+      seg$cols <- splot.color(seg$by$ll, seed = "grey")
+    }
   }
   cl <- length(seg$cols)
   seg$lcols <- seg$cols
@@ -956,9 +1321,17 @@ splot <- function(
   if (ck$cb) {
     sca <- names(formals(splot.color))
     colorby <- substitute(colorby)
-    cba <- if (any(paste(colorby) %in% names(fdat))) NULL else tryCatch(tdc(colorby), error = function(e) NULL)
-    if (is.null(cba)) cba <- eval(substitute(colorby), fdat)
-    if (is.null(cba) || (is.character(cba) && length(cba) == 1)) cba <- tdc(colorby)
+    cba <- if (any(paste(colorby) %in% names(fdat))) {
+      NULL
+    } else {
+      tryCatch(tdc(colorby), error = function(e) NULL)
+    }
+    if (is.null(cba)) {
+      cba <- eval(substitute(colorby), fdat)
+    }
+    if (is.null(cba) || (is.character(cba) && length(cba) == 1)) {
+      cba <- tdc(colorby)
+    }
     if (!is.list(cba) || is.data.frame(cba)) {
       cba <- list(x = cba)
     } else if (is.null(names(cba))) {
@@ -968,7 +1341,9 @@ splot <- function(
       names(cba)[tn] <- sca[seq_len(sum(tn))]
     }
     if (!is.null(ncol(cba$x)) && ncol(cba$x) > 1) {
-      if (!"by" %in% names(cba)) cba$by <- cba$x[, 2]
+      if (!"by" %in% names(cba)) {
+        cba$by <- cba$x[, 2]
+      }
       cba$x <- cba$x[, 1]
     }
     cba$flat <- TRUE
@@ -982,7 +1357,9 @@ splot <- function(
       cba$by <- if (is.numeric(cba$by) && length(unique(cba$by)) > lim) {
         ptxt$cbos <- if (missing(leg.title)) colorby else leg.title
         ptxt$cbos <- if (is.call(ptxt$cbos)) {
-          deparse(ptxt$cbos[[if (cn[2] == "by" && length(ptxt$cbos) > 2) 3 else 2]])
+          deparse(ptxt$cbos[[
+            if (cn[2] == "by" && length(ptxt$cbos) > 2) 3 else 2
+          ]])
         } else {
           deparse(ptxt$cbos)
         }
@@ -990,28 +1367,47 @@ splot <- function(
       } else {
         factor(cba$by, lvs(cba$by))
       }
-      if (seg$by$e && seg$by$ll <= lim && length(cba$by) == nr && !identical(as.character(dat$by), as.character(cba$by))) {
+      if (
+        seg$by$e &&
+          seg$by$ll <= lim &&
+          length(cba$by) == nr &&
+          !identical(as.character(dat$by), as.character(cba$by))
+      ) {
         cba$by <- dat$by:cba$by
         cbbl <- sub(":.*", "", lvs(cba$by))
         colorby[[3]] <- as.name(paste0(ptxt$by, ":", colorby[[3]]))
         seg$lcols <- seg$cols <- splot.color(cbbl, seed = seg$cols)
         if (!ck$b && ck$line) {
-          if (length(lty) < seg$by$ll) lty <- seq_len(seg$by$ll)
+          if (length(lty) < seg$by$ll) {
+            lty <- seq_len(seg$by$ll)
+          }
           ck[c("lty", "ltym")] <- FALSE
           lty <- rep(lty, table(cbbl))
           seg$lty <- unique(lty)
         }
       } else {
         lby <- length(lvs(cba$by))
-        if (!color.lock && cl < lby) seg$cols <- splot.color(as.list(rep.int(round(lby / cl + .49), cl)), seed = seg$cols)
+        if (!color.lock && cl < lby) {
+          seg$cols <- splot.color(
+            as.list(rep.int(round(lby / cl + .49), cl)),
+            seed = seg$cols
+          )
+        }
       }
     }
-    if (length(cba$x) == ck$orn) cba$x <- cba$x[ck$omitted$all]
-    if (ck$cbb && length(cba$by) == ck$orn) cba$by <- cba$by[ck$omitted$all]
+    if (length(cba$x) == ck$orn) {
+      cba$x <- cba$x[ck$omitted$all]
+    }
+    if (ck$cbb && length(cba$by) == ck$orn) {
+      cba$by <- cba$by[ck$omitted$all]
+    }
     if (seg$by$e || !"seed" %in% cn) {
       cba$seed <- seg$cols
       if ("seed" %in% cn) {
-        warning("colorby's seed is ignored because by is specified -- use colors to set seeds", call. = FALSE)
+        warning(
+          "colorby's seed is ignored because by is specified -- use colors to set seeds",
+          call. = FALSE
+        )
       }
     }
     cn <- names(cba)
@@ -1019,13 +1415,17 @@ splot <- function(
     if ((ck$t == 1 || any(seg$by$e, seg$f1$e)) && length(cba$x) == nr) {
       seg$cbxls <- lvs(cba$x)
       if (ck$t != 3 && (!seg$by$e || seg$by$ll > lim)) {
-        cba$x <- vapply(split(cba$x, if (seg$by$e) dat$by else dat$x), function(x) {
-          if (ckn) {
-            mean(x, na.rm = TRUE)
-          } else {
-            names(which.max(table(x)))
-          }
-        }, if (ckn) 0 else "")
+        cba$x <- vapply(
+          split(cba$x, if (seg$by$e) dat$by else dat$x),
+          function(x) {
+            if (ckn) {
+              mean(x, na.rm = TRUE)
+            } else {
+              names(which.max(table(x)))
+            }
+          },
+          if (ckn) 0 else ""
+        )
         if (!ckn || length(seg$cbxls) <= lim) {
           cba$x <- if (ckn) {
             cba$x <- round(cba$x, 3)
@@ -1036,34 +1436,68 @@ splot <- function(
           ckn <- FALSE
         }
         if (ck$cbb && length(cba$by) == nr) {
-          cba$by <- factor(vapply(split(cba$by, if (seg$by$e) dat$by else dat$x), function(x) {
-            names(which.max(table(x)))
-          }, ""), lvs(cba$by))
+          cba$by <- factor(
+            vapply(
+              split(cba$by, if (seg$by$e) dat$by else dat$x),
+              function(x) {
+                names(which.max(table(x)))
+              },
+              ""
+            ),
+            lvs(cba$by)
+          )
           if (length(cba$x) != length(cba$by)) {
             cba$by <- NULL
             ck$cbb <- FALSE
-            warning("colorby's by was dropped as it was not the same length as x after being aligned with the formula's x",
+            warning(
+              "colorby's by was dropped as it was not the same length as x after being aligned with the formula's x",
               call. = FALSE
             )
           }
         }
         if (ckn && !ck$b && ck$t == 1 && length(cba$x) == 2) {
           cba$x <- c(mean(cba$x), cba$x)
-          if (ck$cbb) cba$by <- factor(c(lvs(cba$by)[which.max(tabulate(cba$by))], as.character(cba$by)), lvs(cba$by))
+          if (ck$cbb) {
+            cba$by <- factor(
+              c(lvs(cba$by)[which.max(tabulate(cba$by))], as.character(cba$by)),
+              lvs(cba$by)
+            )
+          }
         }
       } else if (!ck$cbb) {
         if (ck$t == 3) {
           cba$by <- dat$by
         } else {
           cba$x <- data.frame(cba$x, dat$by)
-          if (ck$b && seg$ll != 1) cba$x$x <- dat$x
-          cba$x <- unlist(lapply(split(cba$x, dsf), function(x) {
-            lapply(
-              split(x[, 1], x[, -1]), function(x) if (!length(x)) NA else if (ckn) mean(x, na.rm = TRUE) else names(which.max(table(x)))
-            )
-          }), TRUE, FALSE)
-          if (length(cba$x) == seg$by$ll) names(cba$x) <- seg$by$l else seg$ill <- names(cba$x)
-          if (!ckn) cba$x <- factor(cba$x, seg$cbxls)
+          if (ck$b && seg$ll != 1) {
+            cba$x$x <- dat$x
+          }
+          cba$x <- unlist(
+            lapply(split(cba$x, dsf), function(x) {
+              lapply(
+                split(x[, 1], x[, -1]),
+                function(x) {
+                  if (!length(x)) {
+                    NA
+                  } else if (ckn) {
+                    mean(x, na.rm = TRUE)
+                  } else {
+                    names(which.max(table(x)))
+                  }
+                }
+              )
+            }),
+            TRUE,
+            FALSE
+          )
+          if (length(cba$x) == seg$by$ll) {
+            names(cba$x) <- seg$by$l
+          } else {
+            seg$ill <- names(cba$x)
+          }
+          if (!ckn) {
+            cba$x <- factor(cba$x, seg$cbxls)
+          }
           cba$by <- factor(rep_len(seg$by$l, length(cba$x)), seg$by$l)
           if (ck$cblegm) ck$cbleg <- FALSE
         }
@@ -1076,7 +1510,10 @@ splot <- function(
           cba$by <- unlist(tn, use.names = FALSE)
         } else {
           cba$by <- NULL
-          warning("colorby's by was dropped as its levels within levels of by are not unique", call. = FALSE)
+          warning(
+            "colorby's by was dropped as its levels within levels of by are not unique",
+            call. = FALSE
+          )
         }
       }
       if (ck$cbleg) {
@@ -1097,21 +1534,49 @@ splot <- function(
         tg <- ckn
         ll <- all(ck$t != 1 || (length(seg$x$l) > 2 || seg$by$ll > 2))
         if (ll) {
-          if (is.call(cba$x)) cba$x <- tdc(cba$x)
+          if (is.call(cba$x)) {
+            cba$x <- tdc(cba$x)
+          }
           ll <- length(unique(cba$x)) > 2
         }
-        if (missing(leg.title) && length(ptxt$cbo) == 1) leg.title <- ptxt$cbo
-        ptxt$leg <- if (ckn) formatC(c(min(cba$x), if (ll) mean(cba$x), max(cba$x)), 2, format = "f") else lvs(cba$x)
-      } else if (!seg$by$e) ck$leg <- 0
+        if (missing(leg.title) && length(ptxt$cbo) == 1) {
+          leg.title <- ptxt$cbo
+        }
+        ptxt$leg <- if (ckn) {
+          formatC(
+            c(min(cba$x), if (ll) mean(cba$x), max(cba$x)),
+            2,
+            format = "f"
+          )
+        } else {
+          lvs(cba$x)
+        }
+      } else if (!seg$by$e) {
+        ck$leg <- 0
+      }
     }
-    if (!ckn && length(cba$x) > lim && !"shuffle" %in% cn) cba$shuffle <- TRUE
+    if (!ckn && length(cba$x) > lim && !"shuffle" %in% cn) {
+      cba$shuffle <- TRUE
+    }
     sca <- cn %in% sca
-    if (any(!sca)) warning(paste0("unused colorby arguments: ", paste(cn[!sca], collapse = ", ")), call. = FALSE)
+    if (any(!sca)) {
+      warning(
+        paste0("unused colorby arguments: ", paste(cn[!sca], collapse = ", ")),
+        call. = FALSE
+      )
+    }
     seg$cols <- do.call(splot.color, cba[sca])
-    if (!is.null(names(cba$x))) names(seg$cols) <- names(cba$x)
+    if (!is.null(names(cba$x))) {
+      names(seg$cols) <- names(cba$x)
+    }
     if (!chl || ck$cbb) {
       ck$cbn <- TRUE
-      ptxt$cbn <- paste0("Colored by ", if (ckn || cken) "value of " else "levels of ", ptxt$cbo, ". ")
+      ptxt$cbn <- paste0(
+        "Colored by ",
+        if (ckn || cken) "value of " else "levels of ",
+        ptxt$cbo,
+        ". "
+      )
     }
     if (seg$by$e && !ck$cbb) {
       if (length(seg$cols) == length(ptxt$leg)) {
@@ -1121,32 +1586,72 @@ splot <- function(
       }
     }
     if (chl) {
-      if (ck$legm && !ck$leg) ck$leg <- 1 + seg$ll > 1
-      if ((ck$ltym || length(lty) == length(seg$cbxls)) && (!seg$by$e || seg$by$ll > length(ptxt$leg))) {
+      if (ck$legm && !ck$leg) {
+        ck$leg <- 1 + seg$ll > 1
+      }
+      if (
+        (ck$ltym || length(lty) == length(seg$cbxls)) &&
+          (!seg$by$e || seg$by$ll > length(ptxt$leg))
+      ) {
         ck[c("lty", "ltym")] <- FALSE
-        if (!is.numeric(lty)) lty <- 1
+        if (!is.numeric(lty)) {
+          lty <- 1
+        }
         seg$lty <- rep_len(lty, seg$by$ll)
-        if (!ck$ltym) lty <- seq_along(seg$cbxls)
+        if (!ck$ltym) {
+          lty <- seq_along(seg$cbxls)
+        }
         if (ck$ltym && seg$by$e && !ckn) {
           cbl <- cba[[if (ck$cbb) "by" else "x"]]
-          for (g in seq_along(seg$cbxls)) seg$lty[cbl == seg$cbxls[[g]]] <- lty[[g]]
+          for (g in seq_along(seg$cbxls)) {
+            seg$lty[cbl == seg$cbxls[[g]]] <- lty[[g]]
+          }
         }
         lty <- unique(seg$lty)
       }
       if (tg) {
         l <- length(seg$cols)
-        seg$lcols <- seg$cols[order(cba$x)[c(1, if (ll) round(mean(seq_len(l))), l)]]
-      } else if (seg$by$e && length(seg$cols) == seg$by$ll && length(ptxt$leg) == seg$by$ll) seg$lcols <- seg$cols
+        seg$lcols <- seg$cols[order(cba$x)[c(
+          1,
+          if (ll) round(mean(seq_len(l))),
+          l
+        )]]
+      } else if (
+        seg$by$e &&
+          length(seg$cols) == seg$by$ll &&
+          length(ptxt$leg) == seg$by$ll
+      ) {
+        seg$lcols <- seg$cols
+      }
     } else {
-      ptxt$leg <- if (length(seg$cols) == seg$by$ll && !is.null(names(seg$cols))) names(seg$cols) else seg$by$l
-      if (length(ptxt$leg) == length(seg$cols)) seg$lcols <- seg$cols else if (all(ptxt$leg %in% names(seg$cols))) seg$lcols <- seg$cols[ptxt$leg] else if (seg$by$e && length(seg$cols) == nr) seg$lcols <- vapply(split(seg$cols, dat$by), csf, "")
+      ptxt$leg <- if (
+        length(seg$cols) == seg$by$ll && !is.null(names(seg$cols))
+      ) {
+        names(seg$cols)
+      } else {
+        seg$by$l
+      }
+      if (length(ptxt$leg) == length(seg$cols)) {
+        seg$lcols <- seg$cols
+      } else if (all(ptxt$leg %in% names(seg$cols))) {
+        seg$lcols <- seg$cols[ptxt$leg]
+      } else if (seg$by$e && length(seg$cols) == nr) {
+        seg$lcols <- vapply(split(seg$cols, dat$by), csf, "")
+      }
     }
   } else {
     if (!color.lock && cl < seg$by$ll) {
       seg$cols <-
-        splot.color(as.list(rep.int(round(seg$by$ll / cl + .49), cl)), seed = seg$cols)
+        splot.color(
+          as.list(rep.int(round(seg$by$ll / cl + .49), cl)),
+          seed = seg$cols
+        )
     }
-    if (ck$t != 2 && !any(length(seg$cols) == c(nr, seg$by$ll)) && (!ck$b || seg$by$e)) {
+    if (
+      ck$t != 2 &&
+        !any(length(seg$cols) == c(nr, seg$by$ll)) &&
+        (!ck$b || seg$by$e)
+    ) {
       seg$cols <- rep_len(seg$cols, seg$by$ll)
     }
   }
@@ -1162,18 +1667,30 @@ splot <- function(
       } else {
         seg$lcols <- rep_len(seg$lcols, seg$by$ll)
         if (any(grepl(names(cdat)[1], names(seg$lcols), fixed = TRUE))) {
-          for (g in names(cdat)) names(seg$lcols) <- sub(paste0(g, "."), "", names(seg$lcols), fixed = TRUE)
-          if (all(seg$by$l %in% names(seg$lcols))) seg$lcols <- seg$lcols[seg$by$l]
+          for (g in names(cdat)) {
+            names(seg$lcols) <- sub(
+              paste0(g, "."),
+              "",
+              names(seg$lcols),
+              fixed = TRUE
+            )
+          }
+          if (all(seg$by$l %in% names(seg$lcols))) {
+            seg$lcols <- seg$lcols[seg$by$l]
+          }
         } else {
           names(seg$lcols) <- seg$by$l
         }
       }
     }
     if (ck$b && length(seg$cols) == nr) {
-      seg$cols <- unlist(lapply(
-        split(data.frame(seg$cols, dat$by), dat$x),
-        function(d) vapply(split(d[, 1], d[, 2], drop = TRUE), csf, "")
-      ), use.names = FALSE)
+      seg$cols <- unlist(
+        lapply(
+          split(data.frame(seg$cols, dat$by), dat$x),
+          function(d) vapply(split(d[, 1], d[, 2], drop = TRUE), csf, "")
+        ),
+        use.names = FALSE
+      )
     }
   }
   if (ck$opacity && (ck$t != 3 || !points)) {
@@ -1183,23 +1700,37 @@ splot <- function(
       seg$cols[] <- adjustcolor(seg$cols, opacity)
     }
   }
-  if (lvn && length(ptxt$by)) ptxt$l.by[] <- paste0(paste0(ptxt$by, ": "), ptxt$l.by)
+  if (lvn && length(ptxt$by)) {
+    ptxt$l.by[] <- paste0(paste0(ptxt$by, ": "), ptxt$l.by)
+  }
   if (length(seg$cols) == nr) {
     if (any(seg$by$e && !ck$b, seg$f1$e, seg$f2$e)) {
-      seg$scols <- split(if (seg$by$e && !ck$b) data.frame(seg$cols, dat$by) else seg$cols, dsf)
+      seg$scols <- split(
+        if (seg$by$e && !ck$b) data.frame(seg$cols, dat$by) else seg$cols,
+        dsf
+      )
       if (!ck$b) {
-        if (seg$by$e) seg$scols <- lapply(seg$scols, function(d) split(d[, 1], d[, 2]))
+        if (seg$by$e) {
+          seg$scols <- lapply(seg$scols, function(d) split(d[, 1], d[, 2]))
+        }
         if (ck$t == 1) {
           seg$scols <- lapply(seg$scols, function(bl) {
-            vapply(bl, function(bll) {
-              if (length(bll)) csf(bll) else ""
-            }, "")
+            vapply(
+              bl,
+              function(bll) {
+                if (length(bll)) csf(bll) else ""
+              },
+              ""
+            )
           })
         }
       }
     }
   } else if (seg$ll != 1 && "ill" %in% names(seg)) {
-    seg$scols <- lapply(names(cdat), function(n) seg$cols[grepl(n, names(seg$cols), fixed = TRUE)])
+    seg$scols <- lapply(
+      names(cdat),
+      function(n) seg$cols[grepl(n, names(seg$cols), fixed = TRUE)]
+    )
     names(seg$scols) <- names(cdat)
   }
   if (ck$t == 2 && seg$by$ll > 1 && !all(seg$by$l %in% names(seg$cols))) {
@@ -1216,27 +1747,47 @@ splot <- function(
   ylab <- if (ck$ly) ptxt$y else ""
   xlab <- if (ck$lx && length(ptxt$x)) ptxt$x else ""
   main <- if (is.logical(title) && title) {
-    paste0(if (ck$t == 2) {
-      paste("Density of", ptxt$x)
-    } else {
-      paste(
-        ptxt$y,
-        "by", ptxt$x
-      )
-    }, if (seg$by$e && !ck$mv) paste(" at levels of", ptxt$by), if (length(ptxt$bet) != 0) {
-      paste(
-        " between",
-        paste(ptxt$bet, collapse = " & ")
-      )
-    })
-  } else if (is.character(title)) title else ""
+    paste0(
+      if (ck$t == 2) {
+        paste("Density of", ptxt$x)
+      } else {
+        paste(
+          ptxt$y,
+          "by",
+          ptxt$x
+        )
+      },
+      if (seg$by$e && !ck$mv) paste(" at levels of", ptxt$by),
+      if (length(ptxt$bet) != 0) {
+        paste(
+          " between",
+          paste(ptxt$bet, collapse = " & ")
+        )
+      }
+    )
+  } else if (is.character(title)) {
+    title
+  } else {
+    ""
+  }
   if (!is.character(note)) {
     if (!is.logical(note) || note) {
       ck$er <- ck$t == 1 && ck$el
       ck$spm <- txt$split != "none"
-      if (ck$er && all(vapply(cdat, function(d) {
-        if (!is.data.frame(d)) all(vapply(d, function(dd) !anyDuplicated(dd$x), TRUE)) else !anyDuplicated(d$x)
-      }, TRUE))) {
+      if (
+        ck$er &&
+          all(vapply(
+            cdat,
+            function(d) {
+              if (!is.data.frame(d)) {
+                all(vapply(d, function(dd) !anyDuplicated(dd$x), TRUE))
+              } else {
+                !anyDuplicated(d$x)
+              }
+            },
+            TRUE
+          ))
+      ) {
         ck[c("el", "er")] <- FALSE
       }
       if (any(ck$cbn, ck$spm, ck$er, ck$t == 3 && ck$ltck)) {
@@ -1248,20 +1799,35 @@ splot <- function(
             if (seg$f2$s) ptxt$bet[2],
             if ("cbos" %in% names(ptxt)) ptxt$cbos
           ))
-          tv <- sub(", (?=[A-z0-9]+$)", if (length(tv) > 2) ", & " else " & ", paste(tv, collapse = ", "), perl = TRUE)
+          tv <- sub(
+            ", (?=[A-z0-9]+$)",
+            if (length(tv) > 2) ", & " else " & ",
+            paste(tv, collapse = ", "),
+            perl = TRUE
+          )
         }
         note <- paste0(
           if (ck$spm) paste0(tv, " split by ", txt$split, ". "),
-          if (ck$er) paste("Error bars show", ifelse(ck$e, "standard error. ", "95% confidence intervals. ")),
+          if (ck$er) {
+            paste(
+              "Error bars show",
+              ifelse(ck$e, "standard error. ", "95% confidence intervals. ")
+            )
+          },
           if (ck$cbn) ptxt$cbn,
           if (ck$t == 3 && ck$ltck) {
-            paste0("Line type: ", switch(ck$ltco,
-              li = "lm",
-              lo = "loess",
-              sm = "spline",
-              e = "connected",
-              pr = "probability"
-            ), ".")
+            paste0(
+              "Line type: ",
+              switch(
+                ck$ltco,
+                li = "lm",
+                lo = "loess",
+                sm = "spline",
+                e = "connected",
+                pr = "probability"
+              ),
+              "."
+            )
           }
         )
       }
@@ -1270,7 +1836,8 @@ splot <- function(
     }
   }
   ck$sud <- (!is.logical(sud) || sud) && (is.character(sud) || ck$su || ck$c)
-  ck$sub <- (!is.logical(sub) || sub) && (is.character(sub) || seg$ll > 1 || ndisp)
+  ck$sub <- (!is.logical(sub) || sub) &&
+    (is.character(sub) || seg$ll > 1 || ndisp)
   pdo <- list(...)
   l2m <- function(l) {
     tl <- round(l^.5)
@@ -1290,18 +1857,30 @@ splot <- function(
     rownames(seg$l) <- match(seg$l[, 1], seg$f1$l)
     seg[c("f1", "f2")] <- lapply(c("f1", "f2"), function(n) {
       nl <- seg[[n]]
-      if (nl$e) nl$l <- unique(seg$l[, if (n == "f1") 1 else 2])
-      if (nl$e) nl$ll <- length(nl$l)
+      if (nl$e) {
+        nl$l <- unique(seg$l[, if (n == "f1") 1 else 2])
+      }
+      if (nl$e) {
+        nl$ll <- length(nl$l)
+      }
       nl
     })
   }
   nc <- seg$dim[1] * seg$dim[2]
-  if (length(ptxt$leg) == 1 && ptxt$leg == "NA") ck$leg <- 0
-  if (ck$leg == 1 && ck$legm && (dev.size(units = "in")[1] < 2 ||
-    (all(seg$dim == 1) && (ck$t != 1 || seg$by$ll < 9)))) {
+  if (length(ptxt$leg) == 1 && ptxt$leg == "NA") {
+    ck$leg <- 0
+  }
+  if (
+    ck$leg == 1 &&
+      ck$legm &&
+      (dev.size(units = "in")[1] < 2 ||
+        (all(seg$dim == 1) && (ck$t != 1 || seg$by$ll < 9)))
+  ) {
     ck$leg <- 2
   }
-  if (ck$leg == 1) if (is.logical(leg) || is.character(leg)) leg <- nc + 1
+  if (ck$leg == 1) {
+    if (is.logical(leg) || is.character(leg)) leg <- nc + 1
+  }
   dop <- par(no.readonly = TRUE)
   if (drop["bet"] && !any(ckl) && any(nc - seg$ll >= seg$dim)) {
     seg$dim <- l2m(seg$ll)
@@ -1309,7 +1888,11 @@ splot <- function(
   }
   seg$dmat <- matrix(seq_len(nc), seg$dim[2], seg$dim[1])
   if (!drop["bet"] && seg$f2$e) {
-    seg$lc <- vapply(seg$f1$l, function(l) seg$f2$l %in% seg$l[seg$l[, 1] == l, 2], logical(seg$f2$ll))
+    seg$lc <- vapply(
+      seg$f1$l,
+      function(l) seg$f2$l %in% seg$l[seg$l[, 1] == l, 2],
+      logical(seg$f2$ll)
+    )
   } else {
     seg$lc <- seg$dmat == 0
     seg$lc[seq_len(seg$ll)] <- TRUE
@@ -1327,33 +1910,105 @@ splot <- function(
     }
   }
   ck$legcol <- FALSE
-  if (lpos == "auto") "topright"
-  lega <- list(x = lpos, col = seg$lcols, cex = cex["leg"], text.font = font["leg"], bty = "n", x.intersp = .5, xjust = .5, legend = ptxt$leg)
-  if (ck$legt && (is.character(leg.title) && length(leg.title) == 1 || length(ptxt$by) == 1)) {
+  if (lpos == "auto") {
+    "topright"
+  }
+  lega <- list(
+    x = lpos,
+    col = seg$lcols,
+    cex = cex["leg"],
+    text.font = font["leg"],
+    bty = "n",
+    x.intersp = .5,
+    xjust = .5,
+    legend = ptxt$leg
+  )
+  if (
+    ck$legt &&
+      (is.character(leg.title) &&
+        length(leg.title) == 1 ||
+        length(ptxt$by) == 1)
+  ) {
     lega$title <- if (is.character(leg.title)) leg.title else ptxt$by
   }
   l <- length(lega$legend)
   seg$lwd <- rep_len(if (is.numeric(lwd)) lwd else 2, seg$by$ll)
-  if (!"lty" %in% names(seg)) seg$lty <- rep_len(if (!ck$ltym && !ck$lty) lty else if (ck$cbleg && ck$cbb && seg$by$ll == length(cba$by)) as.numeric(cba$by) else if (ck$lty && lty) seq_len(6) else 1, seg$by$ll)
-  if (length(seg$cols) == length(seg$lcols)) names(seg$lcols) <- names(seg$cols)
-  if (seg$by$e || ck$cbb) names(seg$lwd) <- names(seg$lty) <- if (length(seg$lcols) == seg$by$ll) names(seg$lcols) else if (all(c(length(seg$lwd), length(seg$lty)) == length(seg$cols))) names(seg$cols) else seg$by$l
-  lega$lwd <- if (seg$by$ll == l) seg$lwd else rep_len(if (is.numeric(lwd)) lwd else 2, l)
-  lega$lty <- if (seg$by$ll == l) seg$lty else rep_len(if (!ck$ltym && !ck$lty) lty else if (ck$lty && lty) seq_len(6) else 1, l)
-  if (!missing(leg.args)) lega[names(leg.args)] <- leg.args
+  if (!"lty" %in% names(seg)) {
+    seg$lty <- rep_len(
+      if (!ck$ltym && !ck$lty) {
+        lty
+      } else if (ck$cbleg && ck$cbb && seg$by$ll == length(cba$by)) {
+        as.numeric(cba$by)
+      } else if (ck$lty && lty) {
+        seq_len(6)
+      } else {
+        1
+      },
+      seg$by$ll
+    )
+  }
+  if (length(seg$cols) == length(seg$lcols)) {
+    names(seg$lcols) <- names(seg$cols)
+  }
+  if (seg$by$e || ck$cbb) {
+    names(seg$lwd) <- names(seg$lty) <- if (length(seg$lcols) == seg$by$ll) {
+      names(seg$lcols)
+    } else if (all(c(length(seg$lwd), length(seg$lty)) == length(seg$cols))) {
+      names(seg$cols)
+    } else {
+      seg$by$l
+    }
+  }
+  lega$lwd <- if (seg$by$ll == l) {
+    seg$lwd
+  } else {
+    rep_len(if (is.numeric(lwd)) lwd else 2, l)
+  }
+  lega$lty <- if (seg$by$ll == l) {
+    seg$lty
+  } else {
+    rep_len(
+      if (!ck$ltym && !ck$lty) {
+        lty
+      } else if (ck$lty && lty) {
+        seq_len(6)
+      } else {
+        1
+      },
+      l
+    )
+  }
+  if (!missing(leg.args)) {
+    lega[names(leg.args)] <- leg.args
+  }
   if (any(tck <- !names(lega) %in% names(formals(legend)))) {
-    warning("dropped items from leg.args: ", paste(names(lega)[tck], collapse = ", "), call. = FALSE)
+    warning(
+      "dropped items from leg.args: ",
+      paste(names(lega)[tck], collapse = ", "),
+      call. = FALSE
+    )
     lega <- lega[!tck]
   }
-  if ((ck$legm || !ck$leg) && missing(leg.args) && (sum(strheight(lega$legend, "i")) * cex["leg"] * 1.5 / if ("ncol" %in% names(pdo)) {
-    pdo$ncol
-  } else {
-    1
-  }) > dev.size()[2]) {
+  if (
+    (ck$legm || !ck$leg) &&
+      missing(leg.args) &&
+      (sum(strheight(lega$legend, "i")) *
+        cex["leg"] *
+        1.5 /
+        if ("ncol" %in% names(pdo)) {
+          pdo$ncol
+        } else {
+          1
+        }) >
+        dev.size()[2]
+  ) {
     ck$leg <- 0
     if (ck$ltym) seg$lty[] <- 1
   }
   if (ck$leg == 1) {
-    if (ck$legm && nc > seg$ll) leg <- which(!seg$lc)[1]
+    if (ck$legm && nc > seg$ll) {
+      leg <- which(!seg$lc)[1]
+    }
     if (nc > seg$ll && leg <= nc) {
       if (seg$lc[leg] && !drop["bet"]) {
         mm <- which(!seg$lc)
@@ -1373,7 +2028,9 @@ splot <- function(
         seg$dmat[!seg$lc] <- seq_len(sum(!seg$lc)) + seg$ll + 1
       }
       if (ck$lp) lega$x <- "center"
-    } else if (ck$lp) lega$x <- "right"
+    } else if (ck$lp) {
+      lega$x <- "right"
+    }
     if (nc == seg$ll || leg > nc) {
       seg$dmat[seg$dmat == seg$ll + 1] <- nc + 1
       seg$dmat <- rbind(seg$dmat, rep.int(seg$ll + 1, seg$dim[1]))
@@ -1382,7 +2039,11 @@ splot <- function(
   }
   seg[c("dmat", "lc")] <- lapply(seg[c("dmat", "lc")], t)
   seg$prat <- if (missing(prat) && ck$legcol) {
-    lw <- max(.4, if (ck$legt) strwidth(lega$title, "i"), strwidth(ptxt$leg, "i") / if (seg$ll > 1) 1.3 else 1.7) +
+    lw <- max(
+      .4,
+      if (ck$legt) strwidth(lega$title, "i"),
+      strwidth(ptxt$leg, "i") / if (seg$ll > 1) 1.3 else 1.7
+    ) +
       if (all(seg$dim == 1)) .5 else .2
     fw <- (dev.size(units = "in")[1] - lw) / seg$dim[2]
     c(fw, max(fw / 10, lw))
@@ -1391,12 +2052,18 @@ splot <- function(
   }
   op <- list(
     oma = c(
-      sum(is.character(note) && note != "", ck$lx) + .15, ck$ly * .9,
-      max(sum((main != "") * 1.8 + if (sum(seg$dim) > 2) .5 else 0, ck$sud), 1), .5
+      sum(is.character(note) && note != "", ck$lx) + .15,
+      ck$ly * .9,
+      max(sum((main != "") * 1.8 + if (sum(seg$dim) > 2) .5 else 0, ck$sud), 1),
+      .5
     ),
     mar = c(
-      if (ck$lx) 2 else 1.5, if (ck$ly) 3 else 2.4, (ck$sud && (ck$su || ck$c)) *
-        ifelse(seg$ll > 1, 2, 0) + (ck$sub && sum(seg$dim) > 2) * 1.3, 0
+      if (ck$lx) 2 else 1.5,
+      if (ck$ly) 3 else 2.4,
+      (ck$sud && (ck$su || ck$c)) *
+        ifelse(seg$ll > 1, 2, 0) +
+        (ck$sub && sum(seg$dim) > 2) * 1.3,
+      0
     ),
     mgp = c(3, .3, 0),
     font.main = 1,
@@ -1412,46 +2079,79 @@ splot <- function(
     if (any(cpdo <- (npdo <- names(pdo)) %in% names(dop))) {
       ck$mai <- "mai" %in% npdo
       op[npdo[cpdo]] <- pdo[cpdo]
-      if ("font.sub" %in% names(op)) op$font.main <- op$font.sub
-      if ("cex.sub" %in% names(op)) op$cex.main <- op$cex.sub
+      if ("font.sub" %in% names(op)) {
+        op$font.main <- op$font.sub
+      }
+      if ("cex.sub" %in% names(op)) {
+        op$cex.main <- op$cex.sub
+      }
       if ("col.sub" %in% names(op)) op$col.main <- op$col.sub
     }
     pdo <- pdo[!cpdo]
   }
-  if (!"horiz" %in% names(pdo) && !"ncol" %in% names(leg.args)) lega$ncol <- 1
+  if (!"horiz" %in% names(pdo) && !"ncol" %in% names(leg.args)) {
+    lega$ncol <- 1
+  }
   if (length(pdo) != 0) {
-    if (any(cpdo <- (npdo %in% names(formals(legend)) & !npdo %in% names(leg.args)))) lega[npdo[cpdo]] <- pdo[cpdo]
+    if (
+      any(
+        cpdo <- (npdo %in% names(formals(legend)) & !npdo %in% names(leg.args))
+      )
+    ) {
+      lega[npdo[cpdo]] <- pdo[cpdo]
+    }
     if (any(!cpdo)) {
-      warning("unused argument", if (sum(!cpdo) == 1) ": " else "s: ",
+      warning(
+        "unused argument",
+        if (sum(!cpdo) == 1) ": " else "s: ",
         paste(names(pdo)[!cpdo], collapse = ", "),
         call. = FALSE
       )
     }
   }
   expand_color_code <- function(e) {
-    if (is.character(e) && all(grepl("^#[0-9a-f]{3}$", e, TRUE))) paste0(e, substring(e, 2)) else e
+    if (is.character(e) && all(grepl("^#[0-9a-f]{3}$", e, TRUE))) {
+      paste0(e, substring(e, 2))
+    } else {
+      e
+    }
   }
   pdo <- lapply(pdo, expand_color_code)
   op <- lapply(op, expand_color_code)
   if (dark) {
     op$fg <- op$col <- op$col.axis <- op$col.main <- op$col.sub <- op$col.sub <- "white"
-    if (is.null(op$bg) && par("bg") == "white") warning("foreground and background are both white")
+    if (is.null(op$bg) && par("bg") == "white") {
+      warning("foreground and background are both white")
+    }
   }
   par(op)
   on.exit(par(dop))
-  layout(seg$dmat, c(rep.int(seg$prat[1], seg$dim[2]), if (ck$legcol) seg$prat[if (length(seg$prat) > 1) 2 else 1]))
+  layout(
+    seg$dmat,
+    c(
+      rep.int(seg$prat[1], seg$dim[2]),
+      if (ck$legcol) seg$prat[if (length(seg$prat) > 1) 2 else 1]
+    )
+  )
   success <- FALSE
   ck$scol <- "scols" %in% names(seg)
   for (i in names(cdat)) {
     tryCatch(
       {
         # plotting
-        cl <- (if ("list" %in% class(cdat[[i]])) vapply(cdat[[i]], NROW, 0) else nrow(cdat[[i]])) > 0
+        cl <- (if ("list" %in% class(cdat[[i]])) {
+          vapply(cdat[[i]], NROW, 0)
+        } else {
+          nrow(cdat[[i]])
+        }) >
+          0
         if (any(!cl)) {
           cdat[[i]] <- cdat[[i]][cl]
           if (length(cdat[[i]]) == 0) next
         }
-        if (ck$scol) seg$cols <- seg$lcols <- seg$scols[[i]]
+        if (ck$scol) {
+          seg$cols <- seg$lcols <- seg$scols[[i]]
+        }
         cl <- strsplit(i, ".^^.", fixed = TRUE)[[1]]
         ptxt$sub <- if (is.character(sub)) {
           sub
@@ -1460,29 +2160,57 @@ splot <- function(
             paste0(
               if (seg$f1$e) {
                 paste0(
-                  if (lvn || (ck$mlvn && grepl("^[0-9]", cl[1]))) paste0(ptxt$bet[1], ": "), cl[1],
-                  if (seg$f2$e) paste0(", ", if (lvn || (ck$mlvn && grepl("^[0-9]", cl[2]))) paste0(ptxt$bet[2], ": "), cl[2])
+                  if (lvn || (ck$mlvn && grepl("^[0-9]", cl[1]))) {
+                    paste0(ptxt$bet[1], ": ")
+                  },
+                  cl[1],
+                  if (seg$f2$e) {
+                    paste0(
+                      ", ",
+                      if (lvn || (ck$mlvn && grepl("^[0-9]", cl[2]))) {
+                        paste0(ptxt$bet[2], ": ")
+                      },
+                      cl[2]
+                    )
+                  }
                 )
-              }, if ((length(names(cdat)) > 1 || !missing(ndisp)) && ndisp) paste(", n =", seg$n[i])
+              },
+              if ((length(names(cdat)) > 1 || !missing(ndisp)) && ndisp) {
+                paste(", n =", seg$n[i])
+              }
             )
           } else {
             ""
           }
         }
-        if (!is.null(sort) && ck$t != 2 && any(class(if (seg$by$e) cdat[[i]][[1]][, "x"] else cdat[[i]][, "x"]) %in%
-          c("factor", "character"))) {
+        if (
+          !is.null(sort) &&
+            ck$t != 2 &&
+            any(
+              class(
+                if (seg$by$e) cdat[[i]][[1]][, "x"] else cdat[[i]][, "x"]
+              ) %in%
+                c("factor", "character")
+            )
+        ) {
           nsl <- grepl("^[Ff]", as.character(sort))
           sdir <- grepl("^[DdTt]", as.character(sort))
           td <- if (seg$by$e) do.call(rbind, cdat[[i]]) else cdat[[i]]
           td[, "x"] <- as.character(td[, "x"])
-          cdat[[i]] <- do.call(rbind, lapply(
-            if (nsl) {
-              lvs(td[, "x"])
-            } else {
-              names(sort(vapply(split(td[, "y"], td[, "x"]), mean, 0, na.rm = TRUE), sdir))
-            },
-            function(l) td[td[, "x"] == l, , drop = FALSE]
-          ))
+          cdat[[i]] <- do.call(
+            rbind,
+            lapply(
+              if (nsl) {
+                lvs(td[, "x"])
+              } else {
+                names(sort(
+                  vapply(split(td[, "y"], td[, "x"]), mean, 0, na.rm = TRUE),
+                  sdir
+                ))
+              },
+              function(l) td[td[, "x"] == l, , drop = FALSE]
+            )
+          )
           seg$x$l <- ptxt$l.x <- lvs(cdat[[i]][, "x"])
           cdat[[i]][, "x"] <- factor(cdat[[i]][, "x"], seg$x$l)
           if (seg$by$e) cdat[[i]] <- split(cdat[[i]], cdat[[i]][, "by"])
@@ -1490,31 +2218,65 @@ splot <- function(
         if (ck$t == 1) {
           # bar and line
           flipped <- FALSE
-          if (missing(byx) && ck$mv && any(vapply(cdat[[i]], function(d) {
-            any(vapply(
-              split(d$y, as.character(d$x)),
-              function(dl) if (length(dl) == 1) 0 else var(dl), 0
-            ) == 0)
-          }, TRUE))) {
+          if (
+            missing(byx) &&
+              ck$mv &&
+              any(vapply(
+                cdat[[i]],
+                function(d) {
+                  any(
+                    vapply(
+                      split(d$y, as.character(d$x)),
+                      function(dl) if (length(dl) == 1) 0 else var(dl),
+                      0
+                    ) ==
+                      0
+                  )
+                },
+                TRUE
+              ))
+          ) {
             byx <- FALSE
           }
-          if (byx && lim < Inf && seg$by$e && (is.list(cdat[[i]]) && length(cdat[[i]]) > 1)) {
+          if (
+            byx &&
+              lim < Inf &&
+              seg$by$e &&
+              (is.list(cdat[[i]]) && length(cdat[[i]]) > 1)
+          ) {
             flipped <- TRUE
             cdat[[i]] <- do.call(rbind, cdat[[i]])
             cdat[[i]][c("x", "by")] <- cdat[[i]][c("by", "x")]
-            if (is.numeric(cdat[[i]]$x)) cdat[[i]]$x <- as.character(cdat[[i]]$x)
+            if (is.numeric(cdat[[i]]$x)) {
+              cdat[[i]]$x <- as.character(cdat[[i]]$x)
+            }
             cdat[[i]] <- split(cdat[[i]], cdat[[i]]$by)[lvs(cdat[[i]]$by)]
           }
           dl <- if (cl <- "list" %in% class(cdat[[1]])) length(cdat[[i]]) else 1
-          mot <- paste0("y~0+", paste(names(if (cl) cdat[[i]][[1]] else cdat[[i]])[c(2, cvar)], collapse = "+"))
-          m <- pe <- ne <- matrix(NA, seg$by$ll, max(c(1, length(seg$x$l))), dimnames = list(seg$by$l, seg$x$l))
-          if (flipped) m <- pe <- ne <- t(m)
+          mot <- paste0(
+            "y~0+",
+            paste(
+              names(if (cl) cdat[[i]][[1]] else cdat[[i]])[c(2, cvar)],
+              collapse = "+"
+            )
+          )
+          m <- pe <- ne <- matrix(
+            NA,
+            seg$by$ll,
+            max(c(1, length(seg$x$l))),
+            dimnames = list(seg$by$l, seg$x$l)
+          )
+          if (flipped) {
+            m <- pe <- ne <- t(m)
+          }
           rn <- if (nrow(m) == 1) 1 else rownames(m)
           cn <- if (seg$by$e && flipped) seg$by$l else colnames(m)
           for (l in seq_len(dl)) {
             ri <- rn[l]
             td <- if (cl) cdat[[i]][[ri]] else cdat[[i]]
-            if (is.null(td)) next
+            if (is.null(td)) {
+              next
+            }
             if (nrow(td) > 1 && length(unique(td$x)) > 1) {
               mo <- lm(mot, data = td)
               ccn <- sub("^x", "", names(mo$coef))
@@ -1523,7 +2285,10 @@ splot <- function(
               m[ri, su] <- mo$coef[sus]
               if (nrow(td) > 2 && anyDuplicated(td$x)) {
                 if (ck$e) {
-                  e <- suppressWarnings(summary(update(mo, ~ . - 0))$coef[sus, 2])
+                  e <- suppressWarnings(summary(update(mo, ~ . - 0))$coef[
+                    sus,
+                    2
+                  ])
                   e <- e[c(2, seq_along(e)[-1])]
                   pe[ri, su] <- m[l, su] + e
                   ne[ri, su] <- m[l, su] - e
@@ -1534,32 +2299,60 @@ splot <- function(
                 }
               }
             } else {
-              if (nrow(td) == 0) next
-              mo <- lapply(split(td, td["x"]), function(s) if (nrow(s) == 0) NA else mean(s[is.finite(s[, "y"]), "y"]))
+              if (nrow(td) == 0) {
+                next
+              }
+              mo <- lapply(
+                split(td, td["x"]),
+                function(s) {
+                  if (nrow(s) == 0) NA else mean(s[is.finite(s[, "y"]), "y"])
+                }
+              )
               m[ri, ] <- unlist(mo[colnames(m)])
             }
           }
-          re <- if (flipped) list(m = t(m), ne = t(ne), pe = t(pe)) else list(m = m, ne = ne, pe = pe)
+          re <- if (flipped) {
+            list(m = t(m), ne = t(ne), pe = t(pe))
+          } else {
+            list(m = m, ne = ne, pe = pe)
+          }
           if (ck$ltm && all(apply(is.na(re$m), 2, any))) {
             drop["x"] <- FALSE
             line.type <- "b"
           }
           dx <- !apply(is.na(re$m), 2, all)
-          if (drop["x"]) re <- lapply(re, function(s) s[, dx, drop = FALSE])
+          if (drop["x"]) {
+            re <- lapply(re, function(s) s[, dx, drop = FALSE])
+          }
           m <- re$m
           ne <- re$ne
           pe <- re$pe
-          if (all(mna <- is.na(m))) next
+          if (all(mna <- is.na(m))) {
+            next
+          }
           re <- lapply(re, function(s) {
             na <- is.na(s)
             s[na] <- m[na]
             s[!mna]
           })
-          if (ck$el) ck$el <- all(round(re$m - re$ne, 8) != 0)
-          lb <- min(re$m) - if (!ck$el) round((max(re$m) - min(re$m)) / 10) else max(abs(re$m - re$ne)) * 1.2
-          if (ck$b && !ck$el) lb <- lb - (max(re$m) - min(re$m)) * .1
+          if (ck$el) {
+            ck$el <- all(round(re$m - re$ne, 8) != 0)
+          }
+          lb <- min(re$m) -
+            if (!ck$el) {
+              round((max(re$m) - min(re$m)) / 10)
+            } else {
+              max(abs(re$m - re$ne)) * 1.2
+            }
+          if (ck$b && !ck$el) {
+            lb <- lb - (max(re$m) - min(re$m)) * .1
+          }
           dm <- dim(m)
-          ylim <- if (missing(myl)) c(lb, max(re$m) + if (ck$el) max(abs(re$m - re$pe)) else 0) else myl
+          ylim <- if (missing(myl)) {
+            c(lb, max(re$m) + if (ck$el) max(abs(re$m - re$pe)) else 0)
+          } else {
+            myl
+          }
           if (ck$leg == 2 && ck$lp) {
             if (!seg$by$e && ncol(m) == 2) {
               lega$x <- "top"
@@ -1570,20 +2363,41 @@ splot <- function(
               })
               stw <- ncol(m)
               oyl <- if (stw %% 2) 3 else 2
-              lega$x <- c("topleft", "top", "topright")[if (oyl == 2) -2 else 1:3][which.min(vapply(split(lega$x, rep(seq_len(oyl),
-                each = stw / oyl
-              )[seq_len(stw)]), mean, 0, na.rm = TRUE))]
+              lega$x <- c("topleft", "top", "topright")[
+                if (oyl == 2) -2 else 1:3
+              ][which.min(vapply(
+                split(
+                  lega$x,
+                  rep(seq_len(oyl), each = stw / oyl)[seq_len(stw)]
+                ),
+                mean,
+                0,
+                na.rm = TRUE
+              ))]
               if (is.na(lega$x)) lega$x <- "topright"
             }
           }
-          if (any(is.na(ylim))) next
+          if (any(is.na(ylim))) {
+            next
+          }
           oyl <- axTicks(2, c(ylim[1], ylim[2], par("yaxp")[3]))
           rn <- if (nrow(m) == 1) colnames(m) else rownames(m)
-          colnames(m) <- if (drop["x"] && sum(dx) == ncol(m)) ptxt$l.x[dx] else ptxt$l.x
+          colnames(m) <- if (drop["x"] && sum(dx) == ncol(m)) {
+            ptxt$l.x[dx]
+          } else {
+            ptxt$l.x
+          }
           stw <- strwidth(colnames(m), "i")
-          if ((missing(xlas) || xlas > 1) && sum(stw) > par("fin")[1] - sum(par("omi")[c(2, 4)]) - dm[2] * .1 && par("fin")[1] > 2.5) {
+          if (
+            (missing(xlas) || xlas > 1) &&
+              sum(stw) >
+                par("fin")[1] - sum(par("omi")[c(2, 4)]) - dm[2] * .1 &&
+              par("fin")[1] > 2.5
+          ) {
             xlas <- 3
-            if (missing(mxl)) mxl <- c(1, dm[2])
+            if (missing(mxl)) {
+              mxl <- c(1, dm[2])
+            }
             mh <- c(par("fin")[2] / 2, max(stw))
             par(mai = if (ck$mai) op$mai else c(min(mh) + .25, par("mai")[-1]))
             if (mh[1] < mh[2] && missing(labels.trim)) {
@@ -1593,10 +2407,16 @@ splot <- function(
               colnames(m)[ln] <- sub("$", "...", strtrim(n[ln], mh))
             }
           }
-          if (min(re$ne, na.rm = TRUE) >= 0) autori <- FALSE
+          if (min(re$ne, na.rm = TRUE) >= 0) {
+            autori <- FALSE
+          }
           rck <- !is.list(seg$cols) && all(rn %in% names(seg$cols))
-          if (rck && length(seg$cols) < dm[1]) seg$cols <- rep_len(seg$cols, dm[1])
-          if (!rck && ck$ltm && !ck$el) line.type <- "b"
+          if (rck && length(seg$cols) < dm[1]) {
+            seg$cols <- rep_len(seg$cols, dm[1])
+          }
+          if (!rck && ck$ltm && !ck$el) {
+            line.type <- "b"
+          }
           if (ck$b) {
             if (autori) {
               a <- if (missing(myl)) lb else myl[1]
@@ -1612,66 +2432,166 @@ splot <- function(
                 } else {
                   c(
                     min(aj$m) - max(abs(aj$m - aj$ne)) * 1.2,
-                    max(aj$m) + max(abs(aj$m - aj$pe)) * if (ck$leg == 2 && seg$by$ll > 1) seg$by$ll^.3 + .7 else 1.2
+                    max(aj$m) +
+                      max(abs(aj$m - aj$pe)) *
+                        if (ck$leg == 2 && seg$by$ll > 1) {
+                          seg$by$ll^.3 + .7
+                        } else {
+                          1.2
+                        }
                   )
                 }
               } else {
                 myl + a
               }
             }
-            if (dm[1] != 1) rownames(m) <- ptxt$l.by[rn]
+            if (dm[1] != 1) {
+              rownames(m) <- ptxt$l.by[rn]
+            }
             lega[c("lwd", "lty")] <- NULL
-            lega[c("pch", "pt.cex", "x.intersp", "y.intersp", "adj")] <- list(15, 2, 1, 1.2, c(0, .35))
-            p <- barplot(m,
-              beside = TRUE, col = if (rck) seg$cols[rn] else seg$cols, axes = FALSE, axisnames = FALSE,
-              border = NA, ylab = NA, xlab = NA, ylim = ylim, main = if (ck$sub) ptxt$sub else NA,
-              xpd = if ("xpd" %in% names(pdo)) pdo$xpd else if (autori) NA else FALSE
+            lega[c("pch", "pt.cex", "x.intersp", "y.intersp", "adj")] <- list(
+              15,
+              2,
+              1,
+              1.2,
+              c(0, .35)
+            )
+            p <- barplot(
+              m,
+              beside = TRUE,
+              col = if (rck) seg$cols[rn] else seg$cols,
+              axes = FALSE,
+              axisnames = FALSE,
+              border = NA,
+              ylab = NA,
+              xlab = NA,
+              ylim = ylim,
+              main = if (ck$sub) ptxt$sub else NA,
+              xpd = if ("xpd" %in% names(pdo)) {
+                pdo$xpd
+              } else if (autori) {
+                NA
+              } else {
+                FALSE
+              }
             )
           } else {
-            p <- matrix(rep.int(seq_len(dm[2]), dm[1]), nrow = dm[1], byrow = TRUE)
-            plot(NA,
-              ylim = ylim, xlim = if (missing(mxl)) c(1 - stw[1] / 3, dm[2] + stw[length(stw)] / 3) else mxl, ylab = NA, xlab = NA,
-              main = if (ck$sub) ptxt$sub else NA, axes = FALSE
+            p <- matrix(
+              rep.int(seq_len(dm[2]), dm[1]),
+              nrow = dm[1],
+              byrow = TRUE
             )
-            for (a in if (dm[1] == 1) 1 else if (all(rn %in% names(seg$cols))) rn else seq_len(dm[1])) {
-              graphics::lines(m[a, ], col = seg$cols[[a]], lty = seg$lty[[a]], lwd = seg$lwd[[a]], type = line.type)
+            plot(
+              NA,
+              ylim = ylim,
+              xlim = if (missing(mxl)) {
+                c(1 - stw[1] / 3, dm[2] + stw[length(stw)] / 3)
+              } else {
+                mxl
+              },
+              ylab = NA,
+              xlab = NA,
+              main = if (ck$sub) ptxt$sub else NA,
+              axes = FALSE
+            )
+            for (a in if (dm[1] == 1) {
+              1
+            } else if (all(rn %in% names(seg$cols))) {
+              rn
+            } else {
+              seq_len(dm[1])
+            }) {
+              graphics::lines(
+                m[a, ],
+                col = seg$cols[[a]],
+                lty = seg$lty[[a]],
+                lwd = seg$lwd[[a]],
+                type = line.type
+              )
             }
           }
-          if (ck$ileg) lega$legend <- rn
-          if (xaxis) axis(1, colMeans(p), colnames(m), FALSE, las = xlas, cex = par("cex.axis"), fg = par("col.axis"))
-          a2a <- list(2, las = ylas, cex = par("cex.axis"), fg = par("col.axis"))
+          if (ck$ileg) {
+            lega$legend <- rn
+          }
+          if (xaxis) {
+            axis(
+              1,
+              colMeans(p),
+              colnames(m),
+              FALSE,
+              las = xlas,
+              cex = par("cex.axis"),
+              fg = par("col.axis")
+            )
+          }
+          a2a <- list(
+            2,
+            las = ylas,
+            cex = par("cex.axis"),
+            fg = par("col.axis")
+          )
           if (ck$b && autori) {
             a2a$at <- ayl
             a2a$labels <- formatC(oyl, 2, format = "f")
           }
-          if (yaxis) do.call(axis, a2a)
+          if (yaxis) {
+            do.call(axis, a2a)
+          }
           if (ck$el) {
             te <- round(Reduce("-", list(ne, pe)), 8)
             te[is.na(te)] <- 0
             te <- te == 0
-            if (any(te)) ne[te] <- pe[te] <- NA
-            arrows(p, ne, p, pe, lwd = error.lwd, col = error.color, angle = 90, code = 3, length = .05)
+            if (any(te)) {
+              ne[te] <- pe[te] <- NA
+            }
+            arrows(
+              p,
+              ne,
+              p,
+              pe,
+              lwd = error.lwd,
+              col = error.color,
+              angle = 90,
+              code = 3,
+              length = .05
+            )
           }
         } else if (ck$t == 2) {
           # density
-          if (!is.list(density.args)) density.args <- list()
+          if (!is.list(density.args)) {
+            density.args <- list()
+          }
           fdan <- names(formals(stats::density.default))
           dan <- names(density.args)
           if (any(mdan <- !dan %in% fdan)) {
-            warning(paste("unused density argument(s):", paste(dan[mdan], collapse = ", ")), call. = FALSE)
+            warning(
+              paste(
+                "unused density argument(s):",
+                paste(dan[mdan], collapse = ", ")
+              ),
+              call. = FALSE
+            )
             density.args <- density.args[!mdan]
           }
           density.args$give.Rkern <- FALSE
           if (!missing(mxl)) {
-            if (!"from" %in% dan) density.args$from <- mxl[1]
+            if (!"from" %in% dan) {
+              density.args$from <- mxl[1]
+            }
             if (!"to" %in% dan) density.args$to <- mxl[2]
           }
-          if (!"n" %in% dan) density.args$n <- 512
+          if (!"n" %in% dan) {
+            density.args$n <- 512
+          }
           n <- density.args$n
           m <- list()
           dl <- if (cl <- "list" %in% class(cdat[[i]])) length(cdat[[i]]) else 1
           rnl <- logical(dl)
-          rn <- if (is.data.frame(cdat[[i]])) names(ptxt$l.by) else names(cdat[[i]])
+          rn <- if (is.data.frame(cdat[[i]])) {
+            names(ptxt$l.by)
+          } else {
+            names(cdat[[i]])
+          }
           dx <- dy <- numeric(n * seg$by$ll)
           for (l in seq_len(dl)) {
             tryCatch(
@@ -1687,48 +2607,112 @@ splot <- function(
           }
           names(m) <- rn <- rn[rnl]
           if (seg$by$ll > 1 || (ck$polyo && ck$poly)) {
-            plot(NA,
-              xlim = if (missing(mxl)) range(c(dx, dx)) else mxl, ylim = if (missing(myl)) c(0, max(dy)) else myl,
-              main = if (ck$sub) ptxt$sub else NA, ylab = NA, xlab = NA, axes = FALSE, xpd = if ("xpd" %in% names(pdo)) pdo$xpd else FALSE
+            plot(
+              NA,
+              xlim = if (missing(mxl)) range(c(dx, dx)) else mxl,
+              ylim = if (missing(myl)) c(0, max(dy)) else myl,
+              main = if (ck$sub) ptxt$sub else NA,
+              ylab = NA,
+              xlab = NA,
+              axes = FALSE,
+              xpd = if ("xpd" %in% names(pdo)) pdo$xpd else FALSE
             )
-            for (l in if (seg$by$ll > 1 && all(rn %in% names(seg$cols))) rn else seq_along(m)) {
-              if (ck$poly) polygon(m[[l]], col = adjustcolor(seg$cols[[l]], density.opacity), border = NA)
-              if (!is.logical(lines) || lines) graphics::lines(m[[l]], col = seg$cols[[l]], lwd = seg$lwd[[l]], lty = seg$lty[[l]])
+            for (l in if (seg$by$ll > 1 && all(rn %in% names(seg$cols))) {
+              rn
+            } else {
+              seq_along(m)
+            }) {
+              if (ck$poly) {
+                polygon(
+                  m[[l]],
+                  col = adjustcolor(seg$cols[[l]], density.opacity),
+                  border = NA
+                )
+              }
+              if (!is.logical(lines) || lines) {
+                graphics::lines(
+                  m[[l]],
+                  col = seg$cols[[l]],
+                  lwd = seg$lwd[[l]],
+                  lty = seg$lty[[l]]
+                )
+              }
             }
             if (ck$ileg) lega$legend <- rn
           } else {
             col <- if (length(seg$lcols) > 2) "#555555" else seg$lcols[1]
             if (ck$leg) {
               lega[c("lwd", "lty")] <- NULL
-              lega[c("pch", "pt.cex", "x.intersp", "y.intersp", "adj")] <- list(15, 2, 1, 1.2, c(0, .35))
+              lega[c("pch", "pt.cex", "x.intersp", "y.intersp", "adj")] <- list(
+                15,
+                2,
+                1,
+                1.2,
+                c(0, .35)
+              )
             }
             y <- (if (cl) cdat[[i]][[1]] else cdat[[i]])[, "y"]
             hp <- hist(y, breaks, plot = FALSE)
             if (ck$cb && length(seg$cols) == nr) {
               nb <- length(hp$counts)
-              seg$cols <- vapply(split(seg$cols[order(y)], sort(rep_len(seq_len(nb), nr))), csf, "")
-              if (!ckn) seg$cols <- adjustcolor(seg$cols, 1, color.offset, color.offset, color.offset)
+              seg$cols <- vapply(
+                split(seg$cols[order(y)], sort(rep_len(seq_len(nb), nr))),
+                csf,
+                ""
+              )
+              if (!ckn) {
+                seg$cols <- adjustcolor(
+                  seg$cols,
+                  1,
+                  color.offset,
+                  color.offset,
+                  color.offset
+                )
+              }
             } else if (!color.lock && (ck$co || length(seg$cols) == 1)) {
-              seg$cols[2] <- adjustcolor(seg$cols[1], 1, color.offset, color.offset, color.offset)
+              seg$cols[2] <- adjustcolor(
+                seg$cols[1],
+                1,
+                color.offset,
+                color.offset,
+                color.offset
+              )
             }
             hist(
-              y, breaks, FALSE,
-              border = if ("border" %in% names(pdo)) pdo$border else par("bg"), main = if (ck$sub) ptxt$sub else NA,
-              ylab = NA, xlab = NA, axes = FALSE, col = if (length(seg$cols) == 2) seg$cols[2] else seg$cols,
+              y,
+              breaks,
+              FALSE,
+              border = if ("border" %in% names(pdo)) pdo$border else par("bg"),
+              main = if (ck$sub) ptxt$sub else NA,
+              ylab = NA,
+              xlab = NA,
+              axes = FALSE,
+              col = if (length(seg$cols) == 2) seg$cols[2] else seg$cols,
               xlim = if (missing(mxl)) range(hp$breaks) else mxl,
               ylim = if (missing(myl)) c(0, max(c(dy, hp$density))) else myl
             )
             if (!is.logical(lines) || lines) {
-              graphics::lines(m[[1]], col = col, lwd = lwd, xpd = if ("xpd" %in% names(pdo)) {
-                pdo$xpd
-              } else {
-                FALSE
-              })
+              graphics::lines(
+                m[[1]],
+                col = col,
+                lwd = lwd,
+                xpd = if ("xpd" %in% names(pdo)) {
+                  pdo$xpd
+                } else {
+                  FALSE
+                }
+              )
             }
           }
-          if (ck$lp && ck$leg == 2) lega$x <- if (mean(dx) > mean(range(dx))) "topleft" else "topright"
-          if (xaxis) axis(1, las = xlas, cex = par("cex.axis"), fg = par("col.axis"))
-          if (yaxis) axis(2, las = ylas, cex = par("cex.axis"), fg = par("col.axis"))
+          if (ck$lp && ck$leg == 2) {
+            lega$x <- if (mean(dx) > mean(range(dx))) "topleft" else "topright"
+          }
+          if (xaxis) {
+            axis(1, las = xlas, cex = par("cex.axis"), fg = par("col.axis"))
+          }
+          if (yaxis) {
+            axis(2, las = ylas, cex = par("cex.axis"), fg = par("col.axis"))
+          }
         } else {
           # scatter
           dl <- if (cl <- "list" %in% class(cdat[[i]])) length(cdat[[i]]) else 1
@@ -1736,7 +2720,11 @@ splot <- function(
           td <- if (cl) do.call(rbind, cdat[[i]]) else cdat[[i]]
           cx <- td[, "x"]
           cy <- td[, "y"]
-          xch <- if (is.numeric(cx) || is.logical(cx)) cx else as.numeric(factor(cx))
+          xch <- if (is.numeric(cx) || is.logical(cx)) {
+            cx
+          } else {
+            as.numeric(factor(cx))
+          }
           a2a <- list(cex = par("cex.axis"), fg = par("col.axis"))
           if (length(ptxt$l.x) != 0) {
             a2a$tick <- FALSE
@@ -1744,40 +2732,77 @@ splot <- function(
             a2a$labels <- ptxt$l.x
             if (missing(xlas) || xlas > 1) {
               xlas <- 3
-              par(mai = if (ck$mai) {
-                op$mai
-              } else {
-                c(
-                  min(c(par("fin")[2] / 2, max(strwidth(ptxt$l.x, "i")))) + .25, par("mai")[-1]
-                )
-              })
+              par(
+                mai = if (ck$mai) {
+                  op$mai
+                } else {
+                  c(
+                    min(c(par("fin")[2] / 2, max(strwidth(ptxt$l.x, "i")))) +
+                      .25,
+                    par("mai")[-1]
+                  )
+                }
+              )
             }
           }
           plot(
             NA,
             xlim = if (missing(mxl)) range(xch, na.rm = TRUE) else mxl,
             ylim = if (missing(myl)) {
-              c(min(cy, na.rm = TRUE), max(cy, na.rm = TRUE) + max(cy, na.rm = TRUE) *
-                if (ck$leg == 1 && seg$by$ll < lim) seg$by$ll / 20 else 0)
+              c(
+                min(cy, na.rm = TRUE),
+                max(cy, na.rm = TRUE) +
+                  max(cy, na.rm = TRUE) *
+                    if (ck$leg == 1 && seg$by$ll < lim) seg$by$ll / 20 else 0
+              )
             } else {
               myl
             },
-            main = if (ck$sub) ptxt$sub else NA, ylab = NA, xlab = NA, axes = FALSE
+            main = if (ck$sub) ptxt$sub else NA,
+            ylab = NA,
+            xlab = NA,
+            axes = FALSE
           )
           if (yaxis) {
-            do.call(axis, c(list(2, las = ylas), c(
-              a2a[c("cex", "fg")],
-              if ("yax" %in% names(txt)) list(at = seq_along(txt$yax), labels = txt$yax, tick = FALSE)
-            )))
+            do.call(
+              axis,
+              c(
+                list(2, las = ylas),
+                c(
+                  a2a[c("cex", "fg")],
+                  if ("yax" %in% names(txt)) {
+                    list(
+                      at = seq_along(txt$yax),
+                      labels = txt$yax,
+                      tick = FALSE
+                    )
+                  }
+                )
+              )
+            )
           }
-          if (xaxis) do.call(axis, c(list(1, las = xlas), a2a))
+          if (xaxis) {
+            do.call(axis, c(list(1, las = xlas), a2a))
+          }
           if (ck$leg > 1) {
             up <- xch[cy >= quantile(cy, na.rm = TRUE)[4]]
             mr <- quantile(xch, na.rm = TRUE)
-            if (ck$lp) lega$x <- if (sum(up < mr[2]) > sum(up > mr[4])) "topright" else "topleft"
+            if (ck$lp) {
+              lega$x <- if (sum(up < mr[2]) > sum(up > mr[4])) {
+                "topright"
+              } else {
+                "topleft"
+              }
+            }
             if (ck$ileg) lega$legend <- rn
           }
-          padj <- if (color.lock || ck$cb || (missing(color.offset) && !ck$ltck)) 1 else color.offset
+          padj <- if (
+            color.lock || ck$cb || (missing(color.offset) && !ck$ltck)
+          ) {
+            1
+          } else {
+            color.offset
+          }
           ckcn <- all(rn %in% names(seg$cols))
           ckln <- all(rn %in% names(seg$lcols))
           if (!ckln) {
@@ -1794,14 +2819,24 @@ splot <- function(
           lwd <- rep_len(if (is.numeric(lwd)) lwd else 2, dl)
           for (l in if (ckcn) rn else seq_len(dl)) {
             td <- if (cl) cdat[[i]][[l]] else cdat[[i]]
-            if (is.null(td)) next
+            if (is.null(td)) {
+              next
+            }
             x <- td[, "x"]
             y <- td[, "y"]
             col <- if (ckcn) seg$cols[[l]] else seg$cols
-            if (opacity != 1 || padj != 1) col <- adjustcolor(col, opacity, padj, padj, padj)
-            if (points && points.first) points(x, y, col = col, cex = cex["points"])
+            if (opacity != 1 || padj != 1) {
+              col <- adjustcolor(col, opacity, padj, padj, padj)
+            }
+            if (points && points.first) {
+              points(x, y, col = col, cex = cex["points"])
+            }
             if (ck$ltck) {
-              lt <- if (ck$ltco == "pr" && length(unique(y)) != 2) "li" else ck$ltco
+              lt <- if (ck$ltco == "pr" && length(unique(y)) != 2) {
+                "li"
+              } else {
+                ck$ltco
+              }
               fit <- if (lt == "e") {
                 y
               } else {
@@ -1814,10 +2849,13 @@ splot <- function(
                       y <- factor(y, labels = c(0, 1))
                       fit <- predict(glm(y ~ x, binomial))
                       fit <- exp(fit) / (1 + exp(fit))
-                      if (!all(yr == c(0, 1))) fit <- (fit - mean(fit)) * (yr[2] - yr[1]) + mean(yr)
+                      if (!all(yr == c(0, 1))) {
+                        fit <- (fit - mean(fit)) * (yr[2] - yr[1]) + mean(yr)
+                      }
                       if (max(fit) > yr[2]) fit - (max(fit) - yr[2]) else fit
                     } else {
-                      predict(switch(lt,
+                      predict(switch(
+                        lt,
                         li = lm,
                         lo = loess,
                         sm = smooth.spline
@@ -1841,10 +2879,18 @@ splot <- function(
                   xo <- x[or]
                   fit <- fit[or]
                 }
-                graphics::lines(xo, fit, col = seg$lcols[[l]], lty = seg$lty[[l]], lwd = seg$lwd[[l]])
+                graphics::lines(
+                  xo,
+                  fit,
+                  col = seg$lcols[[l]],
+                  lty = seg$lty[[l]],
+                  lwd = seg$lwd[[l]]
+                )
               }
             }
-            if (points && !points.first) points(x, y, col = col, cex = cex["points"])
+            if (points && !points.first) {
+              points(x, y, col = col, cex = cex["points"])
+            }
           }
         }
         if (ck$leg == 2) {
@@ -1864,11 +2910,16 @@ splot <- function(
         }
         success <- TRUE
         if (!missing(add)) {
-          add_attempt <- tryCatch(eval(substitute(add), fdat), error = function(e) list(failed = TRUE))
+          add_attempt <- tryCatch(
+            eval(substitute(add), fdat),
+            error = function(e) list(failed = TRUE)
+          )
           if (is.list(add_attempt) && isTRUE(add_attempt$failed)) {
             tryCatch(
               eval(substitute(add), parent.frame(1)),
-              error = function(e) warning("error from add: ", e$message, call. = FALSE)
+              error = function(e) {
+                warning("error from add: ", e$message, call. = FALSE)
+              }
             )
           }
         }
@@ -1879,11 +2930,21 @@ splot <- function(
       }
     )
   }
-  if (!success) stop("failed to make any plots with the current input", call. = FALSE)
+  if (!success) {
+    stop("failed to make any plots with the current input", call. = FALSE)
+  }
   if (ck$leg == 1) {
     if (all(par("mfg")[1:2] != 0)) {
       plot.new()
-      if (ck$b) lega[c("pch", "pt.cex", "x.intersp", "y.intersp", "adj")] <- list(15, 2, 1, 1.2, c(0, .35))
+      if (ck$b) {
+        lega[c("pch", "pt.cex", "x.intersp", "y.intersp", "adj")] <- list(
+          15,
+          2,
+          1,
+          1.2,
+          c(0, .35)
+        )
+      }
       if (ck$lpm) {
         message("click to place the legend")
         lega[c("x", "y")] <- locator(1)
@@ -1906,21 +2967,65 @@ splot <- function(
       if (is.character(sud)) {
         sud
       } else {
-        gsub(", (?=[A-z0-9 ]+$)", ifelse(length(ptxt$cov) > 2, ", & ", " & "), gsub("^ | $", "", paste0(if (ck$su) {
-          paste("Subset:", paste0(txt$su[1], if (length(txt$su) != 1) "..."))
-        }, if (ck$su && ck$c) ", ", if (ck$c) {
-          paste(if (ck$t == 1) "Covariates:" else "Line adjustment:", paste(ptxt$cov, collapse = ", "))
-        })), TRUE, TRUE)
+        gsub(
+          ", (?=[A-z0-9 ]+$)",
+          ifelse(length(ptxt$cov) > 2, ", & ", " & "),
+          gsub(
+            "^ | $",
+            "",
+            paste0(
+              if (ck$su) {
+                paste(
+                  "Subset:",
+                  paste0(txt$su[1], if (length(txt$su) != 1) "...")
+                )
+              },
+              if (ck$su && ck$c) ", ",
+              if (ck$c) {
+                paste(
+                  if (ck$t == 1) "Covariates:" else "Line adjustment:",
+                  paste(ptxt$cov, collapse = ", ")
+                )
+              }
+            )
+          ),
+          TRUE,
+          TRUE
+        )
       },
-      3, 0, TRUE,
-      cex = cex["sud"], font = font["sud"]
+      3,
+      0,
+      TRUE,
+      cex = cex["sud"],
+      font = font["sud"]
     )
   }
-  mtext(main, 3, if (ck$sud) 1.5 else .5, TRUE, cex = cex["title"], font = font["title"])
+  mtext(
+    main,
+    3,
+    if (ck$sud) 1.5 else .5,
+    TRUE,
+    cex = cex["title"],
+    font = font["title"]
+  )
   mtext(ylab, 2, -.2, TRUE, cex = par("cex.lab"), font = par("font.lab"))
   mtext(xlab, 1, 0, TRUE, cex = par("cex.lab"), font = par("font.lab"))
-  if (is.character(note)) mtext(note, 1, ck$lx, TRUE, adj = if (ck$ly) 0 else .01, font = font["note"], cex = cex["note"])
-  if (save || (missing(save) && any(!missing(format), !missing(file.name), !missing(dims)))) {
+  if (is.character(note)) {
+    mtext(
+      note,
+      1,
+      ck$lx,
+      TRUE,
+      adj = if (ck$ly) 0 else .01,
+      font = font["note"],
+      cex = cex["note"]
+    )
+  }
+  if (
+    save ||
+      (missing(save) &&
+        any(!missing(format), !missing(file.name), !missing(dims)))
+  ) {
     tryCatch(
       {
         if (is.character(format) || is.name(format)) {
@@ -1929,22 +3034,48 @@ splot <- function(
         } else {
           t <- deparse(substitute(format))
         }
-        if (is.function(format)) t <- sub("^[^:]*::", "", t)
+        if (is.function(format)) {
+          t <- sub("^[^:]*::", "", t)
+        }
         tt <- if (any(grepl("cairo", t, TRUE))) {
           paste0(".", tolower(strsplit(t, "_|Cairo")[[1]][2]))
-        } else if (t == "postscript") ".ps" else paste0(".", t)
-        if (missing(dims) && grepl("jpeg|png|tiff|bmp|bit", t, TRUE)) dims <- dev.size(units = "px")
-        fn <- paste0(if (main == "" || !missing(file.name)) {
-          sub("\\.[^.]+$", "", file.name)
+        } else if (t == "postscript") {
+          ".ps"
         } else {
-          gsub("\\s+", "_", gsub("^ +| +$|  ", "", main))
-        }, tt)
+          paste0(".", t)
+        }
+        if (missing(dims) && grepl("jpeg|png|tiff|bmp|bit", t, TRUE)) {
+          dims <- dev.size(units = "px")
+        }
+        fn <- paste0(
+          if (main == "" || !missing(file.name)) {
+            sub("\\.[^.]+$", "", file.name)
+          } else {
+            gsub("\\s+", "_", gsub("^ +| +$|  ", "", main))
+          },
+          tt
+        )
         dev.copy(format, fn, width = dims[1], height = dims[2])
         dev.off()
-        if (file.exists(fn)) message("image saved: ", fn) else warning("failed to save image")
+        if (file.exists(fn)) {
+          message("image saved: ", fn)
+        } else {
+          warning("failed to save image")
+        }
       },
-      error = function(e) warning("unable to save image: ", e$message, call. = FALSE)
+      error = function(e) {
+        warning("unable to save image: ", e$message, call. = FALSE)
+      }
     )
   }
-  invisible(list(dat = dat, cdat = cdat, txt = txt, ptxt = ptxt, seg = seg, ck = ck, lega = lega, fmod = fmod))
+  invisible(list(
+    dat = dat,
+    cdat = cdat,
+    txt = txt,
+    ptxt = ptxt,
+    seg = seg,
+    ck = ck,
+    lega = lega,
+    fmod = fmod
+  ))
 }

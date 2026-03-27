@@ -98,22 +98,41 @@
 #' @export
 
 splot.bench <- function(
-    ..., runs = 20, runsize = 200, cleanup = FALSE, print.names = FALSE,
-    limit.outliers = TRUE, check_output = TRUE, check_args = list(), options = list()) {
-  e <- sapply(as.character(substitute(list(...)))[-1], function(t) parse(text = t))
+  ...,
+  runs = 20,
+  runsize = 200,
+  cleanup = FALSE,
+  print.names = FALSE,
+  limit.outliers = TRUE,
+  check_output = TRUE,
+  check_args = list(),
+  options = list()
+) {
+  e <- sapply(
+    as.character(substitute(list(...)))[-1],
+    function(t) parse(text = t)
+  )
   e <- e[!duplicated(names(e))]
   es <- length(e)
-  if (!es) stop("no expressions found", call. = FALSE)
+  if (!es) {
+    stop("no expressions found", call. = FALSE)
+  }
   ne <- names(e)
   seconds <- matrix(NA, runs, es, dimnames = list(NULL, ne))
   rs <- seq_len(runsize)
   ops <- tryCatch(
     lapply(e, eval, parent.frame(3)),
-    error = function(e) stop("one of your expressions breaks:\n", e, call. = FALSE)
+    error = function(e) {
+      stop("one of your expressions breaks:\n", e, call. = FALSE)
+    }
   )
   checks <- if (check_output && length(e) != 1) {
-    if (!"check.attributes" %in% names(check_args)) check_args$check.attributes <- FALSE
-    if (!"check.names" %in% names(check_args)) check_args$check.names <- FALSE
+    if (!"check.attributes" %in% names(check_args)) {
+      check_args$check.attributes <- FALSE
+    }
+    if (!"check.names" %in% names(check_args)) {
+      check_args$check.names <- FALSE
+    }
     lapply(ops[-1], function(r) {
       tryCatch(
         do.call(all.equal, c(list(r), list(ops[[1]]), check_args)),
@@ -131,29 +150,58 @@ splot.bench <- function(
     )
   }
   ost <- proc.time()[3]
-  cat("benchmarking", es, "expression(s) in chunks of", runsize, "per run... \nrun 0 of", runs)
+  cat(
+    "benchmarking",
+    es,
+    "expression(s) in chunks of",
+    runsize,
+    "per run... \nrun 0 of",
+    runs
+  )
   fun <- function(e) {
     eval(e, .GlobalEnv)
     NULL
   }
   for (r in seq_len(runs)) {
     for (f in sample(seq_len(es))) {
-      if (cleanup) gc(FALSE)
+      if (cleanup) {
+        gc(FALSE)
+      }
       st <- proc.time()[[3]]
-      for (i in rs) fun(e[[f]])
+      for (i in rs) {
+        fun(e[[f]])
+      }
       seconds[r, f] <- proc.time()[[3]] - st
     }
     cat("\rrun", r, "of", runs)
   }
-  cat("\rfinished", runs, "runs in", round(proc.time()[3] - ost, 2), "seconds       \n\n")
+  cat(
+    "\rfinished",
+    runs,
+    "runs in",
+    round(proc.time()[3] - ost, 2),
+    "seconds       \n\n"
+  )
   cat("expressions:\n\n")
   icn <- seq_len(es)
   ne <- gsub("\n", "\n   ", ne, fixed = TRUE)
-  for (i in icn) cat(i, ". ", ne[i], "\n", sep = "")
+  for (i in icn) {
+    cat(i, ". ", ne[i], "\n", sep = "")
+  }
   cat("\n")
   res <- rbind(colSums(seconds), colMeans(seconds))
-  res <- rbind(res, if (min(res[1, ], na.rm = TRUE) == 0) res[1, ] + 1 else res[1, ] / min(res[1, ], na.rm = TRUE))
-  dimnames(res) <- list(c("total time (seconds)", "mean time per run", "times the minimum"), icn)
+  res <- rbind(
+    res,
+    if (min(res[1, ], na.rm = TRUE) == 0) {
+      res[1, ] + 1
+    } else {
+      res[1, ] / min(res[1, ], na.rm = TRUE)
+    }
+  )
+  dimnames(res) <- list(
+    c("total time (seconds)", "mean time per run", "times the minimum"),
+    icn
+  )
   print(round(res, 4))
   if (!print.names) {
     if (!missing(print.names) || es > 5 || any(nchar(names(e)) > 50)) {
@@ -176,7 +224,13 @@ splot.bench <- function(
     seconds <- seconds[1, ]
   }
   invisible(list(
-    plot = splot(seconds, title = title, labels.filter = FALSE, labels.trim = FALSE, options = options),
+    plot = splot(
+      seconds,
+      title = title,
+      labels.filter = FALSE,
+      labels.trim = FALSE,
+      options = options
+    ),
     checks = checks,
     expressions = as.list(unname(e)),
     summary = res

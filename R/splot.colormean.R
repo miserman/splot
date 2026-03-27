@@ -26,11 +26,25 @@ splot.colormean <- function(...) {
   hdc <- outer(hdc, hdc, paste0)
   s <- seq_len(16)
   ccs <- adjustcolor(unlist(list(...), use.names = FALSE))
-  paste(c("#", apply(Reduce("+", lapply(ccs, function(cc) {
-    cc <- strsplit(cc, "")[[1]][2:7]
-    cc <- paste0(cc[c(TRUE, FALSE)], cc[c(FALSE, TRUE)])
-    vapply(cc, function(c) which(hdc == c, TRUE), numeric(2))
-  })) / length(ccs), 2, function(cc) {
-    hdc[which.min(abs(s - cc[1])), which.min(abs(s - cc[2]))]
-  })), collapse = "")
+  paste(
+    c(
+      "#",
+      apply(
+        Reduce(
+          "+",
+          lapply(ccs, function(cc) {
+            cc <- strsplit(cc, "")[[1]][2:7]
+            cc <- paste0(cc[c(TRUE, FALSE)], cc[c(FALSE, TRUE)])
+            vapply(cc, function(c) which(hdc == c, TRUE), numeric(2))
+          })
+        ) /
+          length(ccs),
+        2,
+        function(cc) {
+          hdc[which.min(abs(s - cc[1])), which.min(abs(s - cc[2]))]
+        }
+      )
+    ),
+    collapse = ""
+  )
 }

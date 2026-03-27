@@ -22,29 +22,55 @@ splot.colorcontrast <- function(color, background = "#ffffff", plot = TRUE) {
   oc <- color
   ob <- background
   adj <- c(0.2126, 0.7152, 0.0722)
-  if (is.character(color)) color <- col2rgb(color)
-  if (is.null(dim(color))) color <- matrix(color, 3)
-  if (is.character(background)) background <- col2rgb(background)
-  if (is.null(dim(background))) background <- matrix(background, 3)
+  if (is.character(color)) {
+    color <- col2rgb(color)
+  }
+  if (is.null(dim(color))) {
+    color <- matrix(color, 3)
+  }
+  if (is.character(background)) {
+    background <- col2rgb(background)
+  }
+  if (is.null(dim(background))) {
+    background <- matrix(background, 3)
+  }
   color <- color / 255
   su <- color <= .03928
-  if (any(su)) color[su] <- color[su] / 12.92
+  if (any(su)) {
+    color[su] <- color[su] / 12.92
+  }
   color[!su] <- ((color[!su] + .055) / 1.055)^2.4
   color <- colSums(color * adj)
   background <- background / 255
   su <- background <= .03928
-  if (any(su)) background[su] <- background[su] / 12.92
+  if (any(su)) {
+    background[su] <- background[su] / 12.92
+  }
   background[!su] <- ((background[!su] + .055) / 1.055)^2.4
   background <- colSums(background * adj)
-  r <- vapply(background, function(bg) {
-    su <- bg > color
-    color[su] <- (bg + .05) / (color[su] + .05)
-    color[!su] <- (color[!su] + .05) / (bg + .05)
+  r <- vapply(
+    background,
+    function(bg) {
+      su <- bg > color
+      color[su] <- (bg + .05) / (color[su] + .05)
+      color[!su] <- (color[!su] + .05) / (bg + .05)
+      color
+    },
     color
-  }, color)
-  if (is.null(dimnames(r))) r <- matrix(r, length(color))
-  rownames(r) <- if (is.character(oc)) oc else paste0("color_", seq_along(color))
-  colnames(r) <- if (is.character(ob)) ob else paste0("background_", seq_along(background))
+  )
+  if (is.null(dimnames(r))) {
+    r <- matrix(r, length(color))
+  }
+  rownames(r) <- if (is.character(oc)) {
+    oc
+  } else {
+    paste0("color_", seq_along(color))
+  }
+  colnames(r) <- if (is.character(ob)) {
+    ob
+  } else {
+    paste0("background_", seq_along(background))
+  }
   if (plot) {
     data <- data.frame(
       Contrast = as.numeric(r),
@@ -52,9 +78,14 @@ splot.colorcontrast <- function(color, background = "#ffffff", plot = TRUE) {
       Color = rep(rownames(r), ncol(r))
     )
     splot(
-      Contrast ~ Color, data,
+      Contrast ~ Color,
+      data,
       between = "Background",
-      type = "bar", title = FALSE, colors = data$Color, ndisp = FALSE, sort = FALSE,
+      type = "bar",
+      title = FALSE,
+      colors = data$Color,
+      ndisp = FALSE,
+      sort = FALSE,
       add = {
         abline(h = 4.5, col = "#a52600", xpd = FALSE)
         abline(h = 7, col = "#0050a5", xpd = FALSE, lty = 2)

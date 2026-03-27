@@ -88,15 +88,62 @@
 #' @export
 
 splot.color <- function(
-    x = NULL, by = NULL, seed = "pastel", brightness = 0, luminance = 0, opacity = 1, extend = .7,
-    lighten = FALSE, shuffle = FALSE, flat = TRUE, method = "scale", grade = FALSE, decreasing = FALSE, nas = "#000000") {
+  x = NULL,
+  by = NULL,
+  seed = "pastel",
+  brightness = 0,
+  luminance = 0,
+  opacity = 1,
+  extend = .7,
+  lighten = FALSE,
+  shuffle = FALSE,
+  flat = TRUE,
+  method = "scale",
+  grade = FALSE,
+  decreasing = FALSE,
+  nas = "#000000"
+) {
   sets <- list(
-    bright = c("#45FF00", "#BA00FF", "#000000", "#FF0000", "#FFFD00", "#003DFF", "#00F2F8", "#999999", "#FF891B"),
-    dark = c("#1B8621", "#681686", "#2A2A2A", "#7C0D0D", "#B5BC00", "#241C80", "#1A7E8B", "#666666", "#B06622"),
-    pastel = c("#82C473", "#A378C0", "#616161", "#9F5C61", "#D3D280", "#6970B2", "#78C4C2", "#454744", "#D98C82"),
+    bright = c(
+      "#45FF00",
+      "#BA00FF",
+      "#000000",
+      "#FF0000",
+      "#FFFD00",
+      "#003DFF",
+      "#00F2F8",
+      "#999999",
+      "#FF891B"
+    ),
+    dark = c(
+      "#1B8621",
+      "#681686",
+      "#2A2A2A",
+      "#7C0D0D",
+      "#B5BC00",
+      "#241C80",
+      "#1A7E8B",
+      "#666666",
+      "#B06622"
+    ),
+    pastel = c(
+      "#82C473",
+      "#A378C0",
+      "#616161",
+      "#9F5C61",
+      "#D3D280",
+      "#6970B2",
+      "#78C4C2",
+      "#454744",
+      "#D98C82"
+    ),
     grey = function(n) grey(.2:n / (n + n * if (n < 10) .1 else .3))
   )
-  if (missing(seed) && is.character(x) && (length(x) == 1 || all(tolower(x) %in% colors()))) {
+  if (
+    missing(seed) &&
+      is.character(x) &&
+      (length(x) == 1 || all(tolower(x) %in% colors()))
+  ) {
     seed <- x
     x <- numeric(length(seed)) + 1
   }
@@ -106,12 +153,18 @@ splot.color <- function(
   }
   seed <- tolower(seed)
   ox <- NULL
-  lvs <- function(x) if (is.factor(x)) base::levels(x) else sort(unique(x[!is.na(x)]))
+  lvs <- function(x) {
+    if (is.factor(x)) base::levels(x) else sort(unique(x[!is.na(x)]))
+  }
   cn <- ncol(x)
   if (!is.null(cn) && !is.na(cn) && cn > 1) {
-    if (is.null(by)) by <- x[, 2]
+    if (is.null(by)) {
+      by <- x[, 2]
+    }
     x <- x[, 1]
-  } else if (is.list(x) && length(x) == 1) x <- x[[1]]
+  } else if (is.list(x) && length(x) == 1) {
+    x <- x[[1]]
+  }
   if (!is.null(by)) {
     ol <- length(x)
     if (is.null(x)) {
@@ -122,11 +175,17 @@ splot.color <- function(
         by <- rep_len(seq_len(by), ol)
       } else {
         by <- NULL
-        warning("splot.color: by was dropped as it is not the same length as x", call. = FALSE)
+        warning(
+          "splot.color: by was dropped as it is not the same length as x",
+          call. = FALSE
+        )
       }
     }
   }
-  if (!is.null(x) && (!(is.list(x) || is.numeric(x)) || (is.numeric(x) && !is.null(by)))) {
+  if (
+    !is.null(x) &&
+      (!(is.list(x) || is.numeric(x)) || (is.numeric(x) && !is.null(by)))
+  ) {
     if (is.null(by)) {
       ox <- x
       x <- as.list(table(x))[lvs(ox)]
@@ -177,30 +236,51 @@ splot.color <- function(
       }
       ccode <- function(m) {
         s <- seq_len(16)
-        paste0("#", paste(apply(m, 2, function(cc) {
-          hdc[which.min(abs(s - cc[1])), which.min(abs(s - cc[2]))]
-        }), collapse = ""))
+        paste0(
+          "#",
+          paste(
+            apply(m, 2, function(cc) {
+              hdc[which.min(abs(s - cc[1])), which.min(abs(s - cc[2]))]
+            }),
+            collapse = ""
+          )
+        )
       }
       csamp <- function(code, n) {
         n <- max(1, n - 1)
         ocs <- NULL
         code <- ccord(code)
-        if (any(ck <- code > 14)) code[ck] <- code[ck] - (code[ck] - 14)
-        if (any(ck <- code < 2)) code[ck] <- code[ck] + (2 - code[ck])
+        if (any(ck <- code > 14)) {
+          code[ck] <- code[ck] - (code[ck] - 14)
+        }
+        if (any(ck <- code < 2)) {
+          code[ck] <- code[ck] + (2 - code[ck])
+        }
         i <- 1
         while (length(ocs) <= n && i < 9999) {
           s <- sample(1:6, 3)
           nc <- code
           nc[s] <- nc[s] + sample(-r:r, 3, TRUE)
           nc <- ccode(nc)
-          if (!nc %in% ocs) ocs <- c(ocs, nc)
+          if (!nc %in% ocs) {
+            ocs <- c(ocs, nc)
+          }
           i <- i + 1
         }
         if (any(opacity != 1, brightness != 0, luminance != 0)) {
           adj <- 1 + brightness
-          ocs <- adjustcolor(ocs, opacity, adj, adj, adj, c(rep(luminance, 3), 0))
+          ocs <- adjustcolor(
+            ocs,
+            opacity,
+            adj,
+            adj,
+            adj,
+            c(rep(luminance, 3), 0)
+          )
         }
-        if (length(ocs) != n + 1) ocs <- rep_len(ocs, n + 1)
+        if (length(ocs) != n + 1) {
+          ocs <- rep_len(ocs, n + 1)
+        }
         ocs
       }
       csamp(cc, n)
@@ -208,11 +288,17 @@ splot.color <- function(
   } else if (ckno) {
     function(cc, n) {
       ns <- length(n)
-      vapply(seq_len(ns), function(i) {
-        adj <- ns / (ns + i - 1) + brightness
-        if (lighten) adj <- 1.8 - adj
-        adjustcolor(cc, opacity, adj, adj, adj, c(rep(luminance, 3), 0))
-      }, "")
+      vapply(
+        seq_len(ns),
+        function(i) {
+          adj <- ns / (ns + i - 1) + brightness
+          if (lighten) {
+            adj <- 1.8 - adj
+          }
+          adjustcolor(cc, opacity, adj, adj, adj, c(rep(luminance, 3), 0))
+        },
+        ""
+      )
     }
   } else {
     function(cc, n) {
@@ -220,19 +306,37 @@ splot.color <- function(
       n <- length(s)
       s <- s / max(s, na.rm = TRUE) * (n - 1) + 1
       r <- max(n, n + n * extend)
-      if (!lighten) s <- s + r - max(s, na.rm = TRUE)
-      vapply(s, function(i) {
-        adj <- i / r + brightness
-        if (lighten) adj <- adj + 1
-        adjustcolor(cc, opacity, adj, adj, adj, c(rep(luminance, 3), 0))
-      }, "")
+      if (!lighten) {
+        s <- s + r - max(s, na.rm = TRUE)
+      }
+      vapply(
+        s,
+        function(i) {
+          adj <- i / r + brightness
+          if (lighten) {
+            adj <- adj + 1
+          }
+          adjustcolor(cc, opacity, adj, adj, adj, c(rep(luminance, 3), 0))
+        },
+        ""
+      )
     }
   }
   asc <- function(v, si) {
     n <- length(v)
-    if (is.numeric(v)) v <- round(v, 3)
-    if (!is.numeric(v) || (n != 1 && !grade)) v <- as.numeric(factor(v, lvs(v)))
-    if (!ckno) if (n == 1) v <- seq_len(max(1, v)) else if (length(lvs(v)) == 1) v <- seq_along(v)
+    if (is.numeric(v)) {
+      v <- round(v, 3)
+    }
+    if (!is.numeric(v) || (n != 1 && !grade)) {
+      v <- as.numeric(factor(v, lvs(v)))
+    }
+    if (!ckno) {
+      if (n == 1) {
+        v <- seq_len(max(1, v))
+      } else if (length(lvs(v)) == 1) {
+        v <- seq_along(v)
+      }
+    }
     n <- length(v)
     l <- lvs(v)
     u <- sort(unique(v), decreasing)
@@ -240,15 +344,27 @@ splot.color <- function(
     pr <- rep(nas, n)
     cols <- if (nu < 2 && (!length(u) || u < 2)) si else sc(si, u)
     v <- factor(v[is.finite(v)], u)
-    if (n != nu) cols <- rep(cols, tabulate(v))
-    if (shuffle) sample(cols) else cols[order(order(v, decreasing = decreasing))]
+    if (n != nu) {
+      cols <- rep(cols, tabulate(v))
+    }
+    if (shuffle) {
+      sample(cols)
+    } else {
+      cols[order(order(v, decreasing = decreasing))]
+    }
   }
   if (!is.list(x)) {
     seed <- asc(x, seed[1])
   } else {
-    if (length(seed) < n) seed <- rep_len(seed, n)
+    if (length(seed) < n) {
+      seed <- rep_len(seed, n)
+    }
     seed <- lapply(seq_len(n), function(i) asc(x[[i]], seed[i]))
-    names(seed) <- if (!is.null(names(x))) names(x) else vapply(seed, "[[", "", 1)
+    names(seed) <- if (!is.null(names(x))) {
+      names(x)
+    } else {
+      vapply(seed, "[[", "", 1)
+    }
     if (flat) {
       seed <- if (!is.null(ox) && all(lvs(ox) %in% names(seed))) {
         by <- as.character(ox)
@@ -263,7 +379,17 @@ splot.color <- function(
       }
     }
   }
-  if (!is.list(seed)) seed[is.na(seed) | is.nan(seed) | seed %in% c("NA", "NaN", "Inf", "-Inf")] <- nas
-  if (opacity == 1) seed <- if (is.list(seed)) lapply(seed, function(s) sub("FF$", "", s)) else sub("FF$", "", seed)
+  if (!is.list(seed)) {
+    seed[
+      is.na(seed) | is.nan(seed) | seed %in% c("NA", "NaN", "Inf", "-Inf")
+    ] <- nas
+  }
+  if (opacity == 1) {
+    seed <- if (is.list(seed)) {
+      lapply(seed, function(s) sub("FF$", "", s))
+    } else {
+      sub("FF$", "", seed)
+    }
+  }
   seed
 }
